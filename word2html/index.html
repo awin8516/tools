@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>文本格式化HTML</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>
+* { font-size:14px; margin:0; padding:0;}
+html,body{ height:100%; background:#f9f9f9; text-align:center;}
+.main { height:80%;}
+.main:before { content:""; display:inline-block;vertical-align:middle; height:100%;}
+.main textarea { display:inline-block; width:45%; height:90%; padding:5px; vertical-align:middle; border:1px #ddd solid;}
+.handler {height:20%; background:#eee;}
+.handler:before { content:""; display:inline-block;vertical-align:middle; height:100%;}
+.handler input { width:30%;height:50%;margin:0 10px; text-indent:1em; vertical-align:middle; border:1px #ddd solid;}
+.btn { height:50%; padding:0 4em; cursor:pointer;display:inline-block; background:#0786D3; color:#fff; vertical-align:middle;}
+.btn:before { content:""; display:inline-block;vertical-align:middle; height:100%;}
+</style>
+</head>
+<body>
+<div class="main">
+    <textarea id="textareaBefore" class="textarea-before">哈尔滨中央大街百盛
+2017年1月1日
+1、流行服饰参活商品5折封顶，男女鞋低至3折
+   鞋服商品再满1217以上送300开年礼金
+   19:00起实付金额满600元以上收100元晚场券
+2、化妆品满20减5/4/3元，国际妆品至高17倍积分即时抵值
+3、珠宝折后满1217送267璀璨币
+4、食尚公社餐饮区折后满40收10元食尚券,满80收20元食尚券，满200收50元食尚券
+5、再享六级新年礼、整点大屏抽奖砸金蛋、银行刷卡赠礼、出行无忧礼等
+2017年1月2日-1月8日
+1、流行服饰参活商品5折封顶，男女鞋低至3折
+部分鞋服商品再满1217以上送150开年礼金
+2、化妆品满20减5/4/3元，国际妆品至高17倍积分，即时抵值
+3、珠宝折后满1217送217新年币
+5、再享六级新年礼、银行刷卡赠礼、出行无忧礼等
+
+哈尔滨太平桥百盛
+2016年12月31日-2017年1月8日</textarea>
+    <textarea id="textareaAfter" class="textarea-after"></textarea>
+</div>
+<div class="handler">
+    <input id="labelBefore" type="text" placeholder="段落前标签" value="'<p>" />
+    <input id="labelAfter" type="text" placeholder="段落后标签"  value="</p>'+" />
+    <b id="btnGo"class="btn">转换</b>
+    <b id="btnWrapSpace"class="btn">去段前后空格</b>
+    <b id="btnAllSpace"class="btn">去段所有空格</b>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	function getById(id){
+		return document.getElementById(id);
+	};
+	function getLineCode(str){
+		var reg = {
+			r  : "\r",
+			n  : "\n",
+			rn : "\r\n"
+		};
+		var res = null ;
+		for(var key in reg){
+			var _reg = new RegExp(reg[key], 'g');
+			if(_reg.test(str)) res = reg[key];	
+		};
+		return res
+	};
+	
+	window.onload = function(){
+		var o = {
+			textareaBefore : getById('textareaBefore'),	
+			textareaAfter  : getById('textareaAfter'),	
+			labelBefore    : getById('labelBefore'),	
+			labelAfter     : getById('labelAfter'),	
+			btnGo          : getById('btnGo'),	
+			btnWrapSpace   : getById('btnWrapSpace'),
+			btnAllSpace    : getById('btnAllSpace')
+		};
+		var str = {	};
+		o.btnGo.onclick = function(){
+			str.before  = o.labelBefore.value;
+			str.content = o.textareaBefore.value;
+			str.after   = o.labelAfter.value;
+			var _str = str.content.replace(/(\r\n)/gm, str.after+'\r\n'+str.before)
+								  .replace(/(\n)/gm, str.after+'\n'+str.before)
+								  .replace(/(\r)/gm, str.after+'\r'+str.before);
+			str.content = o.textareaAfter.value = str.before+_str+str.after;
+		};
+		o.btnWrapSpace.onclick = function(){
+			str.content  = o.textareaBefore.value;
+			str.linecode = getLineCode(str.content);
+			str.contents = str.content.split(str.linecode);
+			for(var i=0; i<str.contents.length; i++){
+				str.contents[i] = str.contents[i].replace(/(^\s*)|(\s*$)/g,'');
+			};
+			str.content = o.textareaAfter.value = str.contents.join(str.linecode);
+		};
+		o.btnAllSpace.onclick = function(){
+			str.content = o.textareaAfter.value = o.textareaBefore.value.replace(/\s/g,'');
+		};
+	};
+	
+	
+	
+	
+	
+	
+</script>
