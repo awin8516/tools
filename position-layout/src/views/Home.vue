@@ -6,9 +6,7 @@
     </div>
     <div id="po-main" class="po-main" :style="'width:'+screenWidth+'px;height:'+screenHeight+'px;'">
       <div class="po-screen" ref="screen" v-drag>
-        <div class="po-el-item" v-for="(item, index) in elementList" :key="index" @click="addElement(item.type)">
-          <Element :params="item"></Element>
-        </div>
+        <Element v-for="(item, index) in elementList" :key="index" :params="item"></Element>
       </div>
 
       <div class="po-toolbar">
@@ -37,7 +35,8 @@ export default {
         },
         {
           name: "picture",
-          type: "image"
+          type: "image",
+          placeholder: require('@/assets/img.jpg'),
         }
       ]
     };
@@ -67,22 +66,22 @@ export default {
           type: 'image',
           width: 100,
           height: 100,
-          src: '@/assets/logo.png'
+          src: this.tools[1].placeholder
         });
       }
     },
-    creater(type) {
-      if (type === "div") {
-        const div = document.createElement("DIV");
-        div.style.width = "100px";
-        div.style.height = "100px";
-        div.style.backgroundColor = "#eeeeee";
-        return div;
-      }
-      if (type === "image") {
-        console.log("image");
-      }
-    },
+    // creater(type) {
+    //   if (type === "div") {
+    //     const div = document.createElement("DIV");
+    //     div.style.width = "100px";
+    //     div.style.height = "100px";
+    //     div.style.backgroundColor = "#eeeeee";
+    //     return div;
+    //   }
+    //   if (type === "image") {
+    //     console.log("image");
+    //   }
+    // },
     bindEvent(el) { }
   }
 };

@@ -1,7 +1,7 @@
 <template>
   <div class="po-el-item">
-    <div v-if="params.type == 'div'">div</div>
-    <img v-if="params.type == 'image'" :src="params.src">
+    <div v-if="params.type === 'div'" :style="createStyle(params)"></div>
+    <img v-if="params.type === 'image'" :style="createStyle(params)" :src="params.src">
   </div>
 </template>
 
@@ -10,16 +10,19 @@ export default {
   name: "Element",
   data() {
     return {
-      
-    };
+
+    }
   },
-  props:['params'],
+  props: ['params'],
   components: {
     // draggable
   },
   methods: {
-    addElement(type) {
-      
+    createStyle(params) {
+      if (params.type === 'div') {
+        return `width:${params.width}px;height:${params.height}px;background-color:${params.backgroundColor};`;
+      }
+
     }
   }
 };
