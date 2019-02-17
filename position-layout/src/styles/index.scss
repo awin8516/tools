@@ -24,6 +24,13 @@ body {
     height: 100%;
     .po-el-item {
       position: absolute;
+      opacity: 0.5;
+      > img {
+        user-select: none;
+      }
+      &.active{
+        opacity: 1;
+      }
     }
   }
   .po-toolbar {
@@ -33,6 +40,35 @@ body {
     .el-button {
       margin-left: 0;
       margin-bottom: 15px;
+    }
+  }
+  .po-options {
+    list-style: none;
+    position: absolute;
+    left: 105%;
+    top: 0;
+    font-size: 11px;
+    text-align: left;
+    margin-left: 50px;
+    li {
+      margin-bottom: 10px;
+      label {
+        display: block;
+        margin-bottom: 2px;
+      }
+      input {
+        width: 8em;
+        border: 1px #ddd solid;
+        background: #fff;
+        box-shadow: 1px 1px 0 1px #eee inset;
+      }
+
+      &.po-options-type {
+        display: none;
+      }
+      &.po-options-draging {
+        display: none;
+      }
     }
   }
 }
