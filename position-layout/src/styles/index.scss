@@ -11,18 +11,49 @@ body {
   margin: 0;
   list-style: none;
 }
+textarea {
+  width: 100%;
+  height: 5em;
+}
 .po-screen-field {
   padding: 1em;
-  input {
+  .el-input {
+    display: inline-block;
     width: 80px;
-    height: 30px;
-    text-align: center;
+    margin: 0 5px;
+  }
+  .el-select {
+    width: 100px;
+    margin-right: 10px;
+    .el-input {
+      width: 100%;
+    }
   }
 }
 .po-main {
   border: 1px #ddd solid;
   background-color: #fff;
   position: relative;
+  .resize {
+    content: '✣';
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    left: 100%;
+    top: 100%;
+    margin: -0.2em;
+    border-radius: 100%;
+    &::before {
+      content: '✣';
+      line-height: 1;
+      display: inline-block;
+      vertical-align: top;
+      color: #409eff;
+    }
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
   .po-screen {
     position: relative;
     width: 100%;
@@ -31,18 +62,22 @@ body {
       position: absolute;
       > img {
         user-select: none;
+        vertical-align: top;
+      }
+      > *:first-child {
+        pointer-events: none;
+      }
+      .resize {
+        display: none;
       }
       &.active {
-        &:before {
-          content: '';
-          position: absolute;
+        .resize {
+          display: block;
           z-index: 2;
-          width: 1em;
-          height: 1em;
-          left: 0;
-          top: 0;
-          background-color: #f30;
         }
+      }
+      &.v-draging {
+        box-shadow: 0 0 10px 0 rgb(0, 195, 255);
       }
       .context-menu {
         position: absolute;
@@ -58,13 +93,15 @@ body {
           i {
             margin-right: 0.5em;
           }
-          &:hover{
+          &:hover {
             background-color: #000;
             color: #fff;
           }
         }
-        .focus-filed{
-          width: 0;height: 0;overflow: hidden;
+        .focus-filed {
+          width: 0;
+          height: 0;
+          overflow: hidden;
           position: absolute;
           opacity: 0;
         }
@@ -73,7 +110,7 @@ body {
   }
   .po-toolbar {
     position: absolute;
-    left: 105%;
+    left: calc(100% + 10px);
     top: 0;
     .el-button {
       margin-left: 0;
@@ -84,7 +121,7 @@ body {
     position: absolute;
     background-color: #fff;
     padding: 10px;
-    left: 105%;
+    left: calc(100% + 10px);
     top: 0;
     font-size: 11px;
     text-align: left;
@@ -95,29 +132,17 @@ body {
     }
     dl {
       position: relative;
-      padding-left: 8em;
-    }
-    & * + dl {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px #eee dotted;
-      dt {
-        top: 10px;
+      padding-left: 0em;
+      .h2 {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
       }
-    }
-    dt {
-      position: absolute;
-      left: 0;
-      top: 0;
-      font-size: 1.2em;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    dd {
-      margin-bottom: 10px;
       label {
-        display: block;
-        margin-bottom: 2px;
+        display: inline-block;
+        width: 120px;
+        text-align: left;
+        padding-right: 1em;
       }
       input {
         width: 10em;
@@ -126,12 +151,61 @@ body {
         background: #fff;
         box-shadow: 1px 1px 0 1px #eee inset;
       }
-
+    }
+    & * + dl {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px #eee dotted;
+      dt {
+        top: 0;
+      }
+    }
+    dt {
+      position: relative;
+      left: 0;
+      top: 0;
+      white-space: nowrap;
+      label {
+        text-align: left;
+      }
+    }
+    dd {
+      margin-bottom: 10px;
+      white-space: nowrap;
       &.po-options-type {
         display: none;
       }
       &.po-options-draging {
         display: none;
+      }
+    }
+    .style-custom {
+      position: relative;
+      height: 100px;
+      textarea {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      .submit {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background: #409eff;
+        text-align: center;
+        color: #fff;
+        padding: 5px;
+        cursor: pointer;
+        &::before {
+          content: 'OK';
+          display: inline-block;
+          line-height: 1;
+        }
+        &.disabled {
+          cursor: default;
+          background: #aaa;
+          pointer-events: none;
+        }
       }
     }
     .po-options-foot {

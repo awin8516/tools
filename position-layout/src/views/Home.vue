@@ -1,133 +1,76 @@
 <template>
   <div>
     <div class="po-screen-field">
-      window size
-      <input id="po-screen-width" type="text" v-range='{val:"screenWidth"}' v-model.lazy="screenWidth" placeholder="屏宽" />
+      Size
+      <el-select v-model="sizeIndex" @change="setSize">
+        <el-option v-for="(item, index) in screenOptions.sizeList" :key="index" :label="item.name" :value="index">{{item.name}}</el-option>
+      </el-select>
+      <el-input id="po-screen-width" type="text" v-range='{val:"screenOptions.style", key:"width"}' v-model.lazy="screenOptions.style.width" placeholder="屏宽"></el-input>
       ✕
-      <input id="po-screen-height" type="text" v-range='{val:"screenHeight"}' v-model.lazy="screenHeight" placeholder="屏高" />
+      <el-input id="po-screen-height" type="text" v-range='{val:"screenOptions.style", key:"height"}' v-model.lazy="screenOptions.style.height" placeholder="屏高"></el-input>
     </div>
-    <div id="po-main" class="po-main" :style="'width:'+screenWidth+';height:'+screenHeight+';'">
-      <div class="po-screen" ref="screen" v-drag :style="createStyle(screenOptions)">
-        <Element v-for="(item, index) in elementList" :key="item.vid" :class="{'active':index == active}" :params.sync="elementList[index]" @mousedown.native="selectElement(index)"></Element>
+    <div id="po-main" class="po-main" :style="'width:'+screenOptions.style.width+';height:'+screenOptions.style.height+';'">
+      <div class="po-screen" ref="screen" v-drag:po-el-item :style="screenStyle" @mousedown.self="cancelSelectElement()">
+        <Element v-for="(item, index) in elementList" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :currentIndex.sync="index" @mousedown.native="selectElement(index)"></Element>
       </div>
 
-      <div class="po-toolbar">
-        <el-button v-for="(item, index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.type" circle @click="createElement(item.type)"></el-button>
-      </div>
-      <div class="po-options">
-        <dl>
-          <dt>页面背景</dt>
-          <dd v-for="(value, key) in screenOptions" :key="key" :class="'po-options-'+key">
-            <label>{{key}}:</label>
-            <input type="text" v-model.lazy="screenOptions[key]">
-          </dd>
-        </dl>
-        <div class="po-options-el" v-if="elementList.length">
-          <dl>
-            <dt>className</dt>
-            <dd>
-              <input type="text" v-model.lazy="options.className">
-            </dd>
-          </dl>
-          <dl v-if="options.src">
-            <dt>Src</dt>
-            <dd>
-              <input type="text" v-model.lazy="options.src">
-            </dd>
-          </dl>
-          <dl>
-            <dt>Style</dt>
-            <dd v-for="(value, key) in options.style" :key="key" :class="'po-options-'+key">
-              <label>{{key}}:</label>
-              <input v-if="ragneList.includes(key)" v-range='{val:"options.style",key:key}' type="text" v-model.lazy="options.style[key]">
-              <input v-else type="text" v-model.lazy="options.style[key]">
-            </dd>
-          </dl>
-          <div class="po-options-foot">
-            <el-button icon='el-icon-delete' @click="deleteElement(active)">删除元素</el-button>
-          </div>
-        </div>
-      </div>
-
+      <Tools></Tools>
+      <Options></Options>
+      <div class="resize" v-drag="resize" @mousedown="getSize"></div>
     </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
-import draggable from "vuedraggable";
+import { mapState, mapGetters, mapActions } from 'vuex'
+// import draggable from "vuedraggable";
 import Element from "@/views/Element.vue";
-import { setInterval } from "timers";
+import Tools from "@/views/Tools.vue";
+import Options from "@/views/Options.vue";
+import { object2style } from "@/utils";
 export default {
   name: "home",
   data() {
     return {
-      screenWidth: "375px",
-      screenHeight: "667px",
-      elementList: [],
-      ragneList: ['left', 'top', 'width', 'height'],
-      active: 0,
-      screenOptions: {
-        "background-image": "url()",
-        "background-color": "#fff",
-        "background-repeat": "no-repeat",
-        "background-size": "100% auto",
-        "background-position": "left top"
-      },
-      options: {},
-      tools: [
-        {
-          icon: "menu",
-          type: "div"
-        },
-        {
-          icon: "picture",
-          type: "image"
-        }
-      ]
+      sizeIndex: 0,
+      size: {
+        width: 0,
+        height: 0
+      }
     };
   },
-  components: {
-    Element
-    // draggable
-  },
-  methods: {
-    createElement(type) {
-      this.elementList.push({
-        type: type
-      });
-      this.$nextTick(() => {
-        this.selectElement(this.elementList.length - 1);
-      });
-    },
-    selectElement(index) {
-      this.active = index;
-      this.elementList.map(v => this.$set(v, 'selected', false))
-      this.elementList[index].selected = true
-      this.options = this.elementList[index];
-    },
-    deleteElement(index) {
-      this.elementList.splice(index, 1)
-      if (index > 0) this.selectElement(this.active - 1);
-    },
-    createStyle(style) {
-      return JSON.stringify(style)
-        .replace("{", "")
-        .replace("}", "")
-        .replace(/"/g, "")
-        .replace(/,/g, ";");
+  computed: {
+    ...mapState(['screenOptions', 'elementList']),
+    ...mapGetters(['selectedIndex', 'list']),
+    screenStyle: function () {
+      return object2style(this.screenOptions.style)
     }
   },
-  mounted() { },
-  watch: {
-    // "options.style.left": {
-    //   handler: function (val, oldVal) {
-    //     if (parseInt(val) < 0) {
-    //       this.options.style.left = 0;
-    //     }
-    //   }
-    // }
+  components: {
+    Element, Tools, Options
+  },
+  methods: {
+    ...mapActions(['selectElement', 'cancelSelectElement', 'setScreenOptions']),
+    setSize() {
+      this.screenOptions.style.width = this.screenOptions.sizeList[this.sizeIndex].width
+      this.screenOptions.style.height = this.screenOptions.sizeList[this.sizeIndex].height
+    },
+    getSize() {
+      this.size = {
+        width: parseInt(this.screenOptions.style.width),
+        height: parseInt(this.screenOptions.style.height)
+      }
+    },
+    resize(el, data) {
+      console.log(data);
+      this.screenOptions.style.width = this.size.width + data.x + 'px';
+      this.screenOptions.style.height = this.size.height + data.y + 'px';
+      this.setScreenOptions(this.screenOptions)
+    }
+  },
+  mounted() {
+    this.setSize()
   }
 };
 </script>

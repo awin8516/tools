@@ -1,55 +1,163 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title></title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<script src="jquery.1.11.3.min.js"></script>
-<script src="jquery.qrcode.min.js"></script>
-<style type="text/css">
-	html,body{height:100%;margin: 0;}
-	.urls {width: 100%; height: 50%;}
-	.list {width: 90%; height: 50%;overflow: auto;border: 1px #ddd solid; background: #fff;padding: 1em;}
-	.list li span {display: inline-block;width: 80%; vertical-align:middle;}
-	.list li img {vertical-align:middle;}
-	textarea {width: 90%; height: 95%;vertical-align: middle;margin-right: 1em;}
-</style>
-</head>
-<body>
-	<div class="urls"><textarea id="textarea"></textarea><button id="btnStart">开始</button></div>
-	<div id="list" class="list"></div>
-	<script>
-		var textarea = $('#textarea');
-		var btnStart = $('#btnStart');
-		var list = $('#list');
-		
-		btnStart.on('click', function(){
-			console.log(textarea.val().split('\n'));
-			var urls = textarea.val().split('\n');
-			var qrcode = [];
-			var html = '';
-			var base64 = [];
-			for(var i=0,len=urls.length; i<len;i++){
-				qrcode[i] = $('<div>');
-				qrcode[i].qrcode({
-					width: 256,
-					height: 256,
-					text: urls[i],
-					render:'canvas'
-				});
-				//html[i] =$("<li><span>"+urls[i]+"</span><span>"+qrcode[i]+"</span></li>");
-				base64[i] = qrcode[i].children()[0].toDataURL('image/jpeg');
-				html +='<li><span>'+urls[i]+'</span><img src="'+base64[i]+'" width="20"></li>';
-			};
-			//console.log(html);
-			list.html(html);
-		})
-		
-		jQuery('.alert-qrcode .alert-title').qrcode({
-			width: 256,
-			height: 256,
-			text: window.location.href,
-			render:'canvas'
-		});
-	</script>
-</body>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="jquery.1.11.3.min.js"></script>
+    <script src="jquery.qrcode.min.js"></script>
+    <style type="text/css">
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      .urls {
+        width: 100%;
+        height: 8%;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+      .list {
+        width: 90%;
+        height: 85%;
+        overflow: auto;
+        border: 1px #ddd solid;
+        background: #fff;
+        padding: 1em;
+      }
+      .list li span {
+        display: inline-block;
+        width: 80%;
+        vertical-align: middle;
+      }
+      .list li img {
+        vertical-align: middle;
+      }
+      .list li .no {
+        display: inline-block;
+        width: 100px;
+        text-align: left;
+      }
+      textarea {
+        width: 90%;
+        height: 0%;
+        vertical-align: middle;
+        margin-right: 1em;
+      }
+      button,
+      input {
+        font-size: 20px;
+      }
+      #loading {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background: rgba(0, 0, 0, 0.8);
+      }
+      #loading::before {
+        content: 'loading...';
+        position: relative;
+        left: 50%;
+        top: 50%;
+        color: #fff;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="urls">
+      <input type="file" id="file" />
+      <!-- <textarea id="textarea"></textarea> -->
+      <button id="btnStart" disabled>开始</button>
+    </div>
+    <div id="list" class="list"></div>
+    <script>
+      var textarea = $('#textarea')
+      var btnStart = $('#btnStart')
+      var list = $('#list')
+      var file = $('#file')
+      var urls = []
+
+      file.on('change', function(e) {
+        var reader = new FileReader()
+        reader.onload = function() {
+          if (reader.result) {
+            //显示文件内容
+            console.log(reader.result.split('\n'))
+            urls = reader.result.split('\n')
+            btnStart.removeAttr('disabled')
+			loading(0)
+          }
+        }
+        reader.readAsText(this.files[0])
+        loading(1)
+      })
+
+      btnStart.on('click', function() {
+        // console.log(textarea.val().split('\n'));
+        // var urls = textarea.val().split('\n');
+        // for (var i = 0; i < 1; i++) {
+        //   urls.push('http://beats-digital.com/?=434ijfajfeijfiej' + i)
+        // }
+        // console.log(urls)
+		loading(1)
+        var completed = 0
+        var qrcode = []
+        var html = ''
+        var base64 = []
+        for (var i = 0, len = urls.length; i < len; i++) {
+          qrcode[i] = $('<div>')
+          qrcode[i].qrcode({
+            width: 180,
+            height: 180,
+            text: urls[i],
+            render: 'canvas'
+          })
+          //html[i] =$("<li><span>"+urls[i]+"</span><span>"+qrcode[i]+"</span></li>");
+          base64[i] = qrcode[i].children()[0].toDataURL('image/jpeg')
+          html +=
+            '<li><span class="no">[' +
+            (i + 1) +
+            ']</span><span>' +
+            urls[i] +
+            '</span><img src="' +
+            base64[i] +
+            '" width="20"></li>'
+          $.ajax({
+            type: 'post',
+            url: 'http://tool.be-xx.com/cdn/base64',
+            data: { key: 'f2019', data: base64[i] },
+            dataType: 'json',
+            success: function(response) {
+              console.log(response)
+              completed++
+              check()
+            }
+          })
+        }
+        //console.log(html);
+        list.html(html)
+
+        function check() {
+          if (completed == urls.length) {
+            console.log(
+              '------------------------------------completed----------------------------------------'
+            )
+            btnStart.prop('disabled', true)
+			loading(0)
+          }
+        }
+      })
+      function loading(act) {
+        if (act == 1) {
+          var html = $('<div id="loading"></div>')
+          $('body').append(html)
+        } else {
+          $('#loading').remove()
+        }
+      }
+    </script>
+  </body>
 </html>
