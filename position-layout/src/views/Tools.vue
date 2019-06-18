@@ -18,32 +18,32 @@ export default {
       },
       //私有属性
       tools: [
-        {
-          icon: "menu",
-          type: "div",
-          style: {
-            "left": "0",
-            "top": "0",
-            "width": "100px",
-            "height": "100px",
-            "background-image": "url()",
-            "background-color": "#eee",
-            "background-repeat": "no-repeat",
-            "background-size": "100% auto",
-            "background-position": "left top"
-          }
-        },
-        {
-          icon: "picture",
-          type: "image",
-          src: require("@/assets/img.jpg"),
-          style: {
-            "left": "0",
-            "top": "0",
-            "width": "100px",
-            "height": "100px",
-          }
-        }
+        // {
+        //   icon: "menu",
+        //   type: "div",
+        //   style: {
+        //     "left": "0",
+        //     "top": "0",
+        //     "width": "100px",
+        //     "height": "100px",
+        //     "background-image": "url()",
+        //     "background-color": "#eee",
+        //     "background-repeat": "no-repeat",
+        //     "background-size": "100% auto",
+        //     "background-position": "left top"
+        //   }
+        // },
+        // {
+        //   icon: "picture",
+        //   type: "image",
+        //   src: require("@/assets/img.jpg"),
+        //   style: {
+        //     "left": "0",
+        //     "top": "0",
+        //     "width": "100px",
+        //     "height": "100px",
+        //   }
+        // }
       ]
     };
   },
@@ -58,11 +58,27 @@ export default {
       _params.vid = new Date().getTime()
       _ElementList.push(_params);
       this.setElementList(_ElementList)
-      // console.log(this.elementList)
+      // console.log(_ElementList)
       this.$nextTick(() => {
         this.selectElement(_ElementList.length - 1);
       });
     }
+  },
+  mounted() {
+    const requireAll = requireContext => requireContext.keys().map(requireContext)
+    const req = require.context('../components/tags', false, /\.vue$/)
+    this.tags = requireAll(req)
+    this.tools = this.tags.map(function (tag) {
+      var tool = tag.default.data()
+      tool.file = tag.default.__file
+      return tool
+    })
+    // this.tags = tags
+    // console.log(this.tools)
+    // this.list = req.keys().map(function(name) {
+    //   console.log(name)
+    //   return name.replace(/.\/|.svg/g, '')
+    // })
   }
 };
 </script>

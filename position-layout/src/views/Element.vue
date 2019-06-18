@@ -1,19 +1,14 @@
 <template>
-  <div class="po-el-item" :style="'left:'+paramsLocal.style.left+';top:'+paramsLocal.style.top+';'" @mousedown="draging = true" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
-    <template v-if="paramsLocal.type === 'div'">
-      <div :style="style"></div>
-    </template>
-    <template v-if="paramsLocal.type === 'image'">
-      <img :style="style" :src="paramsLocal.src">
-    </template>
+  <section class="po-el-item" :style="'left:'+paramsLocal.style.left+';top:'+paramsLocal.style.top+';'" @mousedown="draging = true" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
+    <component :is="element" :element="paramsLocal"></component>
     <div v-show="contextMenuActive && paramsLocal.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
       <ul>
-        <li v-for="(item, index) in contextMenuList[paramsLocal.type]" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
+        <li v-for="(item, index) in contextMenuList[paramsLocal.tagName]" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
       </ul>
       <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="test">
     </div>
     <div class="resize" v-drag="resize" @mousedown="getSize"></div>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -23,6 +18,7 @@ export default {
   name: "Element",
   data() {
     return {
+      element: null,
       draging: false,
       size: {
         width: 0,
@@ -74,7 +70,7 @@ export default {
             }
           }
         ],
-        image: [
+        img: [
           {
             icon: 'el-icon-delete',
             name: '删除',
@@ -182,8 +178,9 @@ export default {
       return value.charAt(0).toUpperCase() + value.slice(1);
     }
   },
-  created() {
-
+  mounted() {
+    const path = this.elementList[this.currentIndex].file.replace('src/', '')
+    this.element = () => import('@/'+path);
   }
 };
 </script>

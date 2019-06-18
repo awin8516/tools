@@ -3,17 +3,16 @@
     <ScreenOptions></ScreenOptions>
     <div class="po-options-el" v-if="elementList.length && selectedIndex>=0">
       <dl>
-        <!-- <dt>className</dt> -->
         <dt>
           <label class="h2">className:</label>
           <input type="text" v-model.lazy="elementSelected.className">
         </dt>
       </dl>
       <dl v-if="elementSelected.src">
-        <!-- <dt>Src</dt> -->
         <dt>
           <label class="h2">src:</label>
           <input type="text" v-model.lazy="elementSelected.src">
+          <input type="file">
         </dt>
       </dl>
       <dl>
@@ -41,7 +40,8 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import ScreenOptions from "@/views/ScreenOptions.vue";
-import { object2style, style2object } from "@/utils";
+import { style2object } from "@/utils";
+import { setTimeout } from 'timers';
 export default {
   name: "options",
   data() {
@@ -51,10 +51,7 @@ export default {
   },
   computed: {
     ...mapState(['elementList', 'ragneList']),
-    ...mapGetters(['elementSelected', 'selectedIndex']),
-    // styleCustomStr() {
-    //   return object2style(this.styleCustom)
-    // }
+    ...mapGetters(['elementSelected', 'selectedIndex'])
   },
   components: {
     ScreenOptions
@@ -63,14 +60,13 @@ export default {
     ...mapActions(['deleteElement', 'setElementList']),
     pushStyle() {
       if (!this.styleCustom) return
-      console.log(this.styleCustom);
-      // style2object(this.styleCustom)   
-      // this.$set(this.elementList[this.selectedIndex], 'style', Object.assign({}, this.elementSelected.style, style2object(this.styleCustom)))
       this.elementList[this.selectedIndex].style = Object.assign({}, this.elementSelected.style, style2object(this.styleCustom))
       this.setElementList(this.elementList)
-      console.log(this.elementSelected);
       this.styleCustom = ''
     }
+  },
+  mounted() {
+
   }
 };
 </script>
