@@ -1,11 +1,11 @@
 const getters = {
-  list(state) {
+  gt_elementList(state) {
     return state.elementList
   },
-  elementSelected(state) {
+  gt_elementSelected(state) {
     return state.elementList.find(item => item.selected)
   },
-  selectedIndex(state) {
+  gt_indexSelected(state) {
     return state.elementList.findIndex(item => item.selected)
   }
 }

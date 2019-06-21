@@ -1,26 +1,26 @@
 <template>
   <div class="po-options">
     <ScreenOptions></ScreenOptions>
-    <div class="po-options-el" v-if="elementList.length && selectedIndex>=0">
+    <div class="po-options-el" v-if="gt_elementSelected">
       <dl>
         <dt>
           <label class="h2">className:</label>
-          <input type="text" v-model.lazy="elementSelected.className">
+          <input type="text" v-model.lazy="gt_elementSelected.className">
         </dt>
       </dl>
-      <dl v-if="elementSelected.src">
+      <dl v-if="gt_elementSelected.src">
         <dt>
           <label class="h2">src:</label>
-          <input type="text" v-model.lazy="elementSelected.src">
+          <input type="text" v-model.lazy="gt_elementSelected.src">
           <input type="file">
         </dt>
       </dl>
       <dl>
         <dt class="h2">Style</dt>
-        <dd v-for="(value, key) in elementSelected.style" :key="key" :class="'po-options-'+key">
+        <dd v-for="(value, key) in gt_elementSelected.style" :key="key" :class="'po-options-'+key">
           <label>{{key}}:</label>
-          <input v-if="ragneList.includes(key)" v-range='{val:"elementSelected.style",key:key}' type="text" v-model.lazy="elementSelected.style[key]">
-          <input v-else type="text" v-model.lazy="elementSelected.style[key]">
+          <input v-if="ragneList.includes(key)" v-range='{val:"gt_elementSelected.style",key:key}' type="text" v-model.lazy="gt_elementSelected.style[key]">
+          <input v-else type="text" v-model.lazy="gt_elementSelected.style[key]">
         </dd>
         <dd>
           <h2 class="h2">自定义：</h2>
@@ -31,7 +31,7 @@
         </dd>
       </dl>
       <div class="po-options-foot">
-        <el-button icon='el-icon-delete' @click="deleteElement(selectedIndex)">删除元素</el-button>
+        <el-button icon='el-icon-delete' @click="ac_deleteElement(gt_indexSelected)">删除元素</el-button>
       </div>
     </div>
   </div>
@@ -51,18 +51,21 @@ export default {
   },
   computed: {
     ...mapState(['elementList', 'ragneList']),
-    ...mapGetters(['elementSelected', 'selectedIndex'])
+    ...mapGetters(['gt_elementSelected', 'gt_indexSelected'])
   },
   components: {
     ScreenOptions
   },
   methods: {
-    ...mapActions(['deleteElement', 'setElementList']),
+    ...mapActions(['ac_deleteElement', 'ac_setElementList']),
     pushStyle() {
       if (!this.styleCustom) return
-      this.elementList[this.selectedIndex].style = Object.assign({}, this.elementSelected.style, style2object(this.styleCustom))
-      this.setElementList(this.elementList)
+      this.gt_elementSelected.style = Object.assign({}, this.gt_elementSelected.style, style2object(this.styleCustom))
       this.styleCustom = ''
+
+      // this.elementList[this.gt_indexSelected].style = Object.assign({}, this.gt_elementSelected.style, style2object(this.styleCustom))
+      // this.ac_setElementList(this.elementList)
+      // this.styleCustom = ''
     }
   },
   mounted() {

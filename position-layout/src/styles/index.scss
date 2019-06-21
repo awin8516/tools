@@ -65,13 +65,33 @@ textarea {
         vertical-align: top;
       }
       > *:first-child {
-        pointer-events: none;
+        /*pointer-events: none;*/
       }
       .resize {
         display: none;
       }
       &.active {
-        .resize {
+        &:before{
+          content: "";
+          position: absolute;
+          width: 10%;
+          padding-bottom: 10%;
+          right: -5px;
+          top: -5px;
+          border-top:1px #f30 solid;
+          border-right:1px #f30 solid;
+        }
+        &:after{
+          content: "";
+          position: absolute;
+          width: 10%;
+          padding-bottom: 10%;
+          left: -5px;
+          bottom: -5px;
+          border-left:1px #f30 solid;
+          border-bottom:1px #f30 solid;
+        }
+        >.resize {
           display: block;
           z-index: 2;
         }

@@ -1,11 +1,11 @@
 <template>
   <div class="po-toolbar">
-    <el-button v-for="(item,index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.type" circle @click="createElement(index)"></el-button>
+    <el-button v-for="(item,index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.tagName" circle @click="createElement(item)"></el-button>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import { deepClone } from "@/utils";
 export default {
   name: "Tools",
@@ -17,50 +17,35 @@ export default {
         className: ['test', 'test-a']
       },
       //私有属性
-      tools: [
-        // {
-        //   icon: "menu",
-        //   type: "div",
-        //   style: {
-        //     "left": "0",
-        //     "top": "0",
-        //     "width": "100px",
-        //     "height": "100px",
-        //     "background-image": "url()",
-        //     "background-color": "#eee",
-        //     "background-repeat": "no-repeat",
-        //     "background-size": "100% auto",
-        //     "background-position": "left top"
-        //   }
-        // },
-        // {
-        //   icon: "picture",
-        //   type: "image",
-        //   src: require("@/assets/img.jpg"),
-        //   style: {
-        //     "left": "0",
-        //     "top": "0",
-        //     "width": "100px",
-        //     "height": "100px",
-        //   }
-        // }
-      ]
+      tools: []
     };
   },
   computed: {
-    ...mapState(['elementList'])
+    ...mapState(['elementList']),
+    ...mapGetters(['gt_elementSelected'])
   },
   methods: {
-    ...mapActions(['setElementList', 'selectElement']),
-    createElement(index) {
-      let _ElementList = this.elementList
-      const _params = Object.assign({}, deepClone(this.params), deepClone(this.tools[index]));
-      _params.vid = new Date().getTime()
-      _ElementList.push(_params);
-      this.setElementList(_ElementList)
-      // console.log(_ElementList)
+    ...mapActions(['ac_setElementList', 'ac_selectElement',]),
+    createElement(item) {
+      // let _ElementList = this.elementList
+      const params = Object.assign({}, this.params, item);
+      params.vid = new Date().getTime()
+      //兄弟元素/子元素
+      if (this.gt_elementSelected) {
+        // console.log(0)
+        // this.gt_elementSelected.children.push(params)
+        params.pid = this.gt_elementSelected.vid
+        this.elementList.push(params);
+      } else {
+        // console.log(1)
+        // _ElementList.push(_params);
+        this.elementList.push(params);
+      }
+      // console.log(params.parent == this.gt_elementSelected)
+      // this.ac_setElementList(this.elementList)
       this.$nextTick(() => {
-        this.selectElement(_ElementList.length - 1);
+        this.ac_selectElement(params);
+        // this.ac_selectElement(_ElementList.length - 1);
       });
     }
   },
@@ -73,12 +58,6 @@ export default {
       tool.file = tag.default.__file
       return tool
     })
-    // this.tags = tags
-    // console.log(this.tools)
-    // this.list = req.keys().map(function(name) {
-    //   console.log(name)
-    //   return name.replace(/.\/|.svg/g, '')
-    // })
   }
 };
 </script>

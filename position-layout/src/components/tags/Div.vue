@@ -1,9 +1,10 @@
 <template>
-  <div :style="element.style"></div>
+  <div :style="elementParams.style">
+    <slot name="children"></slot>
+  </div>
 </template>
 
 <script>
-import { object2style } from "@/utils";
 export default {
   name: "Div",
   data() {
@@ -20,9 +21,18 @@ export default {
         "background-repeat": "no-repeat",
         "background-size": "100% auto",
         "background-position": "left top"
-      }
+      },
+      contextMenu: [
+        {
+          icon: 'el-icon-delete',
+          name: '编辑文字',
+          command: () => {
+
+          }
+        }
+      ]
     };
   },
-  props: ["element"]
+  props: ["elementParams"]
 };
 </script>

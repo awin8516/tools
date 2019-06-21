@@ -8,23 +8,28 @@ Vue.use(Vuex);
 
 const state = {
   screenOptions: {
-    sizeList: [
-      {
-        name: 'iphone4',
+    sizeList:{
+      'iphone4':{
         width: '320px',
         height: '414px'
       },
-      {
-        name: 'iphone5',
+      'iphone5':{
         width: '320px',
         height: '600px'
       },
-      {
-        name: 'iphone6',
+      'iphone6':{
+        width: '375px',
+        height: '667px'
+      },
+      'iphone7':{
+        width: '375px',
+        height: '667px'
+      },
+      'iphoneX':{
         width: '375px',
         height: '667px'
       }
-    ],
+    },
     style: {
       width: '',
       height: '',

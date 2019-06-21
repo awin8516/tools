@@ -1,10 +1,8 @@
 <template>
-  <img :style="element.style" :src="element.src">
+  <img :style="elementParams.style" :src="elementParams.src">
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
-import { object2style } from "@/utils";
 export default {
   name: "Img",
   data() {
@@ -20,11 +18,6 @@ export default {
       }
     };
   },
-  props: ["element"],
-  computed: {
-    styleStr: function () {
-      return object2style(this.style)
-    }
-  }
+  props: ["elementParams"]
 };
 </script>

@@ -1,25 +1,27 @@
 import { deepClone } from '@/utils'
 const actions = {
-  setScreenOptions: ({ commit }, value) => {
-    commit('SET_SCREENOPTIONS', value)
+  ac_setScreenOptions: ({ commit }, value) => {
+    commit('SET_SCREENOPTIONS', deepClone(value))
   },
-  setElementList: ({ commit }, value) => {
-    commit('SET_ELEMENTLIST', value)
+  ac_setElementList: ({ commit }, value) => {
+    commit('SET_ELEMENTLIST', deepClone(value))
   },
-  selectElement({ commit, state }, index) {
-    let _ElementList = deepClone(state.elementList)
-    _ElementList.map(v => (v.selected = false))
-    _ElementList[index].selected = true
-    commit('SET_ELEMENTLIST', _ElementList)
+  ac_selectElement({ commit, state }, element) {
+    console.log(9)
+    state.elementList.map(v => (v.selected = false))
+    state.elementList.find(v => (v === element)).selected = true
+    commit('SET_ELEMENTLIST', deepClone(state.elementList))
   },
-  cancelSelectElement({ commit, state, getters }) {
-    if (getters.selectedIndex >= 0) {
-      let _ElementList = deepClone(state.elementList)
-      _ElementList[getters.selectedIndex].selected = false
-      commit('SET_ELEMENTLIST', _ElementList)
-    }
+  ac_selectElementIndex({ commit, state }, index) {
+    state.elementList.map(v => (v.selected = false))
+    state.elementList[index].selected = true
+    commit('SET_ELEMENTLIST', deepClone(state.elementList))
   },
-  deleteElement({ commit, state }, index) {
+  ac_cancelacSelectElement({ commit, state, getters }) {
+    getters.gt_elementSelected && (getters.gt_elementSelected.selected = false)
+    commit('SET_ELEMENTLIST', state.elementList)
+  },
+  ac_deleteElement({ commit, state }, index) {
     let _ElementList = deepClone(state.elementList)
     _ElementList.splice(index, 1)
     commit('SET_ELEMENTLIST', _ElementList)
@@ -28,8 +30,8 @@ const actions = {
       commit('SET_ELEMENTLIST', _ElementList)
     }
   },
-  updateLayer({ commit, state, getters }, act) {
-    const index = getters.selectedIndex
+  ac_updateLayer({ commit, state, getters }, act) {
+    const index = getters.gt_indexSelected
     let _ElementList = deepClone(state.elementList)
 
     if (index + act >= _ElementList.length - 1) {

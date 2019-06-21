@@ -31,7 +31,7 @@ Vue.prototype.$message = Message;
 Vue.directive('drag', {
   bind: function(el, binding, vnode) {
     let handler = function(e) {
-      let parentEl = e.target;
+      let parentEl = e.target.parentElement;
       if (binding.arg) {
         if (parentEl.classList.contains(binding.arg) && e.button == 0) {
           setTimeout(function() {

@@ -1,13 +1,17 @@
 <template>
-  <section class="po-el-item" :style="'left:'+paramsLocal.style.left+';top:'+paramsLocal.style.top+';'" @mousedown="draging = true" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
-    <component :is="element" :element="paramsLocal"></component>
-    <div v-show="contextMenuActive && paramsLocal.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
+  <section class="po-el-item" :data-vid="elementParams.vid" :class="{'active':elementParams.selected}" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu="contextMenu">
+    <component :is="component" :elementParams="elementParams">
+      <template v-for="item in elementList" slot="children">
+        <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
+      </template>
+    </component>
+    <div v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
       <ul>
-        <li v-for="(item, index) in contextMenuList[paramsLocal.tagName]" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
+        <li v-for="(item, index) in contextMenuDefault" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
       </ul>
       <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="test">
     </div>
-    <div class="resize" v-drag="resize" @mousedown="getSize"></div>
+    <div class="resize" v-drag="resize" @mousedown.stop="getSize"></div>
   </section>
 </template>
 
@@ -18,104 +22,57 @@ export default {
   name: "Element",
   data() {
     return {
-      element: null,
+      component: null,
       draging: false,
       size: {
         width: 0,
         height: 0
       },
-      contextMenuList: {
-        div: [
-          {
-            icon: 'el-icon-delete',
-            name: '删除',
-            command: () => {
-              this.deleteElement(this.currentIndex)
-            }
-          },
-          {
-            icon: 'el-icon-upload2',
-            name: '上移一层',
-            command: () => {
-              if (this.currentIndex < this.elementList.length - 1) {
-                this.updateLayer(1)
-              }
-            }
-          },
-          {
-            icon: 'el-icon-download',
-            name: '下移一层',
-            command: () => {
-              if (this.currentIndex > 0) {
-                this.updateLayer(-1)
-              }
-            }
-          },
-          {
-            icon: 'el-icon-upload2',
-            name: '置为顶层',
-            command: () => {
-              if (this.currentIndex < this.elementList.length - 1) {
-                this.updateLayer(1000)
-              }
-            }
-          },
-          {
-            icon: 'el-icon-download',
-            name: '置为底层',
-            command: () => {
-              if (this.currentIndex > 0) {
-                this.updateLayer(-1000)
-              }
-            }
-          }
-        ],
-        img: [
-          {
-            icon: 'el-icon-delete',
-            name: '删除',
-            command: () => {
-              this.deleteElement(this.currentIndex)
-            }
-          },
-          {
-            icon: 'el-icon-upload2',
-            name: '上移一层',
-            command: () => {
-              if (this.currentIndex < this.elementList.length - 1) {
-                this.updateLayer(1)
-              }
-            }
-          },
-          {
-            icon: 'el-icon-download',
-            name: '下移一层',
-            command: () => {
-              if (this.currentIndex > 0) {
-                this.updateLayer(-1)
-              }
-            }
-          },
-          {
-            icon: 'el-icon-upload2',
-            name: '置为顶层',
-            command: () => {
-              if (this.currentIndex < this.elementList.length - 1) {
-                this.updateLayer(1000)
-              }
-            }
-          },
-          {
-            icon: 'el-icon-download',
-            name: '置为底层',
-            command: () => {
-              if (this.currentIndex > 0) {
-                this.updateLayer(-1000)
-              }
-            }
-          }
-        ]
-      },
+      contextMenuDefault: [
+        // {
+        //   icon: 'el-icon-upload2',
+        //   name: '上移一层',
+        //   command: () => {
+        //     if (this.currentIndex < this.elementList.length - 1) {
+        //       this.ac_updateLayer(1)
+        //     }
+        //   }
+        // },
+        // {
+        //   icon: 'el-icon-download',
+        //   name: '下移一层',
+        //   command: () => {
+        //     if (this.currentIndex > 0) {
+        //       this.ac_updateLayer(-1)
+        //     }
+        //   }
+        // },
+        // {
+        //   icon: 'el-icon-upload2',
+        //   name: '置为顶层',
+        //   command: () => {
+        //     if (this.currentIndex < this.elementList.length - 1) {
+        //       this.ac_updateLayer(1000)
+        //     }
+        //   }
+        // },
+        // {
+        //   icon: 'el-icon-download',
+        //   name: '置为底层',
+        //   command: () => {
+        //     if (this.currentIndex > 0) {
+        //       this.ac_updateLayer(-1000)
+        //     }
+        //   }
+        // },
+        // {
+        //   icon: 'el-icon-delete',
+        //   name: '删除',
+        //   command: () => {
+        //     this.ac_deleteElement(this.currentIndex)
+        //   }
+        // }
+      ],
       contextMenuActive: false,
       contextMenuPos: {
         left: 0,
@@ -123,18 +80,18 @@ export default {
       }
     };
   },
-  props: ["currentIndex"],
+  props: ["elementParams"],
   computed: {
     ...mapState(['elementList']),
-    paramsLocal: function () {
-      return this.elementList[this.currentIndex]
-    },
-    style: function () {
-      return object2style(this.paramsLocal.style)
+    itemStyle: function () {
+      return {
+        left: this.elementParams.style.left,
+        top: this.elementParams.style.top
+      }
     }
   },
   methods: {
-    ...mapActions(['setElementList', 'deleteElement', 'updateLayer']),
+    ...mapActions(['ac_selectElement', 'ac_setElementList', 'ac_deleteElement', 'ac_updateLayer']),
     contextMenu(e) {
       this.contextMenuActive = true
       this.contextMenuPos = {
@@ -145,10 +102,16 @@ export default {
         this.$refs.focusFiled.focus()
       })
     },
+    mouseDown(e) {
+      if (e.target.parentElement.dataset.vid == this.elementParams.vid) {
+        this.draging = true;
+        this.ac_selectElement(this.elementParams);
+      }
+    },
     mouseMove(e) {
       if (this.draging) {
-        this.paramsLocal.style.left = e.currentTarget.style.left;
-        this.paramsLocal.style.top = e.currentTarget.style.top;
+        this.elementParams.style.left = e.currentTarget.style.left;
+        this.elementParams.style.top = e.currentTarget.style.top;
       }
     },
     hideMenu() {
@@ -158,17 +121,13 @@ export default {
     },
     getSize() {
       this.size = {
-        width: parseInt(this.paramsLocal.style.width),
-        height: parseInt(this.paramsLocal.style.height)
+        width: parseInt(this.elementParams.style.width),
+        height: parseInt(this.elementParams.style.height)
       }
     },
     resize(el, data) {
-      let _Element = deepClone(this.paramsLocal)
-      _Element.style.width = this.size.width + data.x + 'px';
-      _Element.style.height = this.size.height + data.y + 'px';
-      const _Elementlist = deepClone(this.elementList)
-      _Elementlist[this.currentIndex] = _Element
-      this.setElementList(_Elementlist)
+      this.elementParams.style.width = this.size.width + data.x + 'px';
+      this.elementParams.style.height = this.size.height + data.y + 'px';
     }
   },
   filters: {
@@ -179,8 +138,11 @@ export default {
     }
   },
   mounted() {
-    const path = this.elementList[this.currentIndex].file.replace('src/', '')
-    this.element = () => import('@/'+path);
+    const path = this.elementParams.file.replace('src/', '')
+    this.component = () => import('@/' + path);
+    if (this.elementParams.contextMenu) {
+      this.contextMenuDefault = this.contextMenuDefault.concat(this.elementParams.contextMenu);
+    }
   }
 };
 </script>
