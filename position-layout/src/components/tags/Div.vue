@@ -1,5 +1,5 @@
 <template>
-  <div :style="elementParams.style">
+  <div :style="elementParams.style" :class="elementParams.className">
     <slot name="children"></slot>
   </div>
 </template>
@@ -11,11 +11,12 @@ export default {
     return {
       tagName: "div",
       icon: "menu",
+      container: true,
       style: {
-        "left": "0",
-        "top": "0",
-        "width": "100px",
-        "height": "100px",
+        left: "0",
+        top: "0",
+        width: "100px",
+        height: "100px",
         "background-image": "url()",
         "background-color": "#eee",
         "background-repeat": "no-repeat",
@@ -24,11 +25,9 @@ export default {
       },
       contextMenu: [
         {
-          icon: 'el-icon-delete',
-          name: '编辑文字',
-          command: () => {
-
-          }
+          icon: "el-icon-delete",
+          name: "编辑文字",
+          command: () => {}
         }
       ]
     };

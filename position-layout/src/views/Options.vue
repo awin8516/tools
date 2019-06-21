@@ -11,15 +11,19 @@
       <dl v-if="gt_elementSelected.src">
         <dt>
           <label class="h2">src:</label>
-          <input type="text" v-model.lazy="gt_elementSelected.src">
-          <input type="file">
+          <div class="field">
+            <Upload :val.sync="gt_elementSelected.src"></Upload>
+          </div>
+
+          <!-- <input type="text" v-model.lazy="gt_elementSelected.src">
+          <input type="file"> -->
         </dt>
       </dl>
       <dl>
         <dt class="h2">Style</dt>
         <dd v-for="(value, key) in gt_elementSelected.style" :key="key" :class="'po-options-'+key">
           <label>{{key}}:</label>
-          <input v-if="ragneList.includes(key)" v-range='{val:"gt_elementSelected.style",key:key}' type="text" v-model.lazy="gt_elementSelected.style[key]">
+          <input v-if="ragneList.includes(key)" v-range="{val:'gt_elementSelected.style',key:key}" type="text" v-model.lazy="gt_elementSelected.style[key]">
           <input v-else type="text" v-model.lazy="gt_elementSelected.style[key]">
         </dd>
         <dd>
@@ -31,45 +35,44 @@
         </dd>
       </dl>
       <div class="po-options-foot">
-        <el-button icon='el-icon-delete' @click="ac_deleteElement(gt_indexSelected)">删除元素</el-button>
+        <el-button icon="el-icon-delete" @click="ac_deleteElement(gt_indexSelected)">删除元素</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from "vuex";
 import ScreenOptions from "@/views/ScreenOptions.vue";
+import Upload from "@/components/Upload.vue";
 import { style2object } from "@/utils";
-import { setTimeout } from 'timers';
 export default {
   name: "options",
   data() {
     return {
-      styleCustom: 'margin:10px;\npadding:20px;'
+      styleCustom: "margin:10px;\npadding:20px;"
     };
   },
   computed: {
-    ...mapState(['elementList', 'ragneList']),
-    ...mapGetters(['gt_elementSelected', 'gt_indexSelected'])
+    ...mapState(["elementList", "ragneList"]),
+    ...mapGetters(["gt_elementSelected", "gt_indexSelected"])
   },
   components: {
-    ScreenOptions
+    ScreenOptions,
+    Upload
   },
   methods: {
-    ...mapActions(['ac_deleteElement', 'ac_setElementList']),
+    ...mapActions(["ac_deleteElement"]),
     pushStyle() {
-      if (!this.styleCustom) return
-      this.gt_elementSelected.style = Object.assign({}, this.gt_elementSelected.style, style2object(this.styleCustom))
-      this.styleCustom = ''
-
-      // this.elementList[this.gt_indexSelected].style = Object.assign({}, this.gt_elementSelected.style, style2object(this.styleCustom))
-      // this.ac_setElementList(this.elementList)
-      // this.styleCustom = ''
+      if (!this.styleCustom) return;
+      this.gt_elementSelected.style = Object.assign(
+        {},
+        this.gt_elementSelected.style,
+        style2object(this.styleCustom)
+      );
+      this.styleCustom = "";
     }
   },
-  mounted() {
-
-  }
+  mounted() {}
 };
 </script>

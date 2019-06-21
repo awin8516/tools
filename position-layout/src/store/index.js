@@ -7,30 +7,32 @@ import getters from './getters';
 Vue.use(Vuex);
 
 const state = {
+  screen: null,
   screenOptions: {
-    sizeList:{
-      'iphone4':{
+    sizeList: {
+      iphone4: {
         width: '320px',
         height: '414px'
       },
-      'iphone5':{
+      iphone5: {
         width: '320px',
         height: '600px'
       },
-      'iphone6':{
+      iphone6: {
         width: '375px',
         height: '667px'
       },
-      'iphone7':{
+      iphone7: {
         width: '375px',
         height: '667px'
       },
-      'iphoneX':{
+      iphoneX: {
         width: '375px',
         height: '667px'
       }
     },
     style: {
+      name:'index',
       width: '',
       height: '',
       'background-image': 'url()',
