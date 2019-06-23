@@ -8,7 +8,7 @@
           <input type="text" v-model.lazy="gt_elementSelected.className">
         </dt>
       </dl>
-      <dl v-if="gt_elementSelected.src">
+      <dl v-if="typeof gt_elementSelected.src !== 'undefined'">
         <dt>
           <label class="h2">src:</label>
           <div class="field">

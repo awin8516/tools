@@ -7,7 +7,6 @@ import getters from './getters';
 Vue.use(Vuex);
 
 const state = {
-  screen: null,
   screenOptions: {
     sizeList: {
       iphone4: {
@@ -40,7 +39,8 @@ const state = {
       'background-repeat': 'no-repeat',
       'background-size': '100% auto',
       'background-position': 'left top'
-    }
+    },
+    el:null
   },
   elementList: [],
   ragneList: ['left', 'top', 'width', 'height']

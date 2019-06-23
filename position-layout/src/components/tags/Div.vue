@@ -12,6 +12,7 @@ export default {
       tagName: "div",
       icon: "menu",
       container: true,
+      className: ["div", "div-test"],
       style: {
         left: "0",
         top: "0",

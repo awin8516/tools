@@ -1,5 +1,5 @@
 <template>
-  <img :style="elementParams.style" :src="elementParams.src" :class="elementParams.className">
+  <img :data-img-name="elementParams.src && elementParams.style.name" :style="elementParams.style" :src="elementParams.src" :class="elementParams.className">
 </template>
 
 <script>
@@ -9,8 +9,10 @@ export default {
     return {
       tagName: "img",
       icon: "picture",
+      className: ["img", "img-test"],
       src: require("@/assets/img.jpg"),
       style: {
+        name:"img01",
         left: "0",
         top: "0",
         width: "100px",

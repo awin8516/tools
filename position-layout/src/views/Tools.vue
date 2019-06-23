@@ -6,16 +6,11 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import { deepClone } from "@/utils";
 export default {
   name: "Tools",
   data() {
     return {
-      //公共属性
-      params: {
-        selected: false,
-        className: ["test", "test-a"]
-      },
-      //私有属性
       tools: []
     };
   },
@@ -26,7 +21,7 @@ export default {
   methods: {
     ...mapActions(["ac_selectElement"]),
     createElement(item) {
-      const params = Object.assign({}, this.params, item);
+      const params = deepClone(item);
       params.vid = new Date().getTime();
       //子元素
       if (this.gt_elementSelected) {

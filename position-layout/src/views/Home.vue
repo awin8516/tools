@@ -73,8 +73,7 @@ export default {
   },
   mounted() {
     this.setSize();
-    console.log(this.$refs.screen)
-    this.ac_setScreen(this.$refs.screen);
+    this.screenOptions.el = this.$refs.screen
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <ins class="po-el-item" :data-vid="elementParams.vid" :class="{'active':elementParams.selected}" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
+  <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="{'active':elementParams.selected}" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
     <component :is="component" :elementParams="elementParams">
       <template v-for="item in elementList" slot="children">
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
@@ -92,11 +92,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
-      "ac_selectElement",
-      "ac_deleteElement",
-      "ac_updateLayer"
-    ]),
+    ...mapActions(["ac_selectElement", "ac_deleteElement", "ac_updateLayer"]),
     contextMenu(e) {
       this.contextMenuActive = true;
       this.contextMenuPos = {

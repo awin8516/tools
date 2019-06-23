@@ -1,5 +1,7 @@
-import { deepClone, createDOM, downloadFile } from "@/utils";
-// import 'jszip/lib/index.js'
+import { deepClone } from "@/utils";
+import JSZip from "jszip";
+import saveAs from "jszip/vendor/FileSaver";
+
 const actions = {
   ac_setScreen: ({ commit }, value) => {
     commit("SET_SCREEN", value);
@@ -62,38 +64,74 @@ const actions = {
     }
     commit("SET_ELEMENTLIST", state.elementList);
   },
-  ac_downloadProject({ commit, state, getters }) {
-    const JSZip = require("jszip");
-    const name = state.screenOptions.style.name
-    console.log(JSZip)
-    // const DOM = createDOM(state.elementList)
-    // state.screen.innerHTML
-    const html = state.screen.innerHTML.replace(/<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g, '').replace(/src="(.*?)"/g, 'src="image/' + name + '/01.jpg"')
-    const doc = '<!DOCTYPE html>\n\
-                  <html lang="en">\n\
-                  <head>\n\
-                      <meta charset="UTF-8">\n\
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
-                      <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
-                      <title>Document</title>\n\
-                  </head>\n\
-                  <body><div class="container">'+ html + '</div></body>\n\
-                  </html>';
-    console.log(html)
+  ac_downloadProject({ state }) {
+    function createHTML(screen) {
+      const html = screen.el.innerHTML
+        .replace(
+          /<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g,
+          ""
+        )
+        .replace(
+          /data-img-name="(.*?)" src="data:image\/(.*?);base64,(.*?)"/g,
+          'src="image/' + screen.style.name + '/$1.$2"'
+        )
+        .replace(".jpeg", ".jpg");
+      const doc =
+        '<!DOCTYPE html>\n\
+                    <html lang="en">\n\
+                    <head>\n\
+                        <meta charset="UTF-8">\n\
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
+                        <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
+                        <title>Document</title>\n\
+                    </head>\n\
+                    <body><div class="container">' +
+        html +
+        "</div></body>\n\
+                    </html>";
+      return doc;
+    }
+
+    function createImg(screen) {
+      let regexp = /data-img-name="\s*\S+"/g;
+      const name = screen.el.innerHTML.match(regexp);
+      regexp = /src="\s*\S+"/g;
+      const src = screen.el.innerHTML.match(regexp);
+      let imgs = [];
+      name.forEach((element, index) => {
+        imgs.push({
+          fileExt : src[index].match(/data:image\/(.*?);base64,/)[1].replace("jpeg", "jpg"),
+          name: element.replace(/data-img-name=|"|'/g, ""),
+          src: src[index].replace(/src=|"|'/g, "").replace(/data:image\/(.*?);base64,/, "")
+        });
+      });
+      return imgs;
+    }
 
     let zip = new JSZip();
-    zip.file(name+".html", doc);
-    let img = zip.folder("images");
+    
+    //HTML
+    const doc = createHTML(state.screenOptions);
+    // console.log(doc);
+    const name = state.screenOptions.style.name;
+    zip.file(name + ".html", doc);
+
+    //IMAGES
+    let img = zip.folder("image");
+    let imgsub = img.folder(name);
+    const imgs = createImg(state.screenOptions);
+    // console.log(imgs);
+    imgs.forEach(element => {
+      imgsub.file(element.name+'.'+element.fileExt, element.src, { base64: true });
+    });
+
+    //CSS
     let css = zip.folder("css");
 
-    img.file("smile.gif", imgData, { base64: true });
-    zip.generateAsync({ type: "blob" })
-      .then(function (content) {
-        // see FileSaver.js
-        saveAs(content, name+".zip");
-      });
-
-
+    zip.generateAsync({ type: "blob" }).then(function(content) {
+      //see FileSaver.js
+      saveAs(content, name + ".zip");
+    });
 
     // downloadFile(doc, 'aaa.html')
   }
