@@ -35,128 +35,147 @@ textarea {
   }
 }
 .po-main {
-  border: 1px #ddd solid;
-  background-color: #fff;
-  position: relative;
-  .resize {
-    content: '✣';
-    position: absolute;
-    width: 1em;
-    height: 1em;
-    left: 100%;
-    top: 100%;
-    margin: -0.2em;
-    border-radius: 100%;
-    &::before {
-      content: '✣';
-      line-height: 1;
-      display: inline-block;
-      vertical-align: top;
-      color: #409eff;
-    }
-    &:hover {
-      transform: scale(1.2);
-    }
-  }
-  .po-screen {
+  > * {
+    display: inline-block;
     position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    .po-el-item {
-      position: absolute;
-      > :first-child {
-        left: 0 !important;
-        top: 0 !important;
-        margin: auto !important;
-        position: relative !important;
+    vertical-align: top;
+    margin-right: 10px;
+  }
+  .po-body {
+    .po-screen {
+      border: 1px #ddd solid;
+      background-color: #fff;
+      &::before,
+      &::after {
+        content: '';
+        display: block;
+        clear: both;
+        width: 100%;
+        overflow: hidden;
       }
-      > img {
-        user-select: none;
-        vertical-align: top;
-      }
-      .resize {
-        display: none;
-      }
-      &.active {
-        &:before {
-          content: '';
-          position: absolute;
-          width: 10%;
-          padding-bottom: 10%;
-          right: -5px;
-          top: -5px;
-          border-top: 1px #f30 solid;
-          border-right: 1px #f30 solid;
-        }
-        &:after {
-          content: '';
-          position: absolute;
-          width: 10%;
-          padding-bottom: 10%;
-          left: -5px;
-          bottom: -5px;
-          border-left: 1px #f30 solid;
-          border-bottom: 1px #f30 solid;
-        }
-        > .resize {
-          display: block;
-          z-index: 2;
-        }
-      }
-      &.v-draging {
-        box-shadow: 0 0 10px 0 rgb(0, 195, 255);
-      }
-      .context-menu {
+      .po-el-item {
         position: absolute;
-        z-index: 10000;
-        text-align: left;
-        background: #fff;
-        border: 1px #eee solid;
-        box-shadow: 2px 2px 5px 0px #eee;
-        li {
-          padding: 0.3em 0.5em 0.3em 0.3em;
-          border-bottom: 1px #aaa solid;
-          white-space: nowrap;
-          i {
-            margin-right: 0.5em;
+        display: block;
+        > :first-child {
+          left: 0 !important;
+          top: 0 !important;
+          margin: auto !important;
+          position: relative !important;
+        }
+        > img {
+          user-select: none;
+          vertical-align: top;
+        }
+        .resize {
+          display: none;
+        }
+        &.active {
+          &:before {
+            content: '';
+            position: absolute;
+            width: 10%;
+            padding-bottom: 10%;
+            right: -5px;
+            top: -5px;
+            border-top: 1px #f30 solid;
+            border-right: 1px #f30 solid;
           }
-          &:hover {
-            background-color: #000;
-            color: #fff;
+          &:after {
+            content: '';
+            position: absolute;
+            width: 10%;
+            padding-bottom: 10%;
+            left: -5px;
+            bottom: -5px;
+            border-left: 1px #f30 solid;
+            border-bottom: 1px #f30 solid;
+          }
+          > .resize {
+            display: block;
+            z-index: 2;
           }
         }
-        .focus-filed {
-          width: 0;
-          height: 0;
-          overflow: hidden;
+        &.v-draging {
+          box-shadow: 0 0 10px 0 rgb(0, 195, 255);
+        }
+        .context-menu {
           position: absolute;
-          opacity: 0;
+          z-index: 10000;
+          text-align: left;
+          background: #fff;
+          border: 1px #eee solid;
+          box-shadow: 2px 2px 5px 0px #eee;
+          li {
+            padding: 0.3em 0.5em 0.3em 0.3em;
+            border-bottom: 1px #aaa solid;
+            white-space: nowrap;
+            i {
+              margin-right: 0.5em;
+            }
+            &:hover {
+              background-color: #000;
+              color: #fff;
+            }
+          }
+          .focus-filed {
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            position: absolute;
+            opacity: 0;
+          }
         }
       }
     }
+    .resize {
+      content: '✣';
+      position: absolute;
+      width: 1em;
+      height: 1em;
+      left: 100%;
+      top: 100%;
+      margin: -0.2em;
+      border-radius: 100%;
+      &::before {
+        content: '✣';
+        line-height: 1;
+        display: inline-block;
+        vertical-align: top;
+        color: #409eff;
+      }
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+    .download-project {
+      margin-top: 10px;
+      text-align: right;
+    }
   }
+
   .po-toolbar {
-    position: absolute;
-    left: calc(100% + 10px);
-    top: 0;
     .el-button {
+      display: block;
       margin-left: 0;
       margin-bottom: 15px;
     }
   }
   .po-options {
-    position: absolute;
     background-color: #fff;
     padding: 10px;
-    left: calc(100% + 10px);
-    top: 0;
     font-size: 11px;
     text-align: left;
-    margin-left: 50px;
-    .po-options-el {
-      padding-top: 10px;
-      border-top: 1px #aaa solid;
+    white-space: nowrap;
+    > .po-options-group {
+      white-space: normal;
+      display: inline-block;
+      max-width: 320px;
+      vertical-align: top;
+      & + .po-options-group {
+        margin-left: 15px;
+        padding-left: 15px;
+        border-left: 1px #ddd solid;
+      }
     }
     dl {
       position: relative;
@@ -186,7 +205,7 @@ textarea {
         box-sizing: border-box;
         box-shadow: 1px 1px 0 1px #eee inset;
       }
-      > input {
+      dd > input, dd> .field {
         width: 10em;
       }
       .el-input {

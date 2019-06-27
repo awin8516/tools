@@ -1,5 +1,5 @@
 <template>
-  <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="{'active':elementParams.selected}" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
+  <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[elementParams.style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
     <component :is="component" :elementParams="elementParams" ref="component">
       <template v-for="item in elementList" slot="children">
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
@@ -85,20 +85,42 @@ export default {
     ...mapState(["elementList"]),
     ...mapGetters(["gt_indexSelected"]),
     itemStyle: function() {
-      return {
-        position: this.elementParams.style.position,
-        width: this.elementParams.style.width,
-        height: this.elementParams.style.height,
-        left: this.elementParams.style.left,
-        right: this.elementParams.style.right,
-        top: this.elementParams.style.top,
-        bottom: this.elementParams.style.bottom,
-        display: this.elementParams.style.display
-      };
+      const style = [
+        "position",
+        // "width",
+        "left",
+        "top",
+        "right",
+        "bottom",
+        "margin",
+        "margin-top",
+        "margin-right",
+        "margin-bottom",
+        "margin-left"
+        // "display"
+      ];
+      let styleObject = {};
+      style.forEach(v => {
+        if (typeof this.elementParams.style[v] !== "undefined") {
+          if (v == "width") {
+            if (this.elementParams.style.position == "relative") {
+              styleObject[v] = this.elementParams.style[v];
+            }
+          } else {
+            styleObject[v] = this.elementParams.style[v];
+          }
+        }
+      });
+      return styleObject;
     }
   },
   methods: {
-    ...mapActions(["ac_selectElement", "ac_deleteElement", "ac_updateLayer"]),
+    ...mapActions([
+      "ac_selectElement",
+      "ac_deleteElement",
+      "ac_updateLayer",
+      "ac_addStyle"
+    ]),
     contextMenu(e) {
       this.contextMenuActive = true;
       this.contextMenuPos = {
@@ -123,10 +145,18 @@ export default {
         const key =
           this.elementParams.style.position == "absolute" ||
           this.elementParams.style.position == "fixed"
-            ? { x: "left", y: "top" }
-            : { x: "marginLeft", y: "marginTop" };
-        this.elementParams.style[key.x] = e.currentTarget.style[key.x];
-        this.elementParams.style[key.y] = e.currentTarget.style[key.y];
+            ? { x: "left", y: "top", jx: "left", jy: "top" }
+            : {
+                x: "margin-left",
+                y: "margin-top",
+                jx: "marginLeft",
+                jy: "marginTop"
+              };
+        const style = {
+          [key.x]: e.currentTarget.style[key.jx],
+          [key.y]: e.currentTarget.style[key.jy]
+        };
+        this.ac_addStyle(style);
       }
     },
     hideMenu() {

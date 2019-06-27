@@ -9,19 +9,21 @@
       ✕
       <el-input id="po-screen-height" type="text" v-range='{val:"screenOptions.style", key:"height"}' v-model.lazy="screenOptions.style.height" placeholder="屏高"></el-input>
     </div>
-    <div id="po-main" class="po-main" :style="'width:'+screenOptions.style.width+';height:'+screenOptions.style.height+';'">
-      <div id="po-screen" class="po-screen" ref="screen" v-drag:po-el-item :style="screenOptions.style" @mousedown.self="ac_cancelacSelectElement()">
-        <template v-for="item in elementList">
-          <Element v-if="!item.pid" :key="item.vid" :elementParams.sync="item"></Element>
-        </template>
+    <div id="po-main" class="po-main">
+      <div class="po-body">
+        <div id="po-screen" class="po-screen" ref="screen" v-drag:po-el-item :style="screenOptions.style" @mousedown.self="ac_cancelacSelectElement()">
+          <template v-for="item in elementList">
+            <Element v-if="!item.pid" :key="item.vid" :elementParams.sync="item"></Element>
+          </template>
+        </div>
+        <div class="resize" v-drag="resize" @mousedown="getSize"></div>
+        <div class="download-project">
+          <el-button type="primary" @click="ac_downloadProject">保存</el-button>
+        </div>
       </div>
 
       <Tools></Tools>
       <Options></Options>
-      <div class="resize" v-drag="resize" @mousedown="getSize"></div>
-      <div>
-        <el-button type="primary" @click="ac_downloadProject">保存</el-button>
-      </div>
     </div>
   </div>
 </template>

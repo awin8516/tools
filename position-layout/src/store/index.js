@@ -48,7 +48,7 @@ const state = {
   },
   elementList: [],
   positionOptions: ['relative', 'absolute', 'fixed'],
-  ragneList: ['left', 'top', 'width', 'height']
+  ragneList: ['left', 'top', 'width', 'height', 'margin-left', 'margin-top']
 };
 
 const store = new Vuex.Store({

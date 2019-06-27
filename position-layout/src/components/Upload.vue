@@ -38,6 +38,7 @@ export default {
 </script>
 <style lang="scss">
 .po-upload {
+  position: relative;
   overflow: hidden;
   white-space: nowrap;
   .text {
@@ -55,9 +56,17 @@ export default {
     border-radius: 0.3em;
     border: none;
   }
-  .file {
+  input.file {
+    width: 0;
+    height: 0;
+    font-size: 0;
+    margin: 0;
+    padding: 0;
     opacity: 0;
     position: absolute;
+    overflow: hidden;
+    left: 0;
+    z-index: -1;
   }
 }
 </style>

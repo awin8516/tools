@@ -1,29 +1,32 @@
 <template>
   <div class="po-options">
     <ScreenOptions></ScreenOptions>
-    <div class="po-options-el" v-if="gt_elementSelected">
+    <div class="po-options-group po-options-el" v-if="gt_elementSelected">
+      <h2>元素</h2>
       <dl>
-        <dt>
+        <dd>
           <label class="h2">className:</label>
           <input type="text" v-model.lazy="gt_elementSelected.className">
-        </dt>
+        </dd>
       </dl>
       <dl v-if="typeof gt_elementSelected.src !== 'undefined'">
-        <dt>
+        <dd>
           <label class="h2">src:</label>
           <div class="field">
             <Upload :val.sync="gt_elementSelected.src"></Upload>
           </div>
-        </dt>
+        </dd>
       </dl>
       <dl>
         <dt class="h2">Style</dt>
         <dd v-for="(value, key) in gt_elementSelected.style" :key="key" :class="'po-options-'+key">
           <template v-if="key == 'position'">
             <label>position:</label>
-            <el-select v-model="gt_elementSelected.style.position" @change="setPosition" :key="gt_elementSelected.vid">
-              <el-option v-for="(item) in positionOptions" :key="item" :label="item" :value="item">{{item}}</el-option>
-            </el-select>
+            <div class="field">
+              <el-select v-model="gt_elementSelected.style.position" @change="setPosition" :key="gt_elementSelected.vid">
+                <el-option v-for="(item) in positionOptions" :key="item" :label="item" :value="item">{{item}}</el-option>
+              </el-select>
+            </div>
           </template>
           <template v-else>
             <label>{{key}}:</label>
@@ -70,11 +73,11 @@ export default {
   methods: {
     ...mapActions(["ac_deleteElement", "ac_addStyle"]),
     setPosition() {
-      this.gt_elementSelected.style.left = 'auto';
-      this.gt_elementSelected.style.top = 'auto';
-      this.gt_elementSelected.style.right = 'auto';
-      this.gt_elementSelected.style.bottom = 'auto';
-      this.gt_elementSelected.style.width = 'auto';
+      this.gt_elementSelected.style.left = "auto";
+      this.gt_elementSelected.style.top = "auto";
+      this.gt_elementSelected.style.right = "auto";
+      this.gt_elementSelected.style.bottom = "auto";
+      this.gt_elementSelected.style.width = "auto";
       this.ac_addStyle({ position: this.gt_elementSelected.style.position });
     },
     pushStyle() {

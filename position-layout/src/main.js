@@ -137,7 +137,7 @@ Vue.directive('range', function (_el, binding, vnode) {
   el.onmousedown = e => {
     //算出鼠标相对元素的位置
     let disY = e.clientY;
-    let value = parseInt(el.value);
+    let value = parseInt(el.value) || 0;
     let getKey = (obj, keyStr) => {
       let keyArr = keyStr.split('.');
       let o = obj;
