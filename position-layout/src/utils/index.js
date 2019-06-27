@@ -1,7 +1,7 @@
 export function object2style(style) {
   return JSON.stringify(style)
     .replace('{', '')
-    .replace('}', '')
+    .replace('}', ';')
     .replace(/"/g, '')
     .replace(/,/g, ';');
 }
@@ -50,17 +50,20 @@ export function createDOM(object) {
   // console.log(object)
 }
 
-export function downloadFile(content, filename) {
-  // 创建a标签
-  let linkNode = document.createElement('a');
-  linkNode.download = filename;
-  linkNode.style.display = 'none';
-  // 利用Blob对象将字符内容转变成二进制数据
-  let blob = new Blob([content]);
-  linkNode.href = URL.createObjectURL(blob);
-  // 点击
-  document.body.appendChild(linkNode);
-  linkNode.click();
-  // 移除
-  document.body.removeChild(linkNode);
+//线型结构转成树形结构
+export function array2Tree(array, key, parentKey) {
+  array = array || []
+  var tree = []
+  var parentid = undefined
+  var map = function(_tree, _parentid) {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i][parentKey] == _parentid) {
+        array[i].children = []
+        _tree.push(array[i])        
+        map(array[i].children, array[i][key])
+      }
+    }
+  }
+  map(tree, parentid)
+  return tree
 }

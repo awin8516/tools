@@ -51,7 +51,11 @@ export default {
     Options
   },
   methods: {
-    ...mapActions(["ac_setScreen", "ac_cancelacSelectElement", "ac_downloadProject"]),
+    ...mapActions([
+      "ac_setScreen",
+      "ac_cancelacSelectElement",
+      "ac_downloadProject"
+    ]),
     setSize() {
       this.screenOptions.style.width = this.screenOptions.sizeList[
         this.sizeSelect
@@ -62,8 +66,8 @@ export default {
     },
     getSize() {
       this.size = {
-        width: parseInt(this.screenOptions.style.width),
-        height: parseInt(this.screenOptions.style.height)
+        width: parseInt(this.screenOptions.style.width) || 0,
+        height: parseInt(this.screenOptions.style.height) || 0
       };
     },
     resize(el, data) {
@@ -73,7 +77,7 @@ export default {
   },
   mounted() {
     this.setSize();
-    this.screenOptions.el = this.$refs.screen
+    this.screenOptions.el = this.$refs.screen;
   }
 };
 </script>

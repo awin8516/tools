@@ -1,4 +1,4 @@
-import { deepClone } from "@/utils";
+import { deepClone, array2Tree, object2style } from "@/utils";
 import JSZip from "jszip";
 import saveAs from "jszip/vendor/FileSaver";
 
@@ -43,6 +43,10 @@ const actions = {
       commit("SET_ELEMENTLIST", state.elementList);
     }
   },
+  ac_addStyle({ commit, state, getters }, style) {
+    getters.gt_elementSelected.style = Object.assign( {}, getters.gt_elementSelected.style, style);
+    commit("SET_ELEMENTLIST", state.elementList);
+  },
   ac_updateLayer({ commit, state, getters }, act) {
     const index = getters.gt_indexSelected;
     if (index + act >= state.elementList.length - 1) {
@@ -64,8 +68,28 @@ const actions = {
     }
     commit("SET_ELEMENTLIST", state.elementList);
   },
+  ac_resetName({ state }, element) {
+    const getLenByTagName = (tagName) => {
+      return state.elementList.filter(v => v.tagName == tagName).length + 1
+    }
+    let len = 0
+    switch (element.tagName) {
+      case 'div':
+        len = getLenByTagName('div')
+        element.className = ['div', 'div-' + getLenByTagName('div')]
+        break
+      case 'img':
+        len = getLenByTagName('img')
+        element.className = ['img', 'img-' + len]
+        element.style.name = 'img-' + len
+        break
+      default:
+    }
+  },
+  //打包下载
   ac_downloadProject({ state }) {
-    function createHTML(screen) {
+    const name = state.screenOptions.style.name;
+    function createHtml(screen) {
       const html = screen.el.innerHTML
         .replace(
           /<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g,
@@ -75,7 +99,7 @@ const actions = {
           /data-img-name="(.*?)" src="data:image\/(.*?);base64,(.*?)"/g,
           'src="image/' + screen.style.name + '/$1.$2"'
         )
-        .replace(".jpeg", ".jpg");
+        .replace(/\.jpeg/g, ".jpg");
       const doc =
         '<!DOCTYPE html>\n\
                     <html lang="en">\n\
@@ -83,7 +107,8 @@ const actions = {
                         <meta charset="UTF-8">\n\
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
                         <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
-                        <title>Document</title>\n\
+                        <title>'+ name + '</title>\n\
+                        <link rel="stylesheet" type="text/css" href="css/'+ name + '.css">\n\
                     </head>\n\
                     <body><div class="container">' +
         html +
@@ -98,9 +123,9 @@ const actions = {
       regexp = /src="\s*\S+"/g;
       const src = screen.el.innerHTML.match(regexp);
       let imgs = [];
-      name.forEach((element, index) => {
+      name && name.forEach((element, index) => {
         imgs.push({
-          fileExt : src[index].match(/data:image\/(.*?);base64,/)[1].replace("jpeg", "jpg"),
+          fileExt: src[index].match(/data:image\/(.*?);base64,/)[1].replace("jpeg", "jpg"),
           name: element.replace(/data-img-name=|"|'/g, ""),
           src: src[index].replace(/src=|"|'/g, "").replace(/data:image\/(.*?);base64,/, "")
         });
@@ -108,32 +133,43 @@ const actions = {
       return imgs;
     }
 
+    function createCss(state) {
+      let css = '\/* ' + name + '.css *\/\n'
+      const tree = array2Tree(deepClone(state.elementList), 'vid', 'pid')
+      const mp = (_tree, parentClassName) => {
+        _tree.forEach(element => {
+          const className = element.className.map(v => '.' + v).join('')
+          const style = object2style(element.style)
+          css += (parentClassName ? parentClassName + ' ' : '') + className + '{' + style + '}\n'
+          element.children.length && mp(element.children, className)
+        })
+      }
+      mp(tree, '')
+      return css
+    }
+
     let zip = new JSZip();
-    
+
     //HTML
-    const doc = createHTML(state.screenOptions);
-    // console.log(doc);
-    const name = state.screenOptions.style.name;
-    zip.file(name + ".html", doc);
+    const html = createHtml(state.screenOptions);
+    zip.file(name + ".html", html);
 
     //IMAGES
-    let img = zip.folder("image");
-    let imgsub = img.folder(name);
+    let folderImg = zip.folder("image");
+    let imgsub = folderImg.folder(name);
     const imgs = createImg(state.screenOptions);
-    // console.log(imgs);
     imgs.forEach(element => {
-      imgsub.file(element.name+'.'+element.fileExt, element.src, { base64: true });
+      imgsub.file(element.name + '.' + element.fileExt, element.src, { base64: true });
     });
 
     //CSS
-    let css = zip.folder("css");
+    let folderCss = zip.folder("css");
+    const css = createCss(state);
+    folderCss.file(name + ".css", css);
 
-    zip.generateAsync({ type: "blob" }).then(function(content) {
-      //see FileSaver.js
+    zip.generateAsync({ type: "blob" }).then(function (content) {
       saveAs(content, name + ".zip");
     });
-
-    // downloadFile(doc, 'aaa.html')
   }
 };
 export default actions;

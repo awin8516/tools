@@ -11,15 +11,19 @@ const state = {
     sizeList: {
       iphone4: {
         width: '320px',
-        height: '414px'
+        height: '416px'
       },
       iphone5: {
         width: '320px',
-        height: '600px'
+        height: '504px'
       },
       iphone6: {
         width: '375px',
-        height: '667px'
+        height: '603px'
+      },
+      iphone6Plus: {
+        width: '414px',
+        height: '672px'
       },
       iphone7: {
         width: '375px',
@@ -27,7 +31,7 @@ const state = {
       },
       iphoneX: {
         width: '375px',
-        height: '667px'
+        height: '812px'
       }
     },
     style: {
@@ -43,6 +47,7 @@ const state = {
     el:null
   },
   elementList: [],
+  positionOptions: ['relative', 'absolute', 'fixed'],
   ragneList: ['left', 'top', 'width', 'height']
 };
 

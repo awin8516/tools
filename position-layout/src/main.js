@@ -29,21 +29,39 @@ Vue.prototype.$loading = Loading.service;
 Vue.prototype.$alert = MessageBox.alert;
 Vue.prototype.$message = Message;
 Vue.directive('drag', {
-  bind: function(el, binding, vnode) {
-    let handler = function(e) {
+  bind: function (el, binding, vnode) {
+    let handler = function (e) {
       let parentEl = e.target.parentElement;
       if (binding.arg) {
         if (parentEl.classList.contains(binding.arg) && e.button == 0) {
-          setTimeout(function() {
+          setTimeout(function () {
             parentEl.classList.add('v-draging');
           }, 10);
 
+          const position = parentEl.style.position;
+          const posKey = position == 'absolute' || position == 'fixed' ?
+            {
+              ox: 'offsetLeft',
+              oy: 'offsetTop',
+              x: 'left',
+              y: 'top'
+            } :
+            {
+              ox: 'marginLeft',
+              oy: 'marginTop',
+              x: 'marginLeft',
+              y: 'marginTop'
+            }
+
           e.preventDefault();
           //算出鼠标相对元素的位置
-          let posStart = {
+          let posStart = position == 'absolute' || position == 'fixed' ? {
             left: parentEl.offsetLeft,
             top: parentEl.offsetTop
-          };
+          } : {
+              left: parseInt(parentEl.style.marginLeft) || 0,
+              top: parseInt(parentEl.style.marginTop) || 0
+            };
           let clientStart = {
             x: e.clientX,
             y: e.clientY
@@ -64,18 +82,20 @@ Vue.directive('drag', {
             let maxLeft = el.clientWidth - parentEl.clientWidth;
             let maxTop = el.clientHeight - parentEl.clientHeight;
 
-            posEnd.left =
-              posEnd.left < 0
-                ? 0
-                : posEnd.left > maxLeft
-                ? maxLeft
-                : posEnd.left;
-            posEnd.top =
-              posEnd.top < 0 ? 0 : posEnd.top > maxTop ? maxTop : posEnd.top;
+            if (position == 'absolute' || position == 'fixed') {
+              posEnd.left =
+                posEnd.left < 0
+                  ? 0
+                  : posEnd.left > maxLeft
+                    ? maxLeft
+                    : posEnd.left;
+              posEnd.top =
+                posEnd.top < 0 ? 0 : posEnd.top > maxTop ? maxTop : posEnd.top;
+            }
 
             //移动当前元素
-            parentEl.style.left = posEnd.left + 'px';
-            parentEl.style.top = posEnd.top + 'px';
+            parentEl.style[posKey.x] = posEnd.left + 'px';
+            parentEl.style[posKey.y] = posEnd.top + 'px';
             binding.value && binding.value(parentEl, clientEnd);
           };
           document.onmouseup = () => {
@@ -112,7 +132,7 @@ Vue.directive('drag', {
     el.addEventListener('mousedown', handler);
   }
 });
-Vue.directive('range', function(_el, binding, vnode) {
+Vue.directive('range', function (_el, binding, vnode) {
   let el = _el.type ? _el : _el.querySelector('input');
   el.onmousedown = e => {
     //算出鼠标相对元素的位置

@@ -19,10 +19,11 @@ export default {
     ...mapGetters(["gt_elementSelected"])
   },
   methods: {
-    ...mapActions(["ac_selectElement"]),
+    ...mapActions(["ac_selectElement", "ac_resetName"]),
     createElement(item) {
       const params = deepClone(item);
       params.vid = new Date().getTime();
+      this.ac_resetName(params)
       //子元素
       if (this.gt_elementSelected) {
         //必须是container容器才能加子元素

@@ -1,6 +1,6 @@
 <template>
   <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="{'active':elementParams.selected}" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
-    <component :is="component" :elementParams="elementParams">
+    <component :is="component" :elementParams="elementParams" ref="component">
       <template v-for="item in elementList" slot="children">
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
       </template>
@@ -86,8 +86,14 @@ export default {
     ...mapGetters(["gt_indexSelected"]),
     itemStyle: function() {
       return {
+        position: this.elementParams.style.position,
+        width: this.elementParams.style.width,
+        height: this.elementParams.style.height,
         left: this.elementParams.style.left,
-        top: this.elementParams.style.top
+        right: this.elementParams.style.right,
+        top: this.elementParams.style.top,
+        bottom: this.elementParams.style.bottom,
+        display: this.elementParams.style.display
       };
     }
   },
@@ -114,8 +120,13 @@ export default {
     },
     mouseMove(e) {
       if (this.draging) {
-        this.elementParams.style.left = e.currentTarget.style.left;
-        this.elementParams.style.top = e.currentTarget.style.top;
+        const key =
+          this.elementParams.style.position == "absolute" ||
+          this.elementParams.style.position == "fixed"
+            ? { x: "left", y: "top" }
+            : { x: "marginLeft", y: "marginTop" };
+        this.elementParams.style[key.x] = e.currentTarget.style[key.x];
+        this.elementParams.style[key.y] = e.currentTarget.style[key.y];
       }
     },
     hideMenu() {
@@ -125,10 +136,23 @@ export default {
     },
     getSize(e) {
       this.shiftKey = e.shiftKey == 1;
-      this.size = {
-        width: parseInt(this.elementParams.style.width),
-        height: parseInt(this.elementParams.style.height)
-      };
+      this.size =
+        this.elementParams.style.position == "absolute" ||
+        this.elementParams.style.position == "fixed"
+          ? {
+              width: parseInt(this.elementParams.style.width) || 0,
+              height: parseInt(this.elementParams.style.height) || 0
+            }
+          : {
+              width:
+                document.querySelector(
+                  '[data-vid="' + this.elementParams.vid + '"]'
+                ).clientWidth || 0,
+              height:
+                document.querySelector(
+                  '[data-vid="' + this.elementParams.vid + '"]'
+                ).clientHeight || 0
+            };
     },
     resize(el, data) {
       this.elementParams.style.width = this.size.width + data.x + "px";
@@ -156,6 +180,10 @@ export default {
         this.elementParams.contextMenu
       );
     }
+  },
+  updated() {
+    // if(this.$refs.component) this.elementParams.$el = this.$refs.component.$el;
+    // console.log(this.elementList)
   }
 };
 </script>

@@ -1,4 +1,4 @@
-mark{
+mark {
   background-color: transparent;
   color: inherit;
 }
@@ -62,40 +62,44 @@ textarea {
     position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     .po-el-item {
       position: absolute;
+      > :first-child {
+        left: 0 !important;
+        top: 0 !important;
+        margin: auto !important;
+        position: relative !important;
+      }
       > img {
         user-select: none;
         vertical-align: top;
-      }
-      > *:first-child {
-        /*pointer-events: none;*/
       }
       .resize {
         display: none;
       }
       &.active {
-        &:before{
-          content: "";
+        &:before {
+          content: '';
           position: absolute;
           width: 10%;
           padding-bottom: 10%;
           right: -5px;
           top: -5px;
-          border-top:1px #f30 solid;
-          border-right:1px #f30 solid;
+          border-top: 1px #f30 solid;
+          border-right: 1px #f30 solid;
         }
-        &:after{
-          content: "";
+        &:after {
+          content: '';
           position: absolute;
           width: 10%;
           padding-bottom: 10%;
           left: -5px;
           bottom: -5px;
-          border-left:1px #f30 solid;
-          border-bottom:1px #f30 solid;
+          border-left: 1px #f30 solid;
+          border-bottom: 1px #f30 solid;
         }
-        >.resize {
+        > .resize {
           display: block;
           z-index: 2;
         }
@@ -173,13 +177,23 @@ textarea {
         vertical-align: top;
       }
       input {
+        font-size: inherit;
         border: 1px #ddd solid;
         padding: 0.2em;
         background: #fff;
+        height: 2em;
+        line-height: 1;
+        box-sizing: border-box;
         box-shadow: 1px 1px 0 1px #eee inset;
       }
       > input {
         width: 10em;
+      }
+      .el-input {
+        font-size: inherit;
+      }
+      .el-input__suffix * {
+        line-height: 1;
       }
     }
     & * + dl {
@@ -213,6 +227,7 @@ textarea {
       position: relative;
       height: 100px;
       textarea {
+        font-size: inherit;
         width: 100%;
         height: 100%;
         box-sizing: border-box;

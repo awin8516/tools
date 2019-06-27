@@ -12,7 +12,8 @@ export default {
       className: ["img", "img-test"],
       src: require("@/assets/img.jpg"),
       style: {
-        name:"img01",
+        name:"img-01",
+        position: "absolute",
         left: "0",
         top: "0",
         width: "100px",
