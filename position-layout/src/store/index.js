@@ -55,7 +55,8 @@ const store = new Vuex.Store({
   state,
   actions,
   mutations,
-  getters
+  getters,
+  strict: false
 });
 
 export default store;

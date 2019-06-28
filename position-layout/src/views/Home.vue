@@ -17,9 +17,7 @@
           </template>
         </div>
         <div class="resize" v-drag="resize" @mousedown="getSize"></div>
-        <div class="download-project">
-          <el-button type="primary" @click="ac_downloadProject">保存</el-button>
-        </div>
+        <save></save>
       </div>
 
       <Tools></Tools>
@@ -33,6 +31,7 @@ import { mapState, mapActions } from "vuex";
 import Element from "@/views/Element.vue";
 import Tools from "@/views/Tools.vue";
 import Options from "@/views/Options.vue";
+import Save from "@/views/Save.vue";
 export default {
   name: "home",
   data() {
@@ -50,13 +49,12 @@ export default {
   components: {
     Element,
     Tools,
-    Options
+    Options,
+    Save
   },
   methods: {
     ...mapActions([
-      "ac_setScreen",
-      "ac_cancelacSelectElement",
-      "ac_downloadProject"
+      "ac_cancelacSelectElement"
     ]),
     setSize() {
       this.screenOptions.style.width = this.screenOptions.sizeList[
@@ -80,6 +78,7 @@ export default {
   mounted() {
     this.setSize();
     this.screenOptions.el = this.$refs.screen;
+    console.log(this.screenOptions)
   }
 };
 </script>

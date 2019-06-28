@@ -1,6 +1,12 @@
+import { mergeJSON } from "@/utils";
+const _ = require("lodash");
+
 const mutations = {
-  SET_SCREEN: (state, component) => {
-    state.screen = component;
+  SET_STATE: (state, component) => {
+    state = mergeJSON(state, component);
+    //强制刷新页面
+    state.elementList = component.elementList;
+
   },
   SET_SCREENOPTIONS: (state, component) => {
     state.screenOptions = component;

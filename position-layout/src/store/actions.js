@@ -1,4 +1,4 @@
-import { deepClone, array2Tree, object2style } from "@/utils";
+import { deepClone, array2Tree, object2style, formatHtml } from "@/utils";
 import JSZip from "jszip";
 import saveAs from "jszip/vendor/FileSaver";
 
@@ -44,7 +44,7 @@ const actions = {
     }
   },
   ac_addStyle({ commit, state, getters }, style) {
-    getters.gt_elementSelected.style = Object.assign( {}, getters.gt_elementSelected.style, style);
+    getters.gt_elementSelected.style = Object.assign({}, getters.gt_elementSelected.style, style);
     commit("SET_ELEMENTLIST", state.elementList);
   },
   ac_updateLayer({ commit, state, getters }, act) {
@@ -86,11 +86,19 @@ const actions = {
       default:
     }
   },
+  ac_importProject({ commit }, json) {
+    const _state = JSON.parse(json)
+    commit("SET_STATE", _state);
+  },
   //打包下载
-  ac_downloadProject({ state }) {
+  ac_exportProject({ state }) {
     const name = state.screenOptions.style.name;
+    function createJson(state) {
+      return JSON.stringify(state).replace(',"el":{"_prevClass":"po-screen"}', '')
+    }
+
     function createHtml(screen) {
-      const html = screen.el.innerHTML
+      let html = screen.el.innerHTML
         .replace(
           /<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g,
           ""
@@ -100,20 +108,22 @@ const actions = {
           'src="image/' + screen.style.name + '/$1.$2"'
         )
         .replace(/\.jpeg/g, ".jpg");
+      html = formatHtml(html)
       const doc =
         '<!DOCTYPE html>\n\
-                    <html lang="en">\n\
-                    <head>\n\
-                        <meta charset="UTF-8">\n\
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
-                        <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
-                        <title>'+ name + '</title>\n\
-                        <link rel="stylesheet" type="text/css" href="css/'+ name + '.css">\n\
-                    </head>\n\
-                    <body><div class="container">' +
-        html +
-        "</div></body>\n\
-                    </html>";
+        <html lang="en">\n\
+        <head>\n\
+            <meta charset="UTF-8">\n\
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
+            <title>'+ name + '</title>\n\
+            <link rel="stylesheet" type="text/css" href="css/'+ name + '.css">\n\
+        </head>\n\
+        <body>\
+        <div class="container">\n' +
+          html +
+        '</div>\n</body>\n\
+        </html>';
       return doc;
     }
 
@@ -149,6 +159,10 @@ const actions = {
     }
 
     let zip = new JSZip();
+
+    //project.json
+    const json = createJson(state);
+    zip.file(name + ".json", json);
 
     //HTML
     const html = createHtml(state.screenOptions);
