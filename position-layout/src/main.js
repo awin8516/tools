@@ -56,8 +56,8 @@ Vue.directive('drag', {
           e.preventDefault();
           //算出鼠标相对元素的位置
           let posStart = position == 'absolute' || position == 'fixed' ? {
-            left: parentEl.offsetLeft,
-            top: parentEl.offsetTop
+            left: parentEl.offsetLeft-parseInt(parentEl.style.marginLeft || 0),
+            top: parentEl.offsetTop-parseInt(parentEl.style.marginTop || 0)
           } : {
               left: parseInt(parentEl.style.marginLeft) || 0,
               top: parseInt(parentEl.style.marginTop) || 0

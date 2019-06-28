@@ -117,11 +117,12 @@ const actions = {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
             <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
             <title>'+ name + '</title>\n\
+            <link rel="stylesheet" type="text/css" href="css/common.css">\n\
             <link rel="stylesheet" type="text/css" href="css/'+ name + '.css">\n\
         </head>\n\
         <body>\
         <div class="container">\n' +
-          html +
+        html +
         '</div>\n</body>\n\
         </html>';
       return doc;
@@ -155,7 +156,9 @@ const actions = {
         })
       }
       mp(tree, '')
-      return css
+      return css.replace(/([0-9]+)px/g, function (pixel) {
+        return (parseInt(pixel) * 0.01).toFixed(2) + 'rem'
+      })
     }
 
     let zip = new JSZip();
@@ -180,6 +183,7 @@ const actions = {
     let folderCss = zip.folder("css");
     const css = createCss(state);
     folderCss.file(name + ".css", css);
+    folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;}");
 
     zip.generateAsync({ type: "blob" }).then(function (content) {
       saveAs(content, name + ".zip");
