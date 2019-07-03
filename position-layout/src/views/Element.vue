@@ -87,7 +87,7 @@ export default {
     itemStyle: function() {
       const style = [
         "position",
-        // "width",
+        "width",
         "left",
         "top",
         "right",
@@ -99,6 +99,9 @@ export default {
         "margin-left"
         // "display"
       ];
+      // if (!this.isAbsolute) {
+      //   style.push('width');
+      // }
       let styleObject = {};
       style.forEach(v => {
         if (typeof this.elementParams.style[v] !== "undefined") {
@@ -112,6 +115,12 @@ export default {
         }
       });
       return styleObject;
+    },
+    isAbsolute: function() {
+      return (
+        this.elementParams.style.position == "absolute" ||
+        this.elementParams.style.position == "fixed"
+      );
     }
   },
   methods: {
@@ -142,16 +151,14 @@ export default {
     },
     mouseMove(e) {
       if (this.draging) {
-        const key =
-          this.elementParams.style.position == "absolute" ||
-          this.elementParams.style.position == "fixed"
-            ? { x: "left", y: "top", jx: "left", jy: "top" }
-            : {
-                x: "margin-left",
-                y: "margin-top",
-                jx: "marginLeft",
-                jy: "marginTop"
-              };
+        const key = this.isAbsolute
+          ? { x: "left", y: "top", jx: "left", jy: "top" }
+          : {
+              x: "margin-left",
+              y: "margin-top",
+              jx: "marginLeft",
+              jy: "marginTop"
+            };
         const style = {
           [key.x]: e.currentTarget.style[key.jx],
           [key.y]: e.currentTarget.style[key.jy]
@@ -166,33 +173,34 @@ export default {
     },
     getSize(e) {
       this.shiftKey = e.shiftKey == 1;
-      this.size =
-        this.elementParams.style.position == "absolute" ||
-        this.elementParams.style.position == "fixed"
-          ? {
-              width: parseInt(this.elementParams.style.width) || 0,
-              height: parseInt(this.elementParams.style.height) || 0
-            }
-          : {
-              width:
-                document.querySelector(
-                  '[data-vid="' + this.elementParams.vid + '"]'
-                ).clientWidth || 0,
-              height:
-                document.querySelector(
-                  '[data-vid="' + this.elementParams.vid + '"]'
-                ).clientHeight || 0
-            };
+      this.size = this.isAbsolute
+        ? {
+            width: parseInt(this.elementParams.style.width) || 0,
+            height: parseInt(this.elementParams.style.height) || 0
+          }
+        : {
+            width:
+              document.querySelector(
+                '[data-vid="' + this.elementParams.vid + '"]'
+              ).clientWidth || 0,
+            height:
+              document.querySelector(
+                '[data-vid="' + this.elementParams.vid + '"]'
+              ).clientHeight || 0
+          };
     },
     resize(el, data) {
-      this.elementParams.style.width = this.size.width + data.x + "px";
+      let style = {};
+      style.width = this.size.width + data.x + "px";
       if (this.shiftKey) {
-        this.elementParams.style.height =
-          (this.size.height / this.size.width) * (this.size.width + data.x) +
-          "px";
+        style.height =
+          parseInt(
+            (this.size.height / this.size.width) * (this.size.width + data.x)
+          ) + "px";
       } else {
-        this.elementParams.style.height = this.size.height + data.y + "px";
+        style.height = this.size.height + data.y + "px";
       }
+      this.ac_addStyle(style);
     }
   },
   filters: {
@@ -203,17 +211,15 @@ export default {
     }
   },
   mounted() {
-    const path = this.elementParams.file.replace("src/", "");
-    this.component = () => import("@/" + path);
-    if (this.elementParams.contextMenu) {
-      this.contextMenuDefault = this.contextMenuDefault.concat(
-        this.elementParams.contextMenu
-      );
-    }
-  },
-  updated() {
-    // if(this.$refs.component) this.elementParams.$el = this.$refs.component.$el;
-    // console.log(this.elementList)
+    try {
+      const path = this.elementParams.file.replace("src/", "");
+      this.component = () => import("@/" + path);
+      if (this.elementParams.contextMenu) {
+        this.contextMenuDefault = this.contextMenuDefault.concat(
+          this.elementParams.contextMenu
+        );
+      }
+    } catch (e) {}
   }
 };
 </script>

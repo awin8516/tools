@@ -54,15 +54,15 @@ export default {
   },
   methods: {
     ...mapActions([
+      "ac_setScreenStyle",
+      "ac_setScreenElement",
       "ac_cancelacSelectElement"
     ]),
     setSize() {
-      this.screenOptions.style.width = this.screenOptions.sizeList[
-        this.sizeSelect
-      ].width;
-      this.screenOptions.style.height = this.screenOptions.sizeList[
-        this.sizeSelect
-      ].height;
+      const screenStyle = Object.assign({}, this.screenOptions.style);
+      screenStyle.width = this.screenOptions.sizeList[this.sizeSelect].width;
+      screenStyle.height = this.screenOptions.sizeList[this.sizeSelect].height;
+      this.ac_setScreenStyle(screenStyle);
     },
     getSize() {
       this.size = {
@@ -77,8 +77,7 @@ export default {
   },
   mounted() {
     this.setSize();
-    this.screenOptions.el = this.$refs.screen;
-    console.log(this.screenOptions)
+    this.ac_setScreenElement(this.$refs.screen)
   }
 };
 </script>

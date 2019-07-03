@@ -3,70 +3,33 @@ import JSZip from "jszip";
 import saveAs from "jszip/vendor/FileSaver";
 
 const actions = {
-  ac_setScreen: ({ commit }, value) => {
-    commit("SET_SCREEN", value);
+  ac_setScreenStyle: ({ commit }, value) => {
+    commit("SET_SCREENSTYLE", value);
   },
-  // ac_setScreenOptions: ({ commit }, value) => {
-  //   commit("SET_SCREENOPTIONS", value);
-  // },
-  // ac_setElementList: ({ commit }, value) => {
-  //   commit("SET_ELEMENTLIST", deepClone(value));
-  // },
-  ac_selectElement({ commit, state }, element) {
-    state.elementList.map(v => (v.selected = false));
-    state.elementList.find(v => v === element).selected = true;
-    commit("SET_ELEMENTLIST", deepClone(state.elementList));
+  ac_setScreenElement: ({ commit }, value) => {
+    commit("SET_SCREENELEMENT", value);
   },
-  ac_selectElementIndex({ commit, state }, index) {
-    state.elementList.map(v => (v.selected = false));
-    state.elementList[index].selected = true;
-    commit("SET_ELEMENTLIST", deepClone(state.elementList));
+  ac_setSelectElement: ({ commit }, element) => {
+    commit("SET_SETSELECTELEMENT", element);
   },
-  ac_cancelacSelectElement({ commit, state, getters }) {
-    getters.gt_elementSelected && (getters.gt_elementSelected.selected = false);
-    commit("SET_ELEMENTLIST", state.elementList);
+  ac_selectElement({ commit }, element) {
+    commit("SET_SELECTELEMENT", element);
   },
-  ac_deleteElement({ commit, state }, element) {
-    let index = state.elementList.findIndex(v => v === element);
-    state.elementList.splice(index, 1);
-    commit("SET_ELEMENTLIST", state.elementList);
-    if (state.elementList.length > 0) {
-      state.elementList[state.elementList.length - 1].selected = true;
-      commit("SET_ELEMENTLIST", state.elementList);
-    }
+  ac_cancelacSelectElement({ commit, getters }) {
+    commit("SET_CANCELACSELECTELEMENT", getters.gt_elementSelected);
   },
-  ac_deleteElementIndex({ commit, state }, index) {
-    state.elementList.splice(index, 1);
-    commit("SET_ELEMENTLIST", state.elementList);
-    if (state.elementList.length > 0) {
-      state.elementList[state.elementList.length - 1].selected = true;
-      commit("SET_ELEMENTLIST", state.elementList);
-    }
+  ac_addElement({ commit }, element) {
+    commit("SET_ADDELEMENT", element);
   },
-  ac_addStyle({ commit, state, getters }, style) {
-    getters.gt_elementSelected.style = Object.assign({}, getters.gt_elementSelected.style, style);
-    commit("SET_ELEMENTLIST", state.elementList);
+  ac_deleteElement({ commit }, element) {
+    commit("SET_DELETEELEMENT", element);
+  },
+  ac_addStyle({ commit }, style) {
+    commit("SET_ADDSTYLE", style);
   },
   ac_updateLayer({ commit, state, getters }, act) {
-    const index = getters.gt_indexSelected;
-    if (index + act >= state.elementList.length - 1) {
-      //置顶
-      const _this = state.elementList[index];
-      state.elementList.splice(index, 1);
-      state.elementList = [...state.elementList, _this];
-    } else if (index + act <= 0) {
-      //置底
-      const _this = state.elementList[index];
-      state.elementList.splice(index, 1);
-      state.elementList = [_this, ...state.elementList];
-    } else {
-      //上下移
-      const _this = state.elementList[index];
-      const _that = state.elementList[index + act];
-      state.elementList[index] = _that;
-      state.elementList[index + act] = _this;
-    }
-    commit("SET_ELEMENTLIST", state.elementList);
+    
+    commit("SET_UPDATELAYER", act);
   },
   ac_resetName({ state }, element) {
     const getLenByTagName = (tagName) => {
@@ -76,12 +39,15 @@ const actions = {
     switch (element.tagName) {
       case 'div':
         len = getLenByTagName('div')
-        element.className = ['div', 'div-' + getLenByTagName('div')]
+        element.name = 'div-' + len
+        element.id = 'div-' + len
+        element.className = 'div div-' + getLenByTagName('div')
         break
       case 'img':
         len = getLenByTagName('img')
-        element.className = ['img', 'img-' + len]
-        element.style.name = 'img-' + len
+        element.name = 'img-' + len
+        element.id = 'img-' + len
+        element.className = 'img img-' + len
         break
       default:
     }

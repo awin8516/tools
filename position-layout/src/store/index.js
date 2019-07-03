@@ -46,6 +46,7 @@ const state = {
     },
     el:null
   },
+  selectedElement:null,
   elementList: [],
   positionOptions: ['relative', 'absolute', 'fixed'],
   ragneList: ['left', 'top', 'width', 'height', 'margin-left', 'margin-top']
@@ -56,7 +57,7 @@ const store = new Vuex.Store({
   actions,
   mutations,
   getters,
-  strict: false
+  strict: true
 });
 
 export default store;

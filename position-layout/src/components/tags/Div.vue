@@ -12,7 +12,9 @@ export default {
       tagName: "div",
       icon: "menu",
       container: true,
-      className: ["div", "div-test"],
+      name: "div1",
+      id: "div1",
+      className: "div div-test",
       style: {
         position: "absolute",
         left: "0",

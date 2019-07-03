@@ -9,10 +9,11 @@ export default {
     return {
       tagName: "img",
       icon: "picture",
-      className: ["img", "img-test"],
+      name: "img-01",
+      id: "img1",
+      className: "img img-test",
       src: require("@/assets/img.jpg"),
       style: {
-        name:"img-01",
         position: "absolute",
         left: "0",
         top: "0",

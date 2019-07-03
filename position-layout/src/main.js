@@ -39,14 +39,14 @@ Vue.directive('drag', {
           }, 10);
 
           const position = parentEl.style.position;
+          console.log(position)
           const posKey = position == 'absolute' || position == 'fixed' ?
             {
               ox: 'offsetLeft',
               oy: 'offsetTop',
               x: 'left',
               y: 'top'
-            } :
-            {
+            } : {
               ox: 'marginLeft',
               oy: 'marginTop',
               x: 'marginLeft',
@@ -54,10 +54,9 @@ Vue.directive('drag', {
             }
 
           e.preventDefault();
-          //算出鼠标相对元素的位置
           let posStart = position == 'absolute' || position == 'fixed' ? {
-            left: parentEl.offsetLeft-parseInt(parentEl.style.marginLeft || 0),
-            top: parentEl.offsetTop-parseInt(parentEl.style.marginTop || 0)
+            left: parentEl.offsetLeft - (parseInt(parentEl.style.marginLeft) || 0),
+            top: parentEl.offsetTop - (parseInt(parentEl.style.marginTop) || 0)
           } : {
               left: parseInt(parentEl.style.marginLeft) || 0,
               top: parseInt(parentEl.style.marginTop) || 0
@@ -66,7 +65,6 @@ Vue.directive('drag', {
             x: e.clientX,
             y: e.clientY
           };
-
           document.onmousemove = e => {
             //用鼠标位移量
             let clientEnd = {
@@ -132,43 +130,42 @@ Vue.directive('drag', {
     el.addEventListener('mousedown', handler);
   }
 });
-Vue.directive('range', function (_el, binding, vnode) {
-  let el = _el.type ? _el : _el.querySelector('input');
-  el.onmousedown = e => {
-    //算出鼠标相对元素的位置
-    let disY = e.clientY;
-    let value = parseInt(el.value) || 0;
-    let getKey = (obj, keyStr) => {
-      let keyArr = keyStr.split('.');
-      let o = obj;
-      keyArr.forEach((key, index) => {
-        o = o[key];
-      });
-      return o;
-    };
-    let obj = getKey(vnode.context, binding.value.val);
-    document.onmousemove = e => {
-      //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-      let top = e.clientY - disY;
-      el.value = value + top + 'px';
-      if (binding.value.index || binding.value.key) {
-        obj[binding.value.index || binding.value.key] = el.value;
-      } else {
-        if (binding.value.val.indexOf('.') !== -1) {
-          obj = el.value;
+Vue.directive('range', {
+  bind: function (_el, binding, vnode) {
+    let el = _el.type ? _el : _el.querySelector('input');
+    el.onmousedown = e => {
+      //算出鼠标相对元素的位置
+      let disY = e.clientY;
+      let value = parseInt(el.value) || 0;
+      let getKey = (obj, keyStr) => {
+        let keyArr = keyStr.split('.');
+        let o = obj;
+        keyArr.forEach((key, index) => {
+          o = o[key];
+        });
+        return o;
+      };
+      let obj = getKey(vnode.context, binding.value.val);
+      document.onmousemove = e => {
+        //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+        let top = e.clientY - disY;
+        el.value = value + top + 'px';
+        if (binding.value.index || binding.value.key) {
+          obj[binding.value.index || binding.value.key] = el.value;
         } else {
-          vnode.context[binding.value.val] = el.value;
+          if (binding.value.val.indexOf('.') !== -1) {
+            obj = el.value;
+          } else {
+            vnode.context[binding.value.val] = el.value;
+          }
         }
-      }
+      };
+      document.onmouseup = () => {
+        document.onmousemove = null;
+        document.onmouseup = null;
+      };
     };
-    document.onmouseup = () => {
-      document.onmousemove = null;
-      document.onmouseup = null;
-    };
-  };
-  // el.blur = e => {
-  //   console.log(el.value)
-  // }
+  }
 });
 
 new Vue({
