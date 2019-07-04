@@ -99,9 +99,6 @@ export default {
         "margin-left"
         // "display"
       ];
-      // if (!this.isAbsolute) {
-      //   style.push('width');
-      // }
       let styleObject = {};
       style.forEach(v => {
         if (typeof this.elementParams.style[v] !== "undefined") {

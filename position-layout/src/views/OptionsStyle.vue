@@ -8,6 +8,12 @@
         </el-select>
       </div>
     </template>
+    <template v-else-if="_key == 'background-image'">
+      <label>background-image:</label>
+      <div class="field">
+        <Upload :val.sync="value" :template="'url(#)'"></Upload>
+      </div>
+    </template>
     <template v-else>
       <label>{{_key}}:</label>
       <input v-if="ragneList.includes(_key)" v-range="{val:'value'}" type="text" v-model.lazy="value">
@@ -18,6 +24,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import Upload from "@/components/Upload.vue";
 export default {
   name: "optionsStyle",
   data() {
@@ -29,9 +36,7 @@ export default {
     ...mapGetters(["gt_elementSelected"]),
     position: {
       get: function() {
-        return (
-          this.gt_elementSelected && this._style.position
-        );
+        return this.gt_elementSelected && this._style.position;
       },
       set: function(v) {
         let style =
@@ -61,14 +66,15 @@ export default {
     },
     value: {
       get: function() {
-        return (
-          this.gt_elementSelected && this._style[this._key]
-        );
+        return this.gt_elementSelected && this._style[this._key];
       },
       set: function(v) {
         this.ac_setSelectElement({ style: { [this._key]: v } });
       }
     }
+  },
+  components: {
+    Upload
   },
   methods: {
     ...mapActions(["ac_setSelectElement", "ac_addStyle"])

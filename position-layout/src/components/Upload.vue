@@ -13,14 +13,14 @@ export default {
   data() {
     return {};
   },
-  props: ["val"],
+  props: ["val", "template"],
   methods: {
     open() {
       this.$refs.file.click();
     },
     change: function(e) {
       file2base64(e.target.files[0]).then(data => {
-        this.src = data;
+        this.src = this.template ? this.template.replace("#", data) : data;
       });
     }
   },
@@ -33,6 +33,9 @@ export default {
         this.$emit("update:val", v);
       }
     }
+  },
+  mounted() {
+    console.log(this);
   }
 };
 </script>

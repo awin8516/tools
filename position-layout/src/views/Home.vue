@@ -36,7 +36,7 @@ export default {
   name: "home",
   data() {
     return {
-      sizeSelect: "iphone6",
+      sizeSelect: "iphoneX",
       size: {
         width: 0,
         height: 0
@@ -71,13 +71,15 @@ export default {
       };
     },
     resize(el, data) {
-      this.screenOptions.style.width = this.size.width + data.x + "px";
-      this.screenOptions.style.height = this.size.height + data.y + "px";
+      const screenStyle = Object.assign({}, this.screenOptions.style);
+      screenStyle.width = this.size.width + data.x + "px";
+      screenStyle.height = this.size.height + data.y + "px";
+      this.ac_setScreenStyle(screenStyle);
     }
   },
   mounted() {
     this.setSize();
-    this.ac_setScreenElement(this.$refs.screen)
+    this.ac_setScreenElement(this.$refs.screen);
   }
 };
 </script>
