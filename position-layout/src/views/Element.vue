@@ -219,7 +219,9 @@ export default {
           this.elementParams.contextMenu
         );
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log('no vue')
+    }
   }
 };
 </script>

@@ -28,7 +28,7 @@ const actions = {
     commit("SET_ADDSTYLE", style);
   },
   ac_updateLayer({ commit, state, getters }, act) {
-    
+
     commit("SET_UPDATELAYER", act);
   },
   ac_resetName({ state }, element) {
@@ -115,10 +115,13 @@ const actions = {
       const tree = array2Tree(deepClone(state.elementList), 'vid', 'pid')
       const mp = (_tree, parentClassName) => {
         _tree.forEach(element => {
-          const className = element.className.map(v => '.' + v).join('')
-          const style = object2style(element.style)
-          css += (parentClassName ? parentClassName + ' ' : '') + className + '{' + style + '}\n'
-          element.children.length && mp(element.children, className)
+          if (element.className) {
+            const className = '.' + element.className.replace(/\s+/g, ' ').replace(/\s+/g, '.')
+            // const className = element.className.map(v => '.' + v).join('')
+            const style = object2style(element.style)
+            css += (parentClassName ? parentClassName + ' ' : '') + className + '{' + style + '}\n'
+            element.children.length && mp(element.children, className)
+          }
         })
       }
       mp(tree, '')

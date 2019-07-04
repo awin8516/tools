@@ -128,13 +128,15 @@ export function array2Tree(array, key, parentKey) {
 }
 export function mergeJSON(Old, New) {
   function isJSON(target) {
+    console.log(target)
+    console.log(target.constructor)
     return typeof target == "object" && target.constructor == Object;
   }
   function isArray(o) {
     return Object.prototype.toString.call(o) == '[object Array]';
   }
   for (var key in New) {
-    if (Old[key] === undefined || typeof Old[key] == 'string') { // 不冲突的，直接赋值 
+    if (Old[key] === undefined || Old[key] === null || typeof Old[key] == 'string') { // 不冲突的，直接赋值 
       Old[key] = New[key];
       continue;
     }

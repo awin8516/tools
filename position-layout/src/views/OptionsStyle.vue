@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <dd :class="'po-options-'+_key">
     <template v-if="_key == 'position'">
       <label>position:</label>
       <div class="field">
@@ -13,7 +13,7 @@
       <input v-if="ragneList.includes(_key)" v-range="{val:'value'}" type="text" v-model.lazy="value">
       <input v-else type="text" v-model.lazy="value">
     </template>
-  </div>
+  </dd>
 </template>
 
 <script>
@@ -23,24 +23,24 @@ export default {
   data() {
     return {};
   },
-  props: ["_key"],
+  props: ["_key", "_style"],
   computed: {
     ...mapState(["ragneList", "positionOptions"]),
     ...mapGetters(["gt_elementSelected"]),
     position: {
       get: function() {
         return (
-          this.gt_elementSelected && this.gt_elementSelected.style.position
+          this.gt_elementSelected && this._style.position
         );
       },
       set: function(v) {
         let style =
           v == "absolute" || v == "fixed"
             ? {
-                left: this.gt_elementSelected.style["margin-left"],
-                top: this.gt_elementSelected.style["margin-top"],
-                right: this.gt_elementSelected.style["margin-right"],
-                bottom: this.gt_elementSelected.style["margin-bottom"],
+                left: this._style["margin-left"],
+                top: this._style["margin-top"],
+                right: this._style["margin-right"],
+                bottom: this._style["margin-bottom"],
                 width:
                   document.querySelector(
                     '[data-vid="' + this.gt_elementSelected.vid + '"]'
@@ -62,7 +62,7 @@ export default {
     value: {
       get: function() {
         return (
-          this.gt_elementSelected && this.gt_elementSelected.style[this._key]
+          this.gt_elementSelected && this._style[this._key]
         );
       },
       set: function(v) {

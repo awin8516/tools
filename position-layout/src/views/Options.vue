@@ -31,9 +31,12 @@
       </dl>
       <dl v-if="typeof style !== 'undefined'">
         <dt class="h2">Style</dt>
-        <dd v-for="(value, key) in style" :key="key" :class="'po-options-'+key">
+        <template v-for="(value, key) in style">
+          <OptionsStyle  :key="key" :_key="key" :_style="style"></OptionsStyle>
+        </template>
+        <!-- <dd v-for="(value, key) in style" :key="key" :class="'po-options-'+key">
           <OptionsStyle :_key="key"></OptionsStyle>
-        </dd>
+        </dd> -->
         <dd>
           <h2 class="h2">自定义：</h2>
           <div class="style-custom">
