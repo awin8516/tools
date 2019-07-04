@@ -16,19 +16,21 @@ export default {
       id: "div1",
       className: "div div-test",
       style: {
-        position: "absolute",
-        left: "0",
-        right: "auto",
-        top: "0",
-        bottom: "auto",
-        width: "100px",
-        height: "100px",
-        display: "block",
-        "background-image": "url()",
-        "background-color": "#eee",
-        "background-repeat": "no-repeat",
-        "background-size": "100% auto",
-        "background-position": "left top"
+        default: {
+          position: "absolute",
+          left: "0",
+          right: "auto",
+          top: "0",
+          bottom: "auto",
+          width: "100px",
+          height: "100px",
+          display: "block",
+          "background-image": "url()",
+          "background-color": "#eee",
+          "background-repeat": "no-repeat",
+          "background-size": "100% auto",
+          "background-position": "left top"
+        }
       },
       contextMenu: [
         {

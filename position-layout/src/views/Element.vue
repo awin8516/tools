@@ -1,5 +1,5 @@
 <template>
-  <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[elementParams.style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
+  <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
     <component :is="component" :elementParams="elementParams" ref="component">
       <template v-for="item in elementList" slot="children">
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
@@ -84,6 +84,9 @@ export default {
   computed: {
     ...mapState(["elementList"]),
     ...mapGetters(["gt_indexSelected"]),
+    style() {
+      return this.elementParams.style.default;
+    },
     itemStyle: function() {
       const style = [
         "position",
@@ -101,9 +104,9 @@ export default {
       ];
       let styleObject = {};
       style.forEach(v => {
-        if (typeof this.elementParams.style[v] !== "undefined") {
+        if (typeof this.style[v] !== "undefined") {
           if (v == "width") {
-            if (this.elementParams.style.position == "relative") {
+            if (this.style.position == "relative") {
               styleObject[v] = this.elementParams.style[v];
             }
           } else {
@@ -115,8 +118,8 @@ export default {
     },
     isAbsolute: function() {
       return (
-        this.elementParams.style.position == "absolute" ||
-        this.elementParams.style.position == "fixed"
+        this.style.position == "absolute" ||
+        this.style.position == "fixed"
       );
     }
   },
@@ -172,8 +175,8 @@ export default {
       this.shiftKey = e.shiftKey == 1;
       this.size = this.isAbsolute
         ? {
-            width: parseInt(this.elementParams.style.width) || 0,
-            height: parseInt(this.elementParams.style.height) || 0
+            width: parseInt(this.style.width) || 0,
+            height: parseInt(this.style.height) || 0
           }
         : {
             width:
@@ -217,7 +220,7 @@ export default {
         );
       }
     } catch (e) {
-      console.log('no vue')
+      console.log("no vue");
     }
   }
 };
