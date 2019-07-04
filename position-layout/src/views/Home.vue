@@ -54,6 +54,7 @@ export default {
   },
   methods: {
     ...mapActions([
+      "ac_setMediaName",
       "ac_setScreenStyle",
       "ac_setScreenElement",
       "ac_cancelacSelectElement"
@@ -62,6 +63,7 @@ export default {
       const screenStyle = Object.assign({}, this.screenOptions.style);
       screenStyle.width = this.screenOptions.sizeList[this.sizeSelect].width;
       screenStyle.height = this.screenOptions.sizeList[this.sizeSelect].height;
+      this.ac_setMediaName(this.sizeSelect);
       this.ac_setScreenStyle(screenStyle);
     },
     getSize() {

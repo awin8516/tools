@@ -1,5 +1,5 @@
 <template>
-  <div :style="elementParams.style" :class="elementParams.className">
+  <div :style="element.style[mediaName]" :class="element.className">
     <slot name="children"></slot>
   </div>
 </template>
@@ -41,6 +41,6 @@ export default {
       ]
     };
   },
-  props: ["elementParams"]
+  props: ["element", "mediaName"]
 };
 </script>

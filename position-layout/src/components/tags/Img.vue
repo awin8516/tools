@@ -1,5 +1,10 @@
 <template>
-  <img :data-img-name="elementParams.src && elementParams.style.name" :style="elementParams.style" :src="elementParams.src" :class="elementParams.className">
+  <img
+    :data-name="element.src && element.name"
+    :style="element.style[mediaName]"
+    :src="element.src"
+    :class="element.className"
+  />
 </template>
 
 <script>
@@ -14,14 +19,16 @@ export default {
       className: "img img-test",
       src: require("@/assets/img.jpg"),
       style: {
-        position: "absolute",
-        left: "0",
-        top: "0",
-        width: "100px",
-        height: "100px"
+        default: {
+          position: "absolute",
+          left: "0",
+          top: "0",
+          width: "100px",
+          height: "100px"
+        }
       }
     };
   },
-  props: ["elementParams"]
+  props: ["element", "mediaName"]
 };
 </script>

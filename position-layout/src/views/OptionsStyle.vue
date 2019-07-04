@@ -4,7 +4,12 @@
       <label>position:</label>
       <div class="field">
         <el-select v-model.lazy="position">
-          <el-option v-for="(item) in positionOptions" :key="item" :label="item" :value="item">{{item}}</el-option>
+          <el-option
+            v-for="(item) in positionOptions"
+            :key="item"
+            :label="item"
+            :value="item"
+          >{{item}}</el-option>
         </el-select>
       </div>
     </template>
@@ -16,8 +21,13 @@
     </template>
     <template v-else>
       <label>{{_key}}:</label>
-      <input v-if="ragneList.includes(_key)" v-range="{val:'value'}" type="text" v-model.lazy="value">
-      <input v-else type="text" v-model.lazy="value">
+      <input
+        v-if="ragneList.includes(_key)"
+        v-range="{val:'value'}"
+        type="text"
+        v-model.lazy="value"
+      />
+      <input v-else type="text" v-model.lazy="value" />
     </template>
   </dd>
 </template>
@@ -32,7 +42,7 @@ export default {
   },
   props: ["_key", "_style"],
   computed: {
-    ...mapState(["ragneList", "positionOptions"]),
+    ...mapState(["mediaName", "ragneList", "positionOptions"]),
     ...mapGetters(["gt_elementSelected"]),
     position: {
       get: function() {
@@ -61,7 +71,7 @@ export default {
                 width: "auto"
               };
         style.position = v;
-        this.ac_addStyle(style);
+        this.ac_updateStyle(style);
       }
     },
     value: {
@@ -69,7 +79,13 @@ export default {
         return this.gt_elementSelected && this._style[this._key];
       },
       set: function(v) {
-        this.ac_setSelectElement({ style: { [this._key]: v } });
+        this.ac_setSelectElement({
+          style: {
+            [this.mediaName]: {
+              [this._key]: v
+            }
+          }
+        });
       }
     }
   },
@@ -77,7 +93,7 @@ export default {
     Upload
   },
   methods: {
-    ...mapActions(["ac_setSelectElement", "ac_addStyle"])
+    ...mapActions(["ac_setSelectElement", "ac_updateStyle"])
   }
 };
 </script>

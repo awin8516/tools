@@ -1,6 +1,9 @@
 import { deepClone, mergeJSON } from "@/utils";
 
 const mutations = {
+  SET_MEDIANAME: (state, component) => {
+    state.mediaName = component;
+  },
   SET_STATE: (state, component) => {
     state = mergeJSON(state, component);
     //强制刷新页面
@@ -21,17 +24,17 @@ const mutations = {
     state.elementList = deepClone(state.elementList);
   },
   SET_SETSELECTELEMENT: (state, component) => {
-    let element = state.elementList.find(v => v.selected)
-    element = mergeJSON(element, component);
+    let element = state.elementList.find(v => v.selected);
+    mergeJSON(element, component);
   },
   SET_CANCELACSELECTELEMENT: (state, component) => {
     if (component) {
-      component.selected = false
+      component.selected = false;
       state.elementList = deepClone(state.elementList);
     }
   },
   SET_ADDELEMENT: (state, component) => {
-    state.elementList.push(component)
+    state.elementList.push(component);
   },
   SET_DELETEELEMENT: (state, component) => {
     let index = state.elementList.findIndex(v => v === component);
@@ -41,8 +44,12 @@ const mutations = {
     }
   },
   SET_ADDSTYLE: (state, component) => {
-    let element = state.elementList.find(v => v.selected)
-    element.style = Object.assign({}, element.style, component);
+    let element = state.elementList.find(v => v.selected);
+    element.style[state.mediaName] = Object.assign(
+      {},
+      element.style[state.mediaName],
+      component
+    );
   },
   SET_UPDATELAYER: (state, act) => {
     const index = state.elementList.findIndex(item => item.selected);

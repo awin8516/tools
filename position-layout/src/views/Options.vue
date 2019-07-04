@@ -66,6 +66,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(["mediaName"]),
     ...mapGetters(["gt_elementSelected", "gt_indexSelected"]),
     elementSelected: {
       get: function() {
@@ -106,7 +107,7 @@ export default {
     },
     style: {
       get: function() {
-        return this.elementSelected && this.elementSelected.style;
+        return this.elementSelected && this.elementSelected.style[this.mediaName];
       }
     }
   },
@@ -116,10 +117,10 @@ export default {
     Upload
   },
   methods: {
-    ...mapActions(["ac_setSelectElement", "ac_deleteElement", "ac_addStyle"]),
+    ...mapActions(["ac_setSelectElement", "ac_deleteElement", "ac_updateStyle"]),
     pushStyle() {
       if (!this.styleCustom) return;
-      this.ac_addStyle(style2object(this.styleCustom));
+      this.ac_updateStyle(style2object(this.styleCustom));
       this.styleCustom = "";
     }
   }

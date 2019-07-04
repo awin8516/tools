@@ -128,8 +128,6 @@ export function array2Tree(array, key, parentKey) {
 }
 export function mergeJSON(Old, New) {
   function isJSON(target) {
-    console.log(target)
-    console.log(target.constructor)
     return typeof target == "object" && target.constructor == Object;
   }
   function isArray(o) {

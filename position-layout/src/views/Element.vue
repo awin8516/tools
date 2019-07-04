@@ -1,8 +1,9 @@
 <template>
-  <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
-    <component :is="component" :elementParams="elementParams" ref="component">
+  <ins class="po-el-item" 
+  :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
+    <component :is="component" :element="elementParams" :mediaName="mediaName">
       <template v-for="item in elementList" slot="children">
-        <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
+        <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item" :mediaName="mediaName"></Element>
       </template>
     </component>
     <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
@@ -82,10 +83,10 @@ export default {
   },
   props: ["elementParams"],
   computed: {
-    ...mapState(["elementList"]),
+    ...mapState(["elementList", "mediaName"]),
     ...mapGetters(["gt_indexSelected"]),
     style() {
-      return this.elementParams.style.default;
+      return this.elementParams.style[this.mediaName];
     },
     itemStyle: function() {
       const style = [
@@ -107,10 +108,10 @@ export default {
         if (typeof this.style[v] !== "undefined") {
           if (v == "width") {
             if (this.style.position == "relative") {
-              styleObject[v] = this.elementParams.style[v];
+              styleObject[v] = this.style[v];
             }
           } else {
-            styleObject[v] = this.elementParams.style[v];
+            styleObject[v] = this.style[v];
           }
         }
       });
@@ -128,7 +129,7 @@ export default {
       "ac_selectElement",
       "ac_deleteElement",
       "ac_updateLayer",
-      "ac_addStyle"
+      "ac_updateStyle"
     ]),
     contextMenu(e) {
       this.contextMenuActive = true;
@@ -163,7 +164,7 @@ export default {
           [key.x]: e.currentTarget.style[key.jx],
           [key.y]: e.currentTarget.style[key.jy]
         };
-        this.ac_addStyle(style);
+        this.ac_updateStyle(style);
       }
     },
     hideMenu() {
@@ -200,7 +201,7 @@ export default {
       } else {
         style.height = this.size.height + data.y + "px";
       }
-      this.ac_addStyle(style);
+      this.ac_updateStyle(style);
     }
   },
   filters: {
