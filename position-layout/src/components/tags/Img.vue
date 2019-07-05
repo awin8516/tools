@@ -1,6 +1,6 @@
 <template>
   <img
-    :data-name="element.src && element.name"
+    :data-name="element.name"
     :style="element.style[mediaName]"
     :src="element.src"
     :class="element.className"
@@ -14,8 +14,8 @@ export default {
     return {
       tagName: "img",
       icon: "picture",
-      name: "img-01",
-      id: "img1",
+      name: "img-1",
+      id: "img-1",
       className: "img img-test",
       src: require("@/assets/img.jpg"),
       style: {

@@ -1,31 +1,34 @@
 import { deepClone, mergeJSON } from "@/utils";
 
 const mutations = {
-  SET_MEDIANAME: (state, component) => {
-    state.mediaName = component;
-  },
   SET_STATE: (state, component) => {
     state = mergeJSON(state, component);
     //强制刷新页面
     state.elementList = component.elementList;
   },
-  SET_SCREENSTYLE: (state, component) => {
-    state.screenOptions.style = component;
+  SET_UPDATEMEDIANAME: (state, component) => {
+    state.elementList.some(v => {
+      if (!v.style[component]) {
+        v.style[component] = deepClone(v.style[state.mediaName])
+      }
+    })
+    state.mediaName = component;
+    state.screenOptions.style.width = state.screenOptions.sizeList[component].width;
+    state.screenOptions.style.height = state.screenOptions.sizeList[component].height;
   },
-  SET_SCREENELEMENT: (state, component) => {
+  SET_UPDATESCREENATTR: (state, component) => {
+    mergeJSON(state.screenOptions, component);
+  },
+  SET_UPDATESCREENSTYLE: (state, component) => {
+    state.screenOptions.style = Object.assign({}, state.screenOptions.style, component);
+  },
+  SET_UPDATESCREENELEMENT: (state, component) => {
     state.screenOptions.el = component;
-  },
-  SET_ELEMENTLIST: (state, component) => {
-    state.elementList = component;
   },
   SET_SELECTELEMENT: (state, component) => {
     state.elementList.map(v => (v.selected = false));
     state.elementList.find(v => v.vid === component.vid).selected = true;
     state.elementList = deepClone(state.elementList);
-  },
-  SET_SETSELECTELEMENT: (state, component) => {
-    let element = state.elementList.find(v => v.selected);
-    mergeJSON(element, component);
   },
   SET_CANCELACSELECTELEMENT: (state, component) => {
     if (component) {
@@ -34,6 +37,9 @@ const mutations = {
     }
   },
   SET_ADDELEMENT: (state, component) => {
+    if (!component.style[state.mediaName]) {
+      component.style[state.mediaName] = deepClone(component.style.default)
+    }
     state.elementList.push(component);
   },
   SET_DELETEELEMENT: (state, component) => {
@@ -43,13 +49,13 @@ const mutations = {
       state.elementList[state.elementList.length - 1].selected = true;
     }
   },
-  SET_ADDSTYLE: (state, component) => {
+  SET_UPDATEELEMENTATTR: (state, component) => {
     let element = state.elementList.find(v => v.selected);
-    element.style[state.mediaName] = Object.assign(
-      {},
-      element.style[state.mediaName],
-      component
-    );
+    mergeJSON(element, component);
+  },
+  SET_UPDATESTYLE: (state, component) => {
+    let element = state.elementList.find(v => v.selected);
+    element.style[state.mediaName] = Object.assign({}, element.style[state.mediaName], component);
   },
   SET_UPDATELAYER: (state, act) => {
     const index = state.elementList.findIndex(item => item.selected);

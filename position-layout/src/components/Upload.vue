@@ -33,9 +33,6 @@ export default {
         this.$emit("update:val", v);
       }
     }
-  },
-  mounted() {
-    console.log(this);
   }
 };
 </script>

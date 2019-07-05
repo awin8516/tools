@@ -3,17 +3,17 @@ import JSZip from "jszip";
 import saveAs from "jszip/vendor/FileSaver";
 
 const actions = {
-  ac_setMediaName: ({ commit }, value) => {
-    commit("SET_MEDIANAME", value);
+  ac_updateMediaName: ({ commit }, value) => {
+    commit("SET_UPDATEMEDIANAME", value);
   },
-  ac_setScreenStyle: ({ commit }, value) => {
-    commit("SET_SCREENSTYLE", value);
+  ac_updateScreenAttr: ({ commit }, value) => {
+    commit("SET_UPDATESCREENATTR", value);
   },
-  ac_setScreenElement: ({ commit }, value) => {
-    commit("SET_SCREENELEMENT", value);
+  ac_updateScreenStyle: ({ commit }, value) => {
+    commit("SET_UPDATESCREENSTYLE", value);
   },
-  ac_setSelectElement: ({ commit }, element) => {
-    commit("SET_SETSELECTELEMENT", element);
+  ac_updateScreenElement: ({ commit }, value) => {
+    commit("SET_UPDATESCREENELEMENT", value);
   },
   ac_selectElement({ commit }, element) {
     commit("SET_SELECTELEMENT", element);
@@ -27,8 +27,11 @@ const actions = {
   ac_deleteElement({ commit }, element) {
     commit("SET_DELETEELEMENT", element);
   },
+  ac_updateElementAttr: ({ commit }, element) => {
+    commit("SET_UPDATEELEMENTATTR", element);
+  },
   ac_updateStyle({ commit }, style) {
-    commit("SET_ADDSTYLE", style);
+    commit("SET_UPDATESTYLE", style);
   },
   ac_updateLayer({ commit }, act) {
     commit("SET_UPDATELAYER", act);
@@ -60,7 +63,7 @@ const actions = {
   },
   //打包下载
   ac_exportProject({ state }) {
-    const name = state.screenOptions.style.name;
+    const pageName = state.screenOptions.name;
     function createJson(state) {
       return JSON.stringify(state).replace(
         ',"el":{"_prevClass":"po-screen"}',
@@ -70,14 +73,8 @@ const actions = {
 
     function createHtml(screen) {
       let html = screen.el.innerHTML
-        .replace(
-          /<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g,
-          ""
-        )
-        .replace(
-          /data-name="(.*?)" src="data:image\/(.*?);base64,(.*?)"/g,
-          'src="image/' + screen.style.name + '/$1.$2"'
-        )
+        .replace(/<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g, "")
+        .replace(/data-name="((?:(?!data-name).)*?)"\ssrc="data:image\/(.*?);base64,.*?"/g, 'src="image/' + pageName + '/$1.$2"')
         .replace(/\.jpeg/g, ".jpg");
       html = formatHtml(html);
       const doc =
@@ -88,11 +85,11 @@ const actions = {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
             <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
             <title>' +
-        name +
+        pageName +
         '</title>\n\
             <link rel="stylesheet" type="text/css" href="css/common.css">\n\
             <link rel="stylesheet" type="text/css" href="css/' +
-        name +
+        pageName +
         '.css">\n\
         </head>\n\
         <body>\
@@ -105,47 +102,48 @@ const actions = {
 
     function createImg(screen) {
       let regexp = /data-name="\s*\S+"/g;
-      const name = screen.el.innerHTML.match(regexp);
-      regexp = /src="\s*\S+"/g;
-      const src = screen.el.innerHTML.match(regexp);
+      const nameArr = screen.el.innerHTML.match(regexp);
+      regexp = /src="\s*\S+"|background-image(:\s|:)url[\("|\('|\(&quot;]\s*\S+["\)|'\)|&quot;\)]/g;
+      const srcArr = screen.el.innerHTML.match(regexp);
       let imgs = [];
-      name &&
-        name.forEach((element, index) => {
-          imgs.push({
-            fileExt: src[index]
-              .match(/data:image\/(.*?);base64,/)[1]
-              .replace("jpeg", "jpg"),
-            name: element.replace(/data-name=|"|'/g, ""),
-            src: src[index]
-              .replace(/src=|"|'/g, "")
-              .replace(/data:image\/(.*?);base64,/, "")
-          });
+      srcArr &&
+        srcArr.forEach((src, index) => {
+          if (src.match(/data:image\/(.*?);base64/)) {
+            imgs.push({
+              fileExt: src.match(/data:image\/(.*?);base64/)[1].replace("jpeg", "jpg"),
+              name: nameArr[index].replace(/data-name=|"|'/g, ""),
+              src: src.replace(/src=|"|'|background-image(:\s|:)url(\("|\('|\(&quot;)|("\)|'\)|&quot;\))/g, "").replace(/data:image\/(.*?);base64(,|;)/, "")
+            });
+          }
         });
       return imgs;
     }
 
     function createCss(state) {
-      let css = "/* " + name + ".css */\n";
+      let css = "/* " + pageName + ".css */\n";
       const tree = array2Tree(deepClone(state.elementList), "vid", "pid");
       const mp = (_tree, parentClassName) => {
         _tree.forEach(element => {
           if (element.className) {
-            const className =
-              "." + element.className.replace(/\s+/g, " ").replace(/\s+/g, ".");
-            // const className = element.className.map(v => '.' + v).join('')
-            const style = object2style(element.style);
+            const className = '.' + element.className.replace(/\s+/g, " ").split(' ').join('.');
+            let style = element.style[state.mediaName]
+            for (let key in style) {
+              if (style['background-image']) {
+                style['background-image'] = style['background-image'].replace(/.*?data:image\/(.*?);.*/g, 'url(../image/' + pageName + '/' + element.name + '.$1)').replace(/\.jpeg/g, ".jpg");
+              }
+            }
             css +=
               (parentClassName ? parentClassName + " " : "") +
               className +
               "{" +
-              style +
+              object2style(style) +
               "}\n";
             element.children.length && mp(element.children, className);
           }
         });
       };
       mp(tree, "");
-      return css.replace(/([0-9]+)px/g, function(pixel) {
+      return css.replace(/([0-9]+)px/g, function (pixel) {
         return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
       });
     }
@@ -154,15 +152,15 @@ const actions = {
 
     //project.json
     const json = createJson(state);
-    zip.file(name + ".json", json);
+    zip.file(pageName + ".json", json);
 
     //HTML
     const html = createHtml(state.screenOptions);
-    zip.file(name + ".html", html);
+    zip.file(pageName + ".html", html);
 
     //IMAGES
     let folderImg = zip.folder("image");
-    let imgsub = folderImg.folder(name);
+    let imgsub = folderImg.folder(pageName);
     const imgs = createImg(state.screenOptions);
     imgs.forEach(element => {
       imgsub.file(element.name + "." + element.fileExt, element.src, {
@@ -173,11 +171,11 @@ const actions = {
     //CSS
     let folderCss = zip.folder("css");
     const css = createCss(state);
-    folderCss.file(name + ".css", css);
+    folderCss.file(pageName + ".css", css);
     folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;}");
 
     zip.generateAsync({ type: "blob" }).then(function(content) {
-      saveAs(content, name + ".zip");
+      saveAs(content, pageName + ".zip");
     });
   }
 };

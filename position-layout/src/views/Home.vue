@@ -1,14 +1,6 @@
 <template>
   <div>
-    <div class="po-screen-field">
-      Size
-      <el-select v-model="sizeSelect" @change="setSize">
-        <el-option v-for="(item, key) in screenOptions.sizeList" :key="key" :label="item.name" :value="key">{{key}}</el-option>
-      </el-select>
-      <el-input id="po-screen-width" type="text" v-range='{val:"screenOptions.style", key:"width"}' v-model.lazy="screenOptions.style.width" placeholder="屏宽"></el-input>
-      ✕
-      <el-input id="po-screen-height" type="text" v-range='{val:"screenOptions.style", key:"height"}' v-model.lazy="screenOptions.style.height" placeholder="屏高"></el-input>
-    </div>
+    <ScreenSize></ScreenSize>
     <div id="po-main" class="po-main">
       <div class="po-body">
         <div id="po-screen" class="po-screen" ref="screen" v-drag:po-el-item :style="screenOptions.style" @mousedown.self="ac_cancelacSelectElement()">
@@ -19,7 +11,6 @@
         <div class="resize" v-drag="resize" @mousedown="getSize"></div>
         <save></save>
       </div>
-
       <Tools></Tools>
       <Options></Options>
     </div>
@@ -28,15 +19,15 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import ScreenSize from "@/views/ScreenSize.vue";
 import Element from "@/views/Element.vue";
 import Tools from "@/views/Tools.vue";
-import Options from "@/views/Options.vue";
+import Options from "@/views/options/Main.vue";
 import Save from "@/views/Save.vue";
 export default {
-  name: "home",
+  name: "Home",
   data() {
     return {
-      sizeSelect: "iphoneX",
       size: {
         width: 0,
         height: 0
@@ -44,28 +35,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(["screen", "screenOptions", "elementList"])
+    ...mapState(["screenOptions", "elementList"])
   },
-  components: {
-    Element,
-    Tools,
-    Options,
-    Save
-  },
+  components: { ScreenSize, Element, Tools, Options, Save },
   methods: {
     ...mapActions([
-      "ac_setMediaName",
-      "ac_setScreenStyle",
-      "ac_setScreenElement",
+      "ac_updateScreenStyle",
+      "ac_updateScreenElement",
       "ac_cancelacSelectElement"
     ]),
-    setSize() {
-      const screenStyle = Object.assign({}, this.screenOptions.style);
-      screenStyle.width = this.screenOptions.sizeList[this.sizeSelect].width;
-      screenStyle.height = this.screenOptions.sizeList[this.sizeSelect].height;
-      this.ac_setMediaName(this.sizeSelect);
-      this.ac_setScreenStyle(screenStyle);
-    },
     getSize() {
       this.size = {
         width: parseInt(this.screenOptions.style.width) || 0,
@@ -76,12 +54,11 @@ export default {
       const screenStyle = Object.assign({}, this.screenOptions.style);
       screenStyle.width = this.size.width + data.x + "px";
       screenStyle.height = this.size.height + data.y + "px";
-      this.ac_setScreenStyle(screenStyle);
+      this.ac_updateScreenStyle(screenStyle);
     }
   },
   mounted() {
-    this.setSize();
-    this.ac_setScreenElement(this.$refs.screen);
+    this.ac_updateScreenElement(this.$refs.screen);
   }
 };
 </script>

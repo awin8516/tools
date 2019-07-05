@@ -39,7 +39,6 @@ Vue.directive("drag", {
           }, 10);
 
           const position = parentEl.style.position;
-          console.log(position);
           const posKey =
             position == "absolute" || position == "fixed"
               ? {

@@ -4,12 +4,7 @@
       <label>position:</label>
       <div class="field">
         <el-select v-model.lazy="position">
-          <el-option
-            v-for="(item) in positionOptions"
-            :key="item"
-            :label="item"
-            :value="item"
-          >{{item}}</el-option>
+          <el-option v-for="(item) in positionOptions" :key="item" :label="item" :value="item">{{item}}</el-option>
         </el-select>
       </div>
     </template>
@@ -21,12 +16,7 @@
     </template>
     <template v-else>
       <label>{{_key}}:</label>
-      <input
-        v-if="ragneList.includes(_key)"
-        v-range="{val:'value'}"
-        type="text"
-        v-model.lazy="value"
-      />
+      <input v-if="ragneList.includes(_key)" v-range="{val:'value'}" type="text" v-model.lazy="value" />
       <input v-else type="text" v-model.lazy="value" />
     </template>
   </dd>
@@ -36,7 +26,7 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import Upload from "@/components/Upload.vue";
 export default {
-  name: "optionsStyle",
+  name: "ElementStyle",
   data() {
     return {};
   },
@@ -79,12 +69,8 @@ export default {
         return this.gt_elementSelected && this._style[this._key];
       },
       set: function(v) {
-        this.ac_setSelectElement({
-          style: {
-            [this.mediaName]: {
-              [this._key]: v
-            }
-          }
+        this.ac_updateStyle({
+          [this._key]: v
         });
       }
     }
@@ -93,7 +79,7 @@ export default {
     Upload
   },
   methods: {
-    ...mapActions(["ac_setSelectElement", "ac_updateStyle"])
+    ...mapActions(["ac_updateElementAttr", "ac_updateStyle"])
   }
 };
 </script>

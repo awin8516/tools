@@ -1,5 +1,5 @@
 <template>
-  <div :style="element.style[mediaName]" :class="element.className">
+  <div :data-name="element.name" :style="element.style[mediaName]" :class="element.className">
     <slot name="children"></slot>
   </div>
 </template>
@@ -12,8 +12,8 @@ export default {
       tagName: "div",
       icon: "menu",
       container: true,
-      name: "div1",
-      id: "div1",
+      name: "div-1",
+      id: "div-1",
       className: "div div-test",
       style: {
         default: {

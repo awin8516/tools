@@ -34,8 +34,8 @@ const state = {
         height: "812px"
       }
     },
+    name: "index",
     style: {
-      name: "index",
       width: "",
       height: "",
       "background-image": "url()",
