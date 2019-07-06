@@ -73,8 +73,14 @@ const actions = {
 
     function createHtml(screen) {
       let html = screen.el.innerHTML
-        .replace(/<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g, "")
-        .replace(/data-name="((?:(?!data-name).)*?)"\ssrc="data:image\/(.*?);base64,.*?"/g, 'src="image/' + pageName + '/$1.$2"')
+        .replace(
+          /<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g,
+          ""
+        )
+        .replace(
+          /data-name="((?:(?!data-name).)*?)"\ssrc="data:image\/(.*?);base64,.*?"/g,
+          'src="image/' + pageName + '/$1.$2"'
+        )
         .replace(/\.jpeg/g, ".jpg");
       html = formatHtml(html);
       const doc =
@@ -103,16 +109,23 @@ const actions = {
     function createImg(screen) {
       let regexp = /data-name="\s*\S+"/g;
       const nameArr = screen.el.innerHTML.match(regexp);
-      regexp = /src="\s*\S+"|background-image(:\s|:)url[\("|\('|\(&quot;]\s*\S+["\)|'\)|&quot;\)]/g;
+      regexp = /src="\s*\S+"|background-image(:\s|:)url[("|('|(&quot;]\s*\S+[")|')|&quot;)]/g;
       const srcArr = screen.el.innerHTML.match(regexp);
       let imgs = [];
       srcArr &&
         srcArr.forEach((src, index) => {
           if (src.match(/data:image\/(.*?);base64/)) {
             imgs.push({
-              fileExt: src.match(/data:image\/(.*?);base64/)[1].replace("jpeg", "jpg"),
+              fileExt: src
+                .match(/data:image\/(.*?);base64/)[1]
+                .replace("jpeg", "jpg"),
               name: nameArr[index].replace(/data-name=|"|'/g, ""),
-              src: src.replace(/src=|"|'|background-image(:\s|:)url(\("|\('|\(&quot;)|("\)|'\)|&quot;\))/g, "").replace(/data:image\/(.*?);base64(,|;)/, "")
+              src: src
+                .replace(
+                  /src=|"|'|background-image(:\s|:)url(("|('|(&quot;)|(")|')|&quot;))/g,
+                  ""
+                )
+                .replace(/data:image\/(.*?);base64(,|;)/, "")
             });
           }
         });
@@ -125,11 +138,22 @@ const actions = {
       const mp = (_tree, parentClassName) => {
         _tree.forEach(element => {
           if (element.className) {
-            const className = '.' + element.className.replace(/\s+/g, " ").split(' ').join('.');
-            let style = element.style[state.mediaName]
-            for (let key in style) {
-              if (style['background-image']) {
-                style['background-image'] = style['background-image'].replace(/.*?data:image\/(.*?);.*/g, 'url(../image/' + pageName + '/' + element.name + '.$1)').replace(/\.jpeg/g, ".jpg");
+            const className =
+              "." +
+              element.className
+                .replace(/\s+/g, " ")
+                .split(" ")
+                .join(".");
+            let style = element.style[state.mediaName];
+            for (const key in style) {
+              if (key === "background-image" && style["background-image"]) {
+                style["background-image"] = style["background-image"]
+                  .replace(
+                    /.*?data:image\/(.*?);.*/g,
+                    "url(../image/" + pageName + "/" + element.name + ".$1)"
+                  )
+                  .replace(/\.jpeg/g, ".jpg");
+                break;
               }
             }
             css +=
@@ -143,7 +167,7 @@ const actions = {
         });
       };
       mp(tree, "");
-      return css.replace(/([0-9]+)px/g, function (pixel) {
+      return css.replace(/([0-9]+)px/g, pixel => {
         return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
       });
     }
@@ -174,7 +198,7 @@ const actions = {
     folderCss.file(pageName + ".css", css);
     folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;}");
 
-    zip.generateAsync({ type: "blob" }).then(function(content) {
+    zip.generateAsync({ type: "blob" }).then(content => {
       saveAs(content, pageName + ".zip");
     });
   }

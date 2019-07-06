@@ -50,7 +50,7 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import ElementStyle from "@/views/options/ElementStyle.vue";
 import Upload from "@/components/Upload.vue";
-import { style2object, deepClone, mergeJSON } from "@/utils";
+import { style2object } from "@/utils";
 export default {
   name: "Element",
   data() {

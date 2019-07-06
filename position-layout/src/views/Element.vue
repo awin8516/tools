@@ -1,6 +1,5 @@
 <template>
-  <ins class="po-el-item" 
-  :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
+  <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
     <component :is="component" :element="elementParams" :mediaName="mediaName">
       <template v-for="item in elementList" slot="children">
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item" :mediaName="mediaName"></Element>
@@ -18,6 +17,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import * as Tags from "@/components/tags";
 export default {
   name: "Element",
   data() {
@@ -119,11 +119,14 @@ export default {
     },
     isAbsolute: function() {
       return (
-        this.style.position == "absolute" ||
-        this.style.position == "fixed"
+        this.style.position === "absolute" || this.style.position === "fixed"
       );
+    },
+    path() {
+      return "@/" + this.elementParams.file.replace(/.vue|src\//g, "");
     }
   },
+  components: Tags,
   methods: {
     ...mapActions([
       "ac_selectElement",
@@ -213,15 +216,9 @@ export default {
   },
   mounted() {
     try {
-      const path = this.elementParams.file.replace("src/", "");
-      this.component = () => import("@/" + path);
-      if (this.elementParams.contextMenu) {
-        this.contextMenuDefault = this.contextMenuDefault.concat(
-          this.elementParams.contextMenu
-        );
-      }
+      this.component = this.elementParams.file.replace(/(.*\/)|.vue/g, "");
     } catch (e) {
-      console.log("no vue");
+      throw new Error(e);
     }
   }
 };

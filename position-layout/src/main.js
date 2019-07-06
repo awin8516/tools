@@ -4,13 +4,13 @@ import router from "./router";
 import store from "./store/index";
 
 import {
-  Checkbox,
+  // Checkbox,
   Input,
   Select,
   Option,
   Button,
-  ButtonGroup,
-  Alert,
+  // ButtonGroup,
+  // Alert,
   Icon,
   Loading,
   MessageBox,
@@ -93,8 +93,8 @@ Vue.directive("drag", {
                 posEnd.left < 0
                   ? 0
                   : posEnd.left > maxLeft
-                  ? maxLeft
-                  : posEnd.left;
+                    ? maxLeft
+                    : posEnd.left;
               posEnd.top =
                 posEnd.top < 0 ? 0 : posEnd.top > maxTop ? maxTop : posEnd.top;
             }
@@ -148,7 +148,7 @@ Vue.directive("range", {
       let getKey = (obj, keyStr) => {
         let keyArr = keyStr.split(".");
         let o = obj;
-        keyArr.forEach((key, index) => {
+        keyArr.forEach(key => {
           o = o[key];
         });
         return o;

@@ -7,7 +7,6 @@
 
 <script>
 import { mapActions } from "vuex";
-import { file2base64 } from "@/utils";
 export default {
   name: "Div",
   data() {

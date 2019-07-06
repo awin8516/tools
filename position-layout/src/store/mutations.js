@@ -9,18 +9,24 @@ const mutations = {
   SET_UPDATEMEDIANAME: (state, component) => {
     state.elementList.some(v => {
       if (!v.style[component]) {
-        v.style[component] = deepClone(v.style[state.mediaName])
+        v.style[component] = deepClone(v.style[state.mediaName]);
       }
-    })
+    });
     state.mediaName = component;
-    state.screenOptions.style.width = state.screenOptions.sizeList[component].width;
-    state.screenOptions.style.height = state.screenOptions.sizeList[component].height;
+    state.screenOptions.style.width =
+      state.screenOptions.sizeList[component].width;
+    state.screenOptions.style.height =
+      state.screenOptions.sizeList[component].height;
   },
   SET_UPDATESCREENATTR: (state, component) => {
     mergeJSON(state.screenOptions, component);
   },
   SET_UPDATESCREENSTYLE: (state, component) => {
-    state.screenOptions.style = Object.assign({}, state.screenOptions.style, component);
+    state.screenOptions.style = Object.assign(
+      {},
+      state.screenOptions.style,
+      component
+    );
   },
   SET_UPDATESCREENELEMENT: (state, component) => {
     state.screenOptions.el = component;
@@ -38,7 +44,7 @@ const mutations = {
   },
   SET_ADDELEMENT: (state, component) => {
     if (!component.style[state.mediaName]) {
-      component.style[state.mediaName] = deepClone(component.style.default)
+      component.style[state.mediaName] = deepClone(component.style.default);
     }
     state.elementList.push(component);
   },
@@ -55,7 +61,11 @@ const mutations = {
   },
   SET_UPDATESTYLE: (state, component) => {
     let element = state.elementList.find(v => v.selected);
-    element.style[state.mediaName] = Object.assign({}, element.style[state.mediaName], component);
+    element.style[state.mediaName] = Object.assign(
+      {},
+      element.style[state.mediaName],
+      component
+    );
   },
   SET_UPDATELAYER: (state, act) => {
     const index = state.elementList.findIndex(item => item.selected);
