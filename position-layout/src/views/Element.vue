@@ -110,6 +110,20 @@ export default {
             if (this.style.position == "relative") {
               styleObject[v] = this.style[v];
             }
+          } else if (v == "left" && this.style.position == "fixed") {
+            // console.log(parseInt(this.style[v]) || 0)
+            // console.log(document.querySelector('#po-screen').getBoundingClientRect().left)
+            // console.log(((parseInt(this.style[v]) || 0) + document.querySelector('#po-screen').getBoundingClientRect().left)+'px')
+            styleObject[v] =
+              (parseInt(this.style[v]) || 0) +
+              document.querySelector("#po-screen").getBoundingClientRect()
+                .left +
+              "px";
+          } else if (v == "top" && this.style.position == "fixed") {
+            styleObject[v] =
+              (parseInt(this.style[v]) || 0) +
+              document.querySelector("#po-screen").getBoundingClientRect().top +
+              "px";
           } else {
             styleObject[v] = this.style[v];
           }
@@ -118,9 +132,10 @@ export default {
       return styleObject;
     },
     isAbsolute: function() {
-      return (
-        this.style.position === "absolute" || this.style.position === "fixed"
-      );
+      return this.style.position === "absolute";
+    },
+    isFixed: function() {
+      return this.style.position === "fixed";
     },
     path() {
       return "@/" + this.elementParams.file.replace(/.vue|src\//g, "");
@@ -155,18 +170,29 @@ export default {
     },
     mouseMove(e) {
       if (this.draging) {
-        const key = this.isAbsolute
-          ? { x: "left", y: "top", jx: "left", jy: "top" }
-          : {
-              x: "margin-left",
-              y: "margin-top",
-              jx: "marginLeft",
-              jy: "marginTop"
-            };
+        const key =
+          this.isAbsolute || this.isFixed
+            ? { x: "left", y: "top", jx: "left", jy: "top" }
+            : {
+                x: "margin-left",
+                y: "margin-top",
+                jx: "marginLeft",
+                jy: "marginTop"
+              };
         const style = {
           [key.x]: e.currentTarget.style[key.jx],
           [key.y]: e.currentTarget.style[key.jy]
         };
+        if (this.isFixed) {
+          style.left =
+            (parseInt(style.left) || 0) -
+            document.querySelector("#po-screen").getBoundingClientRect().left +
+            "px";
+          style.top =
+            (parseInt(style.top) || 0) -
+            document.querySelector("#po-screen").getBoundingClientRect().top +
+            "px";
+        }
         this.ac_updateStyle(style);
       }
     },

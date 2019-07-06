@@ -29,12 +29,12 @@ Vue.prototype.$loading = Loading.service;
 Vue.prototype.$alert = MessageBox.alert;
 Vue.prototype.$message = Message;
 Vue.directive("drag", {
-  bind: function(el, binding) {
-    let handler = function(e) {
+  bind: function (el, binding) {
+    let handler = function (e) {
       let parentEl = e.target.parentElement;
       if (binding.arg) {
         if (parentEl.classList.contains(binding.arg) && e.button == 0) {
-          setTimeout(function() {
+          setTimeout(function () {
             parentEl.classList.add("v-draging");
           }, 10);
 
@@ -42,33 +42,62 @@ Vue.directive("drag", {
           const posKey =
             position == "absolute" || position == "fixed"
               ? {
-                  ox: "offsetLeft",
-                  oy: "offsetTop",
-                  x: "left",
-                  y: "top"
-                }
+                ox: "offsetLeft",
+                oy: "offsetTop",
+                x: "left",
+                y: "top"
+              }
               : {
-                  ox: "marginLeft",
-                  oy: "marginTop",
-                  x: "marginLeft",
-                  y: "marginTop"
-                };
+                ox: "marginLeft",
+                oy: "marginTop",
+                x: "marginLeft",
+                y: "marginTop"
+              };
 
           e.preventDefault();
-          let posStart =
-            position == "absolute" || position == "fixed"
-              ? {
-                  left:
-                    parentEl.offsetLeft -
-                    (parseInt(parentEl.style.marginLeft) || 0),
-                  top:
-                    parentEl.offsetTop -
-                    (parseInt(parentEl.style.marginTop) || 0)
-                }
-              : {
-                  left: parseInt(parentEl.style.marginLeft) || 0,
-                  top: parseInt(parentEl.style.marginTop) || 0
-                };
+          let posStart
+          switch (position) {
+            case 'absolute':
+              posStart = {
+                left:
+                  parentEl.offsetLeft -
+                  (parseInt(parentEl.style.marginLeft) || 0),
+                top:
+                  parentEl.offsetTop -
+                  (parseInt(parentEl.style.marginTop) || 0)
+              }
+              break;
+            case 'fixed':
+              // console.log(parentEl.offsetLeft)
+              posStart = {
+                left:
+                  parentEl.offsetLeft -
+                  (parseInt(parentEl.style.marginLeft) || 0),
+                top:
+                  parentEl.offsetTop -
+                  (parseInt(parentEl.style.marginTop) || 0)
+              }
+              break;
+            default:
+              posStart = {
+                left: parseInt(parentEl.style.marginLeft) || 0,
+                top: parseInt(parentEl.style.marginTop) || 0
+              }
+          }
+          // let posStart =
+          //   position == "absolute" || position == "fixed"
+          //     ? {
+          //         left:
+          //           parentEl.offsetLeft -
+          //           (parseInt(parentEl.style.marginLeft) || 0),
+          //         top:
+          //           parentEl.offsetTop -
+          //           (parseInt(parentEl.style.marginTop) || 0)
+          //       }
+          //     : {
+          //         left: parseInt(parentEl.style.marginLeft) || 0,
+          //         top: parseInt(parentEl.style.marginTop) || 0
+          //       };
           let clientStart = {
             x: e.clientX,
             y: e.clientY
@@ -139,7 +168,7 @@ Vue.directive("drag", {
   }
 });
 Vue.directive("range", {
-  bind: function(_el, binding, vnode) {
+  bind: function (_el, binding, vnode) {
     let el = _el.type ? _el : _el.querySelector("input");
     el.onmousedown = e => {
       //算出鼠标相对元素的位置

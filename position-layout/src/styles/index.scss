@@ -45,7 +45,7 @@ textarea {
   }
   .po-body {
     .po-screen {
-      border: 1px #ddd solid;
+      box-shadow: 0 0 0 1px  rgba(0,0,0,.1);
       background-color: #fff;
       &::before,
       &::after {
