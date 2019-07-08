@@ -68,7 +68,6 @@ Vue.directive("drag", {
               }
               break;
             case 'fixed':
-              // console.log(parentEl.offsetLeft)
               posStart = {
                 left:
                   parentEl.offsetLeft -
@@ -84,20 +83,6 @@ Vue.directive("drag", {
                 top: parseInt(parentEl.style.marginTop) || 0
               }
           }
-          // let posStart =
-          //   position == "absolute" || position == "fixed"
-          //     ? {
-          //         left:
-          //           parentEl.offsetLeft -
-          //           (parseInt(parentEl.style.marginLeft) || 0),
-          //         top:
-          //           parentEl.offsetTop -
-          //           (parseInt(parentEl.style.marginTop) || 0)
-          //       }
-          //     : {
-          //         left: parseInt(parentEl.style.marginLeft) || 0,
-          //         top: parseInt(parentEl.style.marginTop) || 0
-          //       };
           let clientStart = {
             x: e.clientX,
             y: e.clientY

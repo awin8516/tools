@@ -6,6 +6,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
+import * as Tags from "@/components/tags";
 import { deepClone } from "@/utils";
 export default {
   name: "Tools",
@@ -41,15 +42,11 @@ export default {
     }
   },
   mounted() {
-    const requireAll = requireContext =>
-      requireContext.keys().map(requireContext);
-    const req = require.context("../components/tags", false, /\.vue$/);
-    this.tags = requireAll(req);
-    this.tools = this.tags.map(function(tag) {
-      var tool = tag.default.data();
-      tool.file = tag.default.__file;
-      return tool;
-    });
+    for (let key in Tags) {
+      let tool = Tags[key].data();
+      tool.file = Tags[key].__file;
+      this.tools.push(tool);
+    }
   }
 };
 </script>

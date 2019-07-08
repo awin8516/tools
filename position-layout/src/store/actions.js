@@ -1,4 +1,4 @@
-import { deepClone, array2Tree, object2style, formatHtml } from "@/utils";
+import { deepClone, array2Tree, object2style, formatHtml, clearStyle } from "@/utils";
 import JSZip from "jszip";
 import saveAs from "jszip/vendor/FileSaver";
 
@@ -63,6 +63,7 @@ const actions = {
   },
   //打包下载
   ac_exportProject({ state }) {
+    // console.log(state)
     const pageName = state.screenOptions.name;
     function createJson(state) {
       return JSON.stringify(state).replace(
@@ -79,7 +80,7 @@ const actions = {
         )
         .replace(
           /data-name="((?:(?!data-name).)*?)"\ssrc="data:image\/(.*?);base64,.*?"/g,
-          'src="image/' + pageName + '/$1.$2"'
+          'src="image/' + pageName + '/$1-' + state.mediaName + '.$2"'
         )
         .replace(/\.jpeg/g, ".jpg");
       html = formatHtml(html);
@@ -109,7 +110,7 @@ const actions = {
     function createImg(screen) {
       let regexp = /data-name="\s*\S+"/g;
       const nameArr = screen.el.innerHTML.match(regexp);
-      regexp = /src="\s*\S+"|background-image(:\s|:)url[("|('|(&quot;]\s*\S+[")|')|&quot;)]/g;
+      regexp = /src="\s*\S+"|background-image(:\s|:)url[\("|\('|\(&quot;]\s*\S+["\)|'\)|&quot;\)]/g;
       const srcArr = screen.el.innerHTML.match(regexp);
       let imgs = [];
       srcArr &&
@@ -119,83 +120,98 @@ const actions = {
               fileExt: src
                 .match(/data:image\/(.*?);base64/)[1]
                 .replace("jpeg", "jpg"),
-              name: nameArr[index].replace(/data-name=|"|'/g, ""),
+              name: nameArr[index].replace(/data-name=|"|'/g, "") + '-' + state.mediaName,
               src: src
-                .replace(
-                  /src=|"|'|background-image(:\s|:)url(("|('|(&quot;)|(")|')|&quot;))/g,
-                  ""
-                )
+                .replace(/src=|"|'|background-image(:\s|:)url(\("|\('|\(&quot;)|("\)|'\)|&quot;\))/g, "")
                 .replace(/data:image\/(.*?);base64(,|;)/, "")
             });
           }
         });
+      // console.log(imgs)
       return imgs;
     }
 
     function createCss(state) {
       let css = "/* " + pageName + ".css */\n";
-      const tree = array2Tree(deepClone(state.elementList), "vid", "pid");
-      const mp = (_tree, parentClassName) => {
+      let _state = clearStyle(deepClone(state));
+      const tree = array2Tree(deepClone(_state.elementList), "vid", "pid");
+      const getClassName = className => "." + className.replace(/\s+/g, " ").split(" ").join(".");
+      const getStyle = (element, key) => {
+        if (element.style[key]) {
+          let style = element.style[key];
+          for (const k in style) {
+            if (k === "background-image" && style["background-image"] && style["background-image"].match(/data:image\/(.*?);base64/)) {
+              const src = style["background-image"];
+              // console.log(src)
+              style["background-image"] = style["background-image"].replace(/.*?data:image\/(.*?);.*/g, "url(../image/" + pageName + "/" + element.name + '-' + key + ".$1)").replace(/\.jpeg/g, ".jpg");
+              if (key !== _state.mediaName) {
+                file.imgs.push({
+                  fileExt: src.match(/data:image\/(.*?);base64/)[1].replace("jpeg", "jpg"),
+                  name: element.name + '-' + key,
+                  src: src.replace(/url(\(|\("|\('|\(&quot;)|(\)|"\)|'\)|&quot;\))/g, "").replace(/data:image\/(.*?);base64(,|;)/, "")
+                })
+              }
+              break;
+            }
+          }
+          return object2style(style).replace(/([0-9]+)px/g, pixel => {
+            return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
+          })
+        }
+      };
+      const mp = (_tree, parentClassName, key) => {
         _tree.forEach(element => {
           if (element.className) {
-            const className =
-              "." +
-              element.className
-                .replace(/\s+/g, " ")
-                .split(" ")
-                .join(".");
-            let style = element.style[state.mediaName];
-            for (const key in style) {
-              if (key === "background-image" && style["background-image"]) {
-                style["background-image"] = style["background-image"]
-                  .replace(
-                    /.*?data:image\/(.*?);.*/g,
-                    "url(../image/" + pageName + "/" + element.name + ".$1)"
-                  )
-                  .replace(/\.jpeg/g, ".jpg");
-                break;
-              }
+            const className = getClassName(element.className);
+            const style = getStyle(element, key);
+            if (style) {
+              css += (parentClassName ? parentClassName + " " : "") + className + "{" + style + "}\n";
             }
-            css +=
-              (parentClassName ? parentClassName + " " : "") +
-              className +
-              "{" +
-              object2style(style) +
-              "}\n";
             element.children.length && mp(element.children, className);
           }
         });
       };
-      mp(tree, "");
-      return css.replace(/([0-9]+)px/g, pixel => {
-        return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
-      });
+      mp(tree, "", _state.mediaName);
+
+      for (const key in _state.screenOptions.sizeList) {
+        const media = _state.screenOptions.sizeList[key].media
+        if (key !== _state.mediaName) {
+          css += "\n";
+          css += "/* " + key + " */\n";
+          css += media + "{\n";
+          mp(tree, "", key);
+          css += "}";
+        }
+      }
+      // console.log(css)
+      return css;
     }
 
     let zip = new JSZip();
+    let file = {
+
+    }
 
     //project.json
-    const json = createJson(state);
-    zip.file(pageName + ".json", json);
+    file.json = createJson(state);
 
     //HTML
-    const html = createHtml(state.screenOptions);
-    zip.file(pageName + ".html", html);
+    file.html = createHtml(state.screenOptions);
 
     //IMAGES
-    let folderImg = zip.folder("image");
-    let imgsub = folderImg.folder(pageName);
-    const imgs = createImg(state.screenOptions);
-    imgs.forEach(element => {
-      imgsub.file(element.name + "." + element.fileExt, element.src, {
-        base64: true
-      });
-    });
+    file.imgs = createImg(state.screenOptions);
 
     //CSS
+    file.css = createCss(state);
+
+
+    zip.file(pageName + ".json", file.json);
+    zip.file(pageName + ".html", file.html);
+    let folderImg = zip.folder("image");
+    let imgsub = folderImg.folder(pageName);
+    file.imgs.forEach(element => { imgsub.file(element.name + "." + element.fileExt, element.src, { base64: true }); });
     let folderCss = zip.folder("css");
-    const css = createCss(state);
-    folderCss.file(pageName + ".css", css);
+    folderCss.file(pageName + ".css", file.css);
     folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;}");
 
     zip.generateAsync({ type: "blob" }).then(content => {

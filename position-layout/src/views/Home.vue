@@ -3,7 +3,7 @@
     <ScreenSize></ScreenSize>
     <div id="po-main" class="po-main">
       <div class="po-body">
-        <div id="po-screen" class="po-screen" ref="screen" v-drag:po-el-item :style="screenOptions.style" @mousedown.self="ac_cancelacSelectElement()">
+        <div id="po-screen" class="po-screen" ref="screen" v-drag:po-el-item :style="screenOptions.style" @mousedown.self="cancelacSelectElement">
           <template v-for="item in elementList">
             <Element v-if="!item.pid" :key="item.vid" :elementParams.sync="item"></Element>
           </template>
@@ -55,6 +55,11 @@ export default {
       screenStyle.width = this.size.width + data.x + "px";
       screenStyle.height = this.size.height + data.y + "px";
       this.ac_updateScreenStyle(screenStyle);
+    },
+    cancelacSelectElement() {
+      setTimeout(() => {
+        this.ac_cancelacSelectElement();
+      }, 10);
     }
   },
   mounted() {

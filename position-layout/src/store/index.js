@@ -11,27 +11,33 @@ const state = {
     sizeList: {
       iphone4: {
         width: "320px",
-        height: "416px"
+        height: "416px",
+        media:"@media (min-width: 320px) and (max-height: 416px)"
       },
       iphone5: {
         width: "320px",
-        height: "504px"
+        height: "504px",
+        media:"@media (min-width: 320px) and (max-height: 504px)"
       },
       iphone6: {
         width: "375px",
-        height: "603px"
+        height: "603px",
+        media:"@media (min-width: 375px) and (max-height: 603px)"
       },
       iphone6Plus: {
         width: "414px",
-        height: "672px"
+        height: "672px",
+        media:"@media (min-width: 414px) and (max-height: 672px)"
       },
       iphone7: {
         width: "375px",
-        height: "667px"
+        height: "667px",
+        media:"@media (min-width: 375px) and (max-height: 667px)"
       },
       iphoneX: {
         width: "375px",
-        height: "812px"
+        height: "812px",
+        media:"@media (min-width: 375px) and (max-height: 812px)"
       }
     },
     name: "index",
@@ -46,7 +52,6 @@ const state = {
     },
     el: null
   },
-  selectedElement: null,
   elementList: [],
   mediaName: "default",
   positionOptions: ["relative", "absolute", "fixed"],

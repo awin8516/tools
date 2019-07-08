@@ -33,7 +33,7 @@ const mutations = {
   },
   SET_SELECTELEMENT: (state, component) => {
     state.elementList.map(v => (v.selected = false));
-    state.elementList.find(v => v.vid === component.vid).selected = true;
+    state.elementList.find(v => v.vid === component.vid).selected = true
     state.elementList = deepClone(state.elementList);
   },
   SET_CANCELACSELECTELEMENT: (state, component) => {
@@ -46,6 +46,9 @@ const mutations = {
     if (!component.style[state.mediaName]) {
       component.style[state.mediaName] = deepClone(component.style.default);
     }
+    // for(let key in state.screenOptions.sizeList){
+    //   component.style[key] = deepClone(component.style.default);
+    // }
     state.elementList.push(component);
   },
   SET_DELETEELEMENT: (state, component) => {

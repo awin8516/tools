@@ -36,10 +36,10 @@ export function deepClone(source) {
 }
 
 export function file2base64(file) {
-  const p = new Promise(function(resolve) {
+  const p = new Promise(function (resolve) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       resolve(e.target.result);
     };
   });
@@ -50,7 +50,7 @@ export function formatHtml(html) {
   // let h = '<div class="div div-1" ><p>sdf</p><img src="image/index/img-1.jpg" class="img img-1" >测试文字<input type="text" /><img src="image/index/img-2.jpg" class="img img-2" ><img src="image/index/img-3.jpg" class="img img-3" ></div><div class="div div-2" ></div><div class="div div-3" ><img src="image/index/img-4.jpg" class="img img-4" ></div><div class="div div-4" ><img src="image/index/img-5.jpg" class="img img-5" ></div>测试文字<input type="text" >sdf<a class="div div-5" ></a>'
   // const arr = h.replace(/>/g, ">#|#").replace(/\/>/g, "/>#|#").replace(/<\//g, "#|#</").replace(/#\|##\|#/g, "#|#").split('#|#')
   const arr = html
-    .replace(/(<)|(>)(?!<)|(<\/)|(\/>)(?!<)/g, function(str) {
+    .replace(/(<)|(>)(?!<)|(<\/)|(\/>)(?!<)/g, function (str) {
       // console.log(str)
       let res = "";
       if (str == "<" || str == "</") {
@@ -224,7 +224,7 @@ export function array2Tree(array, key, parentKey) {
   array = array || [];
   var tree = [];
   var parentid = undefined;
-  var map = function(_tree, _parentid) {
+  var map = function (_tree, _parentid) {
     for (var i = 0; i < array.length; i++) {
       if (array[i][parentKey] == _parentid) {
         array[i].children = [];
@@ -236,13 +236,16 @@ export function array2Tree(array, key, parentKey) {
   map(tree, parentid);
   return tree;
 }
+
+export function isJSON(target) {
+  return typeof target == "object" && target.constructor == Object;
+}
+
+export function isArray(o) {
+  return Object.prototype.toString.call(o) == "[object Array]";
+}
+
 export function mergeJSON(Old, New) {
-  function isJSON(target) {
-    return typeof target == "object" && target.constructor == Object;
-  }
-  function isArray(o) {
-    return Object.prototype.toString.call(o) == "[object Array]";
-  }
   for (var key in New) {
     if (
       Old[key] === undefined ||
@@ -263,4 +266,29 @@ export function mergeJSON(Old, New) {
     }
   }
   return Old;
+}
+
+//清除不同 media 中样式重复项，保留差异项
+export function clearStyle(state) {
+  const merge = (base, target) => {
+    for (var key in base) {
+      if (typeof base[key] == "string") {
+        if (target[key] === base[key]) {
+          delete target[key];
+          continue;
+        }
+      }
+      if (isJSON(base[key]) || isArray(base[key])) {
+        merge(base[key], target[key]);
+      }
+    }
+  }
+  for (let element of state.elementList) {
+    for (let key in element.style) {
+      if (key !== state.mediaName) {
+        merge(element.style[state.mediaName], element.style[key])
+      }
+    }
+  }
+  return state
 }
