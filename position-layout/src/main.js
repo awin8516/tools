@@ -2,6 +2,7 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store/index";
+import { closest } from "@/utils";
 
 import {
   // Checkbox,
@@ -31,7 +32,8 @@ Vue.prototype.$message = Message;
 Vue.directive("drag", {
   bind: function (el, binding) {
     let handler = function (e) {
-      let parentEl = e.target.parentElement;
+      // let parentEl = e.target.parentElement;
+      let parentEl = closest(e.target, '.po-el-item');
       if (binding.arg) {
         if (parentEl.classList.contains(binding.arg) && e.button == 0) {
           setTimeout(function () {
@@ -54,7 +56,7 @@ Vue.directive("drag", {
                 y: "marginTop"
               };
 
-          e.preventDefault();
+          e.target.tagName.toLowerCase() == 'img' && e.preventDefault();
           let posStart
           switch (position) {
             case 'absolute':
@@ -189,6 +191,14 @@ Vue.directive("range", {
     };
   }
 });
+
+Vue.directive('focus', function (el, binding) {
+  if(binding.value){
+    el.focus()
+  }else{
+    el.blur()
+  }
+})
 
 new Vue({
   router,

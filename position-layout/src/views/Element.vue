@@ -1,15 +1,18 @@
 <template>
   <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
-    <component :is="component" :element="elementParams" :mediaName="mediaName">
+    <component :is="component" :element="elementParams" :mediaName="mediaName" v-html="elementParams.text">
       <template v-for="item in elementList" slot="children">
-        <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item" :mediaName="mediaName"></Element>
+        <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item" :mediaName="mediaName" v-html="item.text"></Element>
       </template>
     </component>
     <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
       <ul>
-        <li v-for="(item, index) in contextMenuDefault" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
+        <li v-for="(item, index) in contextMenuList" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
       </ul>
       <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
+    </mark>
+    <mark v-show="elementParams.texting" class="textarea">
+      <textarea v-focus="elementParams.texting" placeholder="编辑文字" @blur="updateText" v-model.lazy="text"></textarea>
     </mark>
     <mark class="resize" v-drag="resize" @mousedown.stop="getSize"></mark>
   </ins>
@@ -18,6 +21,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from "vuex";
 import * as Tags from "@/components/tags";
+import { closest } from "@/utils";
 export default {
   name: "Element",
   data() {
@@ -74,6 +78,7 @@ export default {
           }
         }
       ],
+      textareaActive: false,
       contextMenuActive: false,
       contextMenuPos: {
         left: 0,
@@ -85,6 +90,13 @@ export default {
   computed: {
     ...mapState(["elementList", "mediaName"]),
     ...mapGetters(["gt_indexSelected"]),
+    contextMenuList() {
+      if (this.elementParams.contextMenu) {
+        return this.contextMenuDefault.concat(this.elementParams.contextMenu);
+      } else {
+        return this.contextMenuDefault;
+      }
+    },
     style() {
       return this.elementParams.style[this.mediaName];
     },
@@ -137,8 +149,13 @@ export default {
     isFixed: function() {
       return this.style.position === "fixed";
     },
-    path() {
-      return "@/" + this.elementParams.file.replace(/.vue|src\//g, "");
+    text: {
+      get: function() {
+        return this.elementParams && this.elementParams.text;
+      },
+      set: function(v) {
+        this.ac_updateElementAttr({ text: v, texting: false });
+      }
     }
   },
   components: Tags,
@@ -147,6 +164,7 @@ export default {
       "ac_selectElement",
       "ac_deleteElement",
       "ac_updateLayer",
+      "ac_updateElementAttr",
       "ac_updateStyle"
     ]),
     contextMenu(e) {
@@ -160,7 +178,9 @@ export default {
       });
     },
     mouseDown(e) {
-      if (e.target.parentElement.dataset.vid == this.elementParams.vid) {
+      if (
+        closest(e.target, ".po-el-item").dataset.vid == this.elementParams.vid
+      ) {
         this.draging = true;
         this.ac_selectElement(this.elementParams);
       }
@@ -231,6 +251,9 @@ export default {
         style.height = this.size.height + data.y + "px";
       }
       this.ac_updateStyle(style);
+    },
+    updateText(e) {
+      this.ac_updateElementAttr({ text: e.target.value, texting: false });
     }
   },
   filters: {

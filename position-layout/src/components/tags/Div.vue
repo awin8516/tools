@@ -15,6 +15,8 @@ export default {
       name: "div-1",
       id: "div-1",
       className: "div div-test",
+      text: "",
+      texting:false,
       style: {
         default: {
           position: "absolute",
@@ -33,14 +35,25 @@ export default {
         }
       },
       contextMenu: [
-        {
-          icon: "el-icon-delete",
-          name: "编辑文字",
-          command: () => {}
-        }
+        // {
+        //   icon: "el-icon-delete",
+        //   name: "编辑文字",
+        //   command: ()=>{
+        //     console.log(this)
+        //   }
+        // }
       ]
     };
   },
-  props: ["element", "mediaName"]
+  props: ["element", "mediaName"],
+  mounted(){
+    this.element.contextMenu.push({
+      icon: "el-icon-delete",
+          name: "编辑文字",
+          command: ()=>{
+            this.element.texting = true
+          }
+    })
+  }
 };
 </script>

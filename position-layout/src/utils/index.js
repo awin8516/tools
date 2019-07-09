@@ -17,6 +17,16 @@ export function style2object(style) {
   return JSON.parse(style);
 }
 
+export function closest(ele, selecter) {
+  const key = selecter.indexOf('.') !== -1 ? 'className' : selecter.indexOf('#') !== -1 ? 'id' : 'tagName'
+  const value = selecter.replace(/\.|#/g, '')
+  let res = ele
+  while (res && res[key].indexOf(value) == -1) {
+    res = res.parentElement
+  };
+  return res || ele
+}
+
 export function deepClone(source) {
   if (!source && typeof source !== "object") {
     throw new Error("error arguments", "shallowClone");
@@ -250,7 +260,8 @@ export function mergeJSON(Old, New) {
     if (
       Old[key] === undefined ||
       Old[key] === null ||
-      typeof Old[key] == "string"
+      typeof Old[key] == "string"||
+      typeof Old[key] == "boolean"
     ) {
       // 不冲突的，直接赋值
       Old[key] = New[key];
