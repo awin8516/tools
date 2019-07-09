@@ -1,7 +1,7 @@
 export function object2style(style) {
   return JSON.stringify(style)
     .replace("{", "")
-    .replace("}", ";")
+    .replace("}", "")
     .replace(/"/g, "")
     .replace(/,/g, ";");
 }

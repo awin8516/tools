@@ -108,11 +108,10 @@ const actions = {
     }
 
     function createImg(screen) {
-      let regexp = /data-name=".*?"/g;
+      let regexp = /data-name="\s*\S+"/g;
       const nameArr = screen.el.innerHTML.match(regexp);
-      regexp = /src=["|']?(.*?)("|'|(?=\s)|(?=>))|background-image.*?\)/g;
+      regexp = /src="\s*\S+"|background-image(:\s|:)url[("|('|(&quot;]\s*\S+[")|')|&quot;)]/g;
       const srcArr = screen.el.innerHTML.match(regexp);
-      console.log(srcArr)
       let imgs = [];
       srcArr &&
         srcArr.forEach((src, index) => {
@@ -122,11 +121,13 @@ const actions = {
                 .match(/data:image\/(.*?);base64/)[1]
                 .replace("jpeg", "jpg"),
               name: nameArr[index].replace(/data-name=|"|'/g, "") + '-' + state.mediaName,
-              src: src.match(/base64\,(.*?)(\s|'|"|\)|&quot;)/)[1]
+              src: src
+                .replace(/src=|"|'|background-image(:\s|:)url(\("|\('|\(&quot;)|("\)|'\)|&quot;\))/g, "")
+                .replace(/data:image\/(.*?);base64(,|;)/, "")
             });
           }
         });
-      console.log(imgs)
+      // console.log(imgs)
       return imgs;
     }
 
@@ -134,7 +135,6 @@ const actions = {
       let css = "/* " + pageName + ".css */\n";
       let _state = clearStyle(deepClone(state));
       const tree = array2Tree(deepClone(_state.elementList), "vid", "pid");
-      console.log(tree);
       const getClassName = className => "." + className.replace(/\s+/g, " ").split(" ").join(".");
       const getStyle = (element, key) => {
         if (element.style[key]) {
@@ -148,7 +148,7 @@ const actions = {
                 file.imgs.push({
                   fileExt: src.match(/data:image\/(.*?);base64/)[1].replace("jpeg", "jpg"),
                   name: element.name + '-' + key,
-                  src: src.match(/base64\,(.*?)(\s|'|"|\)|&quot;)/)[1]
+                  src: src.replace(/url(\(|\("|\('|\(&quot;)|(\)|"\)|'\)|&quot;\))/g, "").replace(/data:image\/(.*?);base64(,|;)/, "")
                 })
               }
               break;
@@ -167,7 +167,7 @@ const actions = {
             if (style) {
               css += (parentClassName ? parentClassName + " " : "") + className + "{" + style + "}\n";
             }
-            element.children.length && mp(element.children, className, key);
+            element.children.length && mp(element.children, className);
           }
         });
       };
@@ -176,7 +176,7 @@ const actions = {
       for (const key in _state.screenOptions.sizeList) {
         const media = _state.screenOptions.sizeList[key].media
         if (key !== _state.mediaName) {
-          css += "\n\n";
+          css += "\n";
           css += "/* " + key + " */\n";
           css += media + "{\n";
           mp(tree, "", key);
