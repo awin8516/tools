@@ -10,7 +10,7 @@ export default {
   name: "Div",
   data() {
     return {
-      tagName: "div",
+      type: "div",
       icon: "menu",
       container: true,
       name: "div-1",

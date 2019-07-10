@@ -37,22 +37,28 @@ const actions = {
     commit("SET_UPDATELAYER", act);
   },
   ac_resetName({ state }, element) {
-    const getLenByTagName = tagName => {
-      return state.elementList.filter(v => v.tagName == tagName).length + 1;
+    const getLenBytype = type => {
+      return state.elementList.filter(v => v.type == type).length + 1;
     };
     let len = 0;
-    switch (element.tagName) {
+    switch (element.type) {
       case "div":
-        len = getLenByTagName("div");
+        len = getLenBytype("div");
         element.name = "div-" + len;
         element.id = "div-" + len;
-        element.className = "div div-" + getLenByTagName("div");
+        element.className = "div div-" + getLenBytype("div");
         break;
       case "img":
-        len = getLenByTagName("img");
+        len = getLenBytype("img");
         element.name = "img-" + len;
         element.id = "img-" + len;
         element.className = "img img-" + len;
+        break;
+      case "txt":
+        len = getLenBytype("txt");
+        element.name = "txt-" + len;
+        element.id = "txt-" + len;
+        element.className = "txt txt-" + len;
         break;
       default:
     }
@@ -82,28 +88,30 @@ const actions = {
           /data-name="((?:(?!data-name).)*?)"\ssrc="data:image\/(.*?);base64,.*?"/g,
           'src="image/' + pageName + '/$1-' + state.mediaName + '.$2"'
         )
+        .replace(
+          /data-name="(.*?)"/g,
+          ""
+        ).replace(/\s+/g, ' ')
         .replace(/\.jpeg/g, ".jpg");
-      html = formatHtml(html);
-      const doc =
-        '<!DOCTYPE html>\n\
-        <html lang="en">\n\
-        <head>\n\
-            <meta charset="UTF-8">\n\
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">\n\
-            <meta http-equiv="X-UA-Compatible" content="ie=edge">\n\
-            <title>' +
-        pageName +
-        '</title>\n\
-            <link rel="stylesheet" type="text/css" href="css/common.css">\n\
-            <link rel="stylesheet" type="text/css" href="css/' +
-        pageName +
-        '.css">\n\
-        </head>\n\
+      let doc =
+        '<!DOCTYPE html>\
+        <html lang="en">\
+        <head>\
+          <meta charset="UTF-8">\
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+          <meta http-equiv="X-UA-Compatible" content="ie=edge">\
+          <title>' + pageName + '</title>\
+          <link rel="stylesheet" type="text/css" href="css/common.css">\
+          <link rel="stylesheet" type="text/css" href="css/' + pageName + '.css">\
+        </head>\
         <body>\
-        <div class="container">\n' +
+          <div class="container container-'+ pageName + '">' +
         html +
-        "</div>\n</body>\n\
-        </html>";
+        '</div>\
+        </body>\
+        </html>';
+      doc = doc.replace(/>(\s+|\r*|\n*)</g, '><')
+      doc = formatHtml(doc);
       return doc;
     }
 
@@ -112,7 +120,7 @@ const actions = {
       const nameArr = screen.el.innerHTML.match(regexp);
       regexp = /src=["|']?(.*?)("|'|(?=\s)|(?=>))|background-image.*?\)/g;
       const srcArr = screen.el.innerHTML.match(regexp);
-      console.log(srcArr)
+      // console.log(srcArr)
       let imgs = [];
       srcArr &&
         srcArr.forEach((src, index) => {
@@ -122,19 +130,40 @@ const actions = {
                 .match(/data:image\/(.*?);base64/)[1]
                 .replace("jpeg", "jpg"),
               name: nameArr[index].replace(/data-name=|"|'/g, "") + '-' + state.mediaName,
-              src: src.match(/base64\,(.*?)(\s|'|"|\)|&quot;)/)[1]
+              src: src.match(/base64,(.*?)(\s|'|"|\)|&quot;)/)[1]
             });
           }
         });
-      console.log(imgs)
+      // console.log(imgs)
       return imgs;
+    }
+
+    function createPageCss(_state) {
+      let style = _state.screenOptions.style
+      for (const k in style) {
+        if (k === "background-image" && style["background-image"] && style["background-image"].match(/data:image\/(.*?);base64/)) {
+          const src = style["background-image"];
+          // console.log(src)
+          style["background-image"] = style["background-image"].replace(/.*?data:image\/(.*?);.*/g, "url(../image/" + pageName + "/page-bg.$1)").replace(/\.jpeg/g, ".jpg");
+          file.imgs.push({
+            fileExt: src.match(/data:image\/(.*?);base64/)[1].replace("jpeg", "jpg"),
+            name: "page-bg",
+            src: src.match(/base64,(.*?)(\s|'|"|\)|&quot;)/)[1]
+          });
+          break;
+        }
+      }
+      return object2style(style).replace(/([0-9]+)px/g, pixel => {
+        return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
+      });
     }
 
     function createCss(state) {
       let css = "/* " + pageName + ".css */\n";
       let _state = clearStyle(deepClone(state));
+      css += ".container-" + pageName + " {" + createPageCss(_state) + "}\n\n";
       const tree = array2Tree(deepClone(_state.elementList), "vid", "pid");
-      console.log(tree);
+      // console.log(tree);
       const getClassName = className => "." + className.replace(/\s+/g, " ").split(" ").join(".");
       const getStyle = (element, key) => {
         if (element.style[key]) {
@@ -147,16 +176,16 @@ const actions = {
               if (key !== _state.mediaName) {
                 file.imgs.push({
                   fileExt: src.match(/data:image\/(.*?);base64/)[1].replace("jpeg", "jpg"),
-                  name: element.name + '-' + key,
-                  src: src.match(/base64\,(.*?)(\s|'|"|\)|&quot;)/)[1]
-                })
+                  name: element.name + "-" + key,
+                  src: src.match(/base64,(.*?)(\s|'|"|\)|&quot;)/)[1]
+                });
               }
               break;
             }
           }
           return object2style(style).replace(/([0-9]+)px/g, pixel => {
             return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
-          })
+          });
         }
       };
       const mp = (_tree, parentClassName, key) => {
@@ -174,7 +203,7 @@ const actions = {
       mp(tree, "", _state.mediaName);
 
       for (const key in _state.screenOptions.sizeList) {
-        const media = _state.screenOptions.sizeList[key].media
+        const media = _state.screenOptions.sizeList[key].media;
         if (key !== _state.mediaName) {
           css += "\n\n";
           css += "/* " + key + " */\n";
@@ -188,9 +217,7 @@ const actions = {
     }
 
     let zip = new JSZip();
-    let file = {
-
-    }
+    let file = {};
 
     //project.json
     file.json = createJson(state);
@@ -204,12 +231,15 @@ const actions = {
     //CSS
     file.css = createCss(state);
 
-
     zip.file(pageName + ".json", file.json);
     zip.file(pageName + ".html", file.html);
     let folderImg = zip.folder("image");
     let imgsub = folderImg.folder(pageName);
-    file.imgs.forEach(element => { imgsub.file(element.name + "." + element.fileExt, element.src, { base64: true }); });
+    file.imgs.forEach(element => {
+      imgsub.file(element.name + "." + element.fileExt, element.src, {
+        base64: true
+      });
+    });
     let folderCss = zip.folder("css");
     folderCss.file(pageName + ".css", file.css);
     folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;}");

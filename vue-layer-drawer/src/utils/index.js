@@ -194,7 +194,7 @@ export function formatHtml(html) {
     );
   }
   html = "";
-
+  console.log(arr)
   arr.forEach(v => {
     if (v.match(/^<\//)) {
       if (getTag(v) !== startTag) {

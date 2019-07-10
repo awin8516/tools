@@ -1,6 +1,6 @@
 <template>
   <div class="po-toolbar">
-    <el-button v-for="(item,index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.tagName" circle @click="createElement(item)"></el-button>
+    <el-button v-for="(item,index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.type" circle @click="createElement(item)"></el-button>
   </div>
 </template>
 
@@ -35,7 +35,6 @@ export default {
           this.ac_addElement(params);
           this.ac_selectElement(params);
         }else{
-          console.log(MSG)
           alert(MSG['not-container'])
         }
       } else {

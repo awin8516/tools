@@ -179,7 +179,7 @@ export default {
     },
     mouseDown(e) {
       if (
-        closest(e.target, ".po-el-item").dataset.vid == this.elementParams.vid
+        closest(e.target, ".po-el-item").dataset.vid == this.elementParams.vid && e.target.tagName !== 'TEXTAREA'
       ) {
         this.draging = true;
         this.ac_selectElement(this.elementParams);
@@ -213,6 +213,7 @@ export default {
             document.querySelector("#po-screen").getBoundingClientRect().top +
             "px";
         }
+      console.log(1)
         this.ac_updateStyle(style);
       }
     },
@@ -250,6 +251,7 @@ export default {
       } else {
         style.height = this.size.height + data.y + "px";
       }
+      console.log(2)
       this.ac_updateStyle(style);
     },
     updateText(e) {

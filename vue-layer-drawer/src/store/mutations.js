@@ -5,6 +5,7 @@ const mutations = {
     state = mergeJSON(state, component);
     //强制刷新页面
     state.elementList = component.elementList;
+    console.log(state)
   },
   SET_UPDATEMEDIANAME: (state, component) => {
     state.elementList.some(v => {

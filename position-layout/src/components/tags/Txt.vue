@@ -1,23 +1,22 @@
 <template>
   <div :data-name="element.name" :style="element.style[mediaName]" :class="element.className">
     <slot name="innerHTML"></slot>
-    <slot name="children"></slot>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Div",
+  name: "Txt",
   data() {
     return {
       tagName: "div",
       icon: "menu",
-      container: true,
-      name: "div-1",
-      id: "div-1",
-      className: "div div-test",
+      container: false,
+      name: "text-1",
+      id: "text-1",
+      className: "text text-test",
       text: "",
-      texting: false,
+      texting: true,
       style: {
         default: {
           position: "absolute",
@@ -26,10 +25,10 @@ export default {
           top: "0",
           bottom: "auto",
           width: "100px",
-          height: "100px",
+          "min-height": "2em",
           display: "block",
-          "background-image": "url()",
           "background-color": "#eee",
+          "background-image": "url()",
           "background-repeat": "no-repeat",
           "background-size": "100% auto",
           "background-position": "left top"

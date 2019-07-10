@@ -23,14 +23,6 @@ body {
   padding: 0;
   margin: 0;
   list-style: none;
-  &::before,
-  &::after {
-    content: '';
-    display: block;
-    clear: both;
-    width: 100%;
-    overflow: hidden;
-  }
 }
 textarea {
   width: 100%;
@@ -62,6 +54,16 @@ textarea {
   }
   .po-body {
     .po-screen {
+      * {
+        &::before,
+        &::after {
+          content: '';
+          display: block;
+          clear: both;
+          width: 100%;
+          overflow: hidden;
+        }
+      }
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
       background-color: #fff;
       &::before,
