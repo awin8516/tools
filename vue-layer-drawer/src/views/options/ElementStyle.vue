@@ -26,7 +26,7 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import Upload from "@/components/Upload.vue";
 export default {
-  name: "ElementStyle",
+  name: "optionsElementStyle",
   data() {
     return {};
   },

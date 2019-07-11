@@ -18,7 +18,7 @@
 import { mapState, mapActions } from "vuex";
 import Upload from "@/components/Upload.vue";
 export default {
-  name: "ScreenStyle",
+  name: "optionsScreenStyle",
   data() {
     return {};
   },

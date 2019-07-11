@@ -1,5 +1,5 @@
 <template>
-  <div :data-name="element.name" :style="element.style[mediaName]" :class="element.className">
+  <div :data-name="element.name" :style="element.style[$parent.mediaName]" :class="element.className">
     <slot name="innerHTML"></slot>
   </div>
 </template>
@@ -36,7 +36,7 @@ export default {
       }
     };
   },
-  props: ["element", "mediaName"],
+  props: ["element"],
   mounted() {
     this.$parent.ac_updateElementAttr({
       contextMenu: [

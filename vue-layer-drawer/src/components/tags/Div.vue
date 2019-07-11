@@ -1,5 +1,5 @@
 <template>
-  <div :data-name="element.name" :style="element.style[mediaName]" :class="element.className">
+  <div :data-name="element.name" :style="element.style[$parent.mediaName]" :class="element.className">
     <slot name="innerHTML"></slot>
     <slot name="children"></slot>
   </div>
@@ -34,22 +34,45 @@ export default {
           "background-size": "100% auto",
           "background-position": "left top"
         }
-      }
-    };
-  },
-  props: ["element", "mediaName"],
-  mounted() {
-    this.$parent.ac_updateElementAttr({
+      },
       contextMenu: [
         {
           icon: "el-icon-delete",
           name: "编辑文字",
           command: () => {
-            this.$parent.ac_updateElementAttr({texting:true})
+            this.$parent.ac_updateElementAttr({ texting: true });
           }
         }
       ]
-    });
+    };
+  },
+  props: ["element"],
+  beforeCreate() {
+    // this.$parent.ac_updateElementAttr({
+    //   contextMenu: [
+    //     {
+    //       icon: "el-icon-delete",
+    //       name: "编辑文字",
+    //       command: () => {
+    //         this.$parent.ac_updateElementAttr({ texting: true });
+    //       }
+    //     }
+    //   ]
+    // });
+  },
+  mounted() {
+    console.log(this)
+    // this.$parent.ac_updateElementAttr({
+    //   contextMenu: [
+    //     {
+    //       icon: "el-icon-delete",
+    //       name: "编辑文字",
+    //       command: () => {
+    //         this.$parent.ac_updateElementAttr({ texting: true });
+    //       }
+    //     }
+    //   ]
+    // });
   }
 };
 </script>

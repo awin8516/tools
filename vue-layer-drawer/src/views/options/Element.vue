@@ -52,7 +52,7 @@ import ElementStyle from "@/views/options/ElementStyle.vue";
 import Upload from "@/components/Upload.vue";
 import { style2object } from "@/utils";
 export default {
-  name: "Element",
+  name: "optionsElement",
   data() {
     return {
       styleCustom: "margin:10px;\npadding:20px;"

@@ -1,6 +1,6 @@
 <template>
   <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
-    <component :is="component" :element="elementParams" :mediaName="mediaName">
+    <component :is="component" :element="elementParams">
       <template slot="innerHTML">
         {{elementParams.text}}
       </template>
@@ -10,7 +10,7 @@
     </component>
     <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
       <ul>
-        <li v-for="(item, index) in contextMenuList" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
+        <li v-for="(item, index) in elementParams.contextMenu" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
       </ul>
       <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
     </mark>
@@ -93,13 +93,19 @@ export default {
   computed: {
     ...mapState(["elementList", "mediaName"]),
     ...mapGetters(["gt_indexSelected"]),
-    contextMenuList() {
-      if (this.elementParams.contextMenu) {
-        return this.contextMenuDefault.concat(this.elementParams.contextMenu);
-      } else {
-        return this.contextMenuDefault;
-      }
-    },
+    // contextMenuList() {
+    //   if (this.elementParams.contextMenu) {
+    //     const contextMenu = this.contextMenuDefault.concat(
+    //       this.elementParams.contextMenu
+    //     );
+    //     this.$parent.ac_updateElementAttr({
+    //       contextMenu: contextMenu
+    //     });
+    //     return this.contextMenuDefault.concat(this.elementParams.contextMenu);
+    //   } else {
+    //     return this.contextMenuDefault;
+    //   }
+    // },
     style() {
       return this.elementParams.style[this.mediaName];
     },
@@ -165,6 +171,7 @@ export default {
       "ac_deleteElement",
       "ac_updateLayer",
       "ac_updateElementAttr",
+      "ac_replaceElementAttr",
       "ac_updateStyle"
     ]),
     contextMenu(e) {
@@ -179,7 +186,9 @@ export default {
     },
     mouseDown(e) {
       if (
-        closest(e.target, ".po-el-item").dataset.vid == this.elementParams.vid && e.target.tagName !== 'TEXTAREA'
+        closest(e.target, ".po-el-item").dataset.vid ==
+          this.elementParams.vid &&
+        e.target.tagName !== "TEXTAREA"
       ) {
         this.draging = true;
         this.ac_selectElement(this.elementParams);
@@ -213,7 +222,6 @@ export default {
             document.querySelector("#po-screen").getBoundingClientRect().top +
             "px";
         }
-      console.log(1)
         this.ac_updateStyle(style);
       }
     },
@@ -251,7 +259,6 @@ export default {
       } else {
         style.height = this.size.height + data.y + "px";
       }
-      console.log(2)
       this.ac_updateStyle(style);
     },
     updateText(e) {
@@ -260,6 +267,22 @@ export default {
         texting: false,
         vid: this.elementParams.vid
       });
+    },
+    addContextMenu() {
+      console.log(this.elementParams.contextMenu);
+      if (this.elementParams.contextMenu) {
+        const contextMenu = this.contextMenuDefault.concat(
+          this.elementParams.contextMenu
+        );
+        console.log(contextMenu);
+        this.ac_replaceElementAttr({
+          contextMenu: contextMenu
+        });
+      } else {
+        this.ac_replaceElementAttr({
+          contextMenu: this.contextMenuDefault
+        });
+      }
     }
   },
   filters: {
@@ -272,6 +295,7 @@ export default {
   mounted() {
     try {
       this.component = this.elementParams.file.replace(/(.*\/)|.vue/g, "");
+      this.addContextMenu();
     } catch (e) {
       throw new Error(e);
     }

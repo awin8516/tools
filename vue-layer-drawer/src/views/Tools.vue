@@ -1,6 +1,6 @@
 <template>
   <div class="po-toolbar">
-    <el-button v-for="(item,index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.type" circle @click="createElement(item)"></el-button>
+    <el-button v-for="(item,index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.type" circle @click="ac_addElement(item)"></el-button>
   </div>
 </template>
 
@@ -21,29 +21,7 @@ export default {
     ...mapGetters(["gt_elementSelected"])
   },
   methods: {
-    ...mapActions(["ac_addElement", "ac_selectElement", "ac_resetName"]),
-    createElement(item) {
-      const params = deepClone(item);
-      params.vid = new Date().getTime();
-      this.ac_resetName(params);
-      //子元素
-      if (this.gt_elementSelected) {
-        //必须是container容器才能加子元素
-        if (this.gt_elementSelected.container) {
-          params.pid = this.gt_elementSelected.vid;
-          // this.elementList.push(params);
-          this.ac_addElement(params);
-          this.ac_selectElement(params);
-        }else{
-          alert(MSG['not-container'])
-        }
-      } else {
-        //顶层元素
-        this.ac_addElement(params);
-        this.ac_selectElement(params);
-      }
-      // console.log(this.elementList)
-    }
+    ...mapActions(["ac_addElement", "ac_selectElement"])
   },
   mounted() {
     for (let key in Tags) {

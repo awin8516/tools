@@ -1,7 +1,7 @@
 <template>
   <img
     :data-name="element.name"
-    :style="element.style[mediaName]"
+    :style="element.style[$parent.mediaName]"
     :src="element.src"
     :class="element.className"
   />
@@ -29,6 +29,6 @@ export default {
       }
     };
   },
-  props: ["element", "mediaName"]
+  props: ["element"]
 };
 </script>

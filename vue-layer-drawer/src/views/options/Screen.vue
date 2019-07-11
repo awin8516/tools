@@ -27,7 +27,7 @@
 import { mapState, mapActions } from "vuex";
 import ScreenStyle from "@/views/options/ScreenStyle.vue";
 export default {
-  name: "Screen",
+  name: "optionsScreen",
   data() {
     return {};
   },

@@ -23,6 +23,7 @@ const actions = {
   },
   ac_addElement({ commit }, element) {
     commit("SET_ADDELEMENT", element);
+    commit("SET_SELECTELEMENT", element);
   },
   ac_deleteElement({ commit }, element) {
     commit("SET_DELETEELEMENT", element);
@@ -30,38 +31,14 @@ const actions = {
   ac_updateElementAttr: ({ commit }, attr) => {
     commit("SET_UPDATEELEMENTATTR", attr);
   },
+  ac_replaceElementAttr: ({ commit }, attr) => {
+    commit("SET_REPLACEELEMENTATTR", attr);
+  },
   ac_updateStyle({ commit }, style) {
     commit("SET_UPDATESTYLE", style);
   },
   ac_updateLayer({ commit }, act) {
     commit("SET_UPDATELAYER", act);
-  },
-  ac_resetName({ state }, element) {
-    const getLenBytype = type => {
-      return state.elementList.filter(v => v.type == type).length + 1;
-    };
-    let len = 0;
-    switch (element.type) {
-      case "div":
-        len = getLenBytype("div");
-        element.name = "div-" + len;
-        element.id = "div-" + len;
-        element.className = "div div-" + getLenBytype("div");
-        break;
-      case "img":
-        len = getLenBytype("img");
-        element.name = "img-" + len;
-        element.id = "img-" + len;
-        element.className = "img img-" + len;
-        break;
-      case "txt":
-        len = getLenBytype("txt");
-        element.name = "txt-" + len;
-        element.id = "txt-" + len;
-        element.className = "txt txt-" + len;
-        break;
-      default:
-    }
   },
   ac_importProject({ commit }, json) {
     const _state = JSON.parse(json);
@@ -162,7 +139,7 @@ const actions = {
       let css = "/* " + pageName + ".css */\n";
       let _state = clearStyle(deepClone(state));
       css += ".container-" + pageName + " {" + createPageCss(_state) + "}\n\n";
-      const tree = array2Tree(deepClone(_state.elementList), "vid", "pid");
+      const tree = array2Tree(_state.elementList, "vid", "pid");
       // console.log(tree);
       const getClassName = className => "." + className.replace(/\s+/g, " ").split(" ").join(".");
       const getStyle = (element, key) => {

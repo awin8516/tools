@@ -56,6 +56,35 @@ export function file2base64(file) {
   return p;
 }
 
+export function resetLayerName(state, element) {
+  const getLenBytype = type => {
+    return state.elementList.filter(v => v.type == type).length + 1;
+  };
+  let len = 0;
+  switch (element.type) {
+    case "div":
+      len = getLenBytype("div");
+      element.name = "div-" + len;
+      element.id = "div-" + len;
+      element.className = "div div-" + getLenBytype("div");
+      break;
+    case "img":
+      len = getLenBytype("img");
+      element.name = "img-" + len;
+      element.id = "img-" + len;
+      element.className = "img img-" + len;
+      break;
+    case "txt":
+      len = getLenBytype("txt");
+      element.name = "txt-" + len;
+      element.id = "txt-" + len;
+      element.className = "txt txt-" + len;
+      break;
+    default:
+  }
+  return element
+}
+
 export function formatHtml(html) {
   // let h = '<div class="div div-1" ><p>sdf</p><img src="image/index/img-1.jpg" class="img img-1" >测试文字<input type="text" /><img src="image/index/img-2.jpg" class="img img-2" ><img src="image/index/img-3.jpg" class="img img-3" ></div><div class="div div-2" ></div><div class="div div-3" ><img src="image/index/img-4.jpg" class="img img-4" ></div><div class="div div-4" ><img src="image/index/img-5.jpg" class="img img-5" ></div>测试文字<input type="text" >sdf<a class="div div-5" ></a>'
   // const arr = h.replace(/>/g, ">#|#").replace(/\/>/g, "/>#|#").replace(/<\//g, "#|#</").replace(/#\|##\|#/g, "#|#").split('#|#')
