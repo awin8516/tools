@@ -1,28 +1,28 @@
 <template>
   <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
     <component :is="component" :element="elementParams">
-      <template slot="innerHTML">
-        {{elementParams.text}}
+      <template slot="innerText">
+        {{elementParams.innerText}}
       </template>
-      <template v-for="item in elementList" slot="children">
+      <template v-for="item in gt_elementList" slot="children">
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
       </template>
     </component>
     <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
       <ul>
-        <li v-for="(item, index) in elementParams.contextMenu" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.name}}</li>
+        <li v-for="(item, index) in elementParams.contextMenu" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
       </ul>
       <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
     </mark>
-    <mark v-show="elementParams.texting" class="textarea">
-      <textarea v-focus="elementParams.texting" placeholder="编辑文字" @blur="updateText" :value="text"></textarea>
+    <mark v-show="elementParams.editing" class="textarea">
+      <textarea v-focus="elementParams.editing" placeholder="编辑文字" @blur="updateText" :value="innerText"></textarea>
     </mark>
     <mark class="resize" v-drag="resize" @mousedown.stop="getSize"></mark>
   </ins>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import * as Tags from "@/components/tags";
 import { closest } from "@/utils";
 export default {
@@ -38,17 +38,19 @@ export default {
       },
       contextMenuDefault: [
         {
+          name: "cm_zindexMoveUp",
           icon: "el-icon-upload2",
-          name: "上移一层",
+          label: "上移一层",
           command: () => {
-            if (this.gt_indexSelected < this.elementList.length - 1) {
+            if (this.gt_indexSelected < this.gt_elementList.length - 1) {
               this.ac_updateLayer(1);
             }
           }
         },
         {
+          name: "cm_zindexMoveDown",
           icon: "el-icon-download",
-          name: "下移一层",
+          label: "下移一层",
           command: () => {
             if (this.gt_indexSelected > 0) {
               this.ac_updateLayer(-1);
@@ -56,17 +58,19 @@ export default {
           }
         },
         {
+          name: "cm_zindexMoveTop",
           icon: "el-icon-upload2",
-          name: "置为顶层",
+          label: "置为顶层",
           command: () => {
-            if (this.gt_indexSelected < this.elementList.length - 1) {
+            if (this.gt_indexSelected < this.gt_elementList.length - 1) {
               this.ac_updateLayer(1000);
             }
           }
         },
         {
+          name: "cm_zindexMoveBottom",
           icon: "el-icon-download",
-          name: "置为底层",
+          label: "置为底层",
           command: () => {
             if (this.gt_indexSelected > 0) {
               this.ac_updateLayer(-1000);
@@ -74,8 +78,9 @@ export default {
           }
         },
         {
+          name: "cm_delete",
           icon: "el-icon-delete",
-          name: "删除",
+          label: "删除",
           command: () => {
             this.ac_deleteElement(this.elementParams);
           }
@@ -91,8 +96,12 @@ export default {
   },
   props: ["elementParams"],
   computed: {
-    ...mapState(["elementList", "mediaName"]),
-    ...mapGetters(["gt_indexSelected"]),
+    ...mapGetters([
+      "gt_elementList",
+      "gt_mediaName",
+      "gt_indexSelected",
+      "ac_registerContextMenu"
+    ]),
     // contextMenuList() {
     //   if (this.elementParams.contextMenu) {
     //     const contextMenu = this.contextMenuDefault.concat(
@@ -107,7 +116,7 @@ export default {
     //   }
     // },
     style() {
-      return this.elementParams.style[this.mediaName];
+      return this.elementParams.style[this.gt_mediaName];
     },
     itemStyle: function() {
       const style = [
@@ -129,12 +138,19 @@ export default {
         if (typeof this.style[v] !== "undefined") {
           if (v == "width") {
             if (this.style.position == "relative") {
-              styleObject[v] = this.style[v];
+              const padding =
+                (parseInt(this.style["padding-left"]) || 0) +
+                (parseInt(this.style["padding-right"]) || 0);
+              // console.log(this.style[v])
+              // styleObject[v] = ((parseInt(this.style[v]) || 0) + padding) + "px";
+              if (this.style[v] == "auto") {
+                styleObject[v] = this.style[v];
+              } else {
+                styleObject[v] =
+                  (parseInt(this.style[v]) || 0) + padding + "px";
+              }
             }
           } else if (v == "left" && this.style.position == "fixed") {
-            // console.log(parseInt(this.style[v]) || 0)
-            // console.log(document.querySelector('#po-screen').getBoundingClientRect().left)
-            // console.log(((parseInt(this.style[v]) || 0) + document.querySelector('#po-screen').getBoundingClientRect().left)+'px')
             styleObject[v] =
               (parseInt(this.style[v]) || 0) +
               document.querySelector("#po-screen").getBoundingClientRect()
@@ -158,9 +174,9 @@ export default {
     isFixed: function() {
       return this.style.position === "fixed";
     },
-    text: {
+    innerText: {
       get: function() {
-        return this.elementParams && this.elementParams.text;
+        return this.elementParams && this.elementParams.innerText;
       }
     }
   },
@@ -241,11 +257,11 @@ export default {
             width:
               document.querySelector(
                 '[data-vid="' + this.elementParams.vid + '"]'
-              ).clientWidth || 0,
+              ).firstElementChild.clientWidth || 0,
             height:
               document.querySelector(
                 '[data-vid="' + this.elementParams.vid + '"]'
-              ).clientHeight || 0
+              ).firstElementChild.clientHeight || 0
           };
     },
     resize(el, data) {
@@ -263,26 +279,30 @@ export default {
     },
     updateText(e) {
       this.ac_updateElementAttr({
-        text: e.target.value,
-        texting: false,
+        innerText: e.target.value,
+        editing: false,
         vid: this.elementParams.vid
       });
     },
     addContextMenu() {
-      console.log(this.elementParams.contextMenu);
-      if (this.elementParams.contextMenu) {
-        const contextMenu = this.contextMenuDefault.concat(
-          this.elementParams.contextMenu
-        );
-        console.log(contextMenu);
-        this.ac_replaceElementAttr({
-          contextMenu: contextMenu
-        });
-      } else {
-        this.ac_replaceElementAttr({
-          contextMenu: this.contextMenuDefault
-        });
-      }
+      this.$nextTick(() => {
+        console.log(this.elementParams);
+        console.log(Tags.Div.data());
+      });
+      console.log(this.elementParams);
+      // if (this.elementParams.contextMenu) {
+      //   const contextMenu = this.contextMenuDefault.concat(
+      //     this.elementParams.contextMenu
+      //   );
+      //   console.log(contextMenu);
+      //   this.ac_replaceElementAttr({
+      //     contextMenu: contextMenu
+      //   });
+      // } else {
+      //   this.ac_replaceElementAttr({
+      //     contextMenu: this.contextMenuDefault
+      //   });
+      // }
     }
   },
   filters: {
@@ -295,18 +315,10 @@ export default {
   mounted() {
     try {
       this.component = this.elementParams.file.replace(/(.*\/)|.vue/g, "");
-      this.addContextMenu();
+      // this.addContextMenu();
     } catch (e) {
       throw new Error(e);
     }
   }
 };
 </script>
-<style lang="scss">
-.po-el-item {
-  > div:first-child {
-    left: 0 !important;
-    top: 0 !important;
-  }
-}
-</style>

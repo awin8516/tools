@@ -7,6 +7,14 @@
         <input type="text" v-model.lazy="name">
       </dd>
     </dl>
+    <dl>
+      <dd>
+        <label class="h2">主题色系:</label>
+        <div class="field">
+          <ThemeColors></ThemeColors>
+        </div>
+      </dd>
+    </dl>
     <dl v-if="typeof style !== 'undefined'">
       <dt class="h2">Style</dt>
       <template v-for="(value, key) in style">
@@ -24,7 +32,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
+import ThemeColors from "@/components/ThemeColors.vue";
 import ScreenStyle from "@/views/options/ScreenStyle.vue";
 export default {
   name: "optionsScreen",
@@ -32,10 +41,10 @@ export default {
     return {};
   },
   computed: {
-    ...mapState(["screenOptions"]),
+    ...mapGetters(["gt_screenOptions"]),
     name: {
       get: function() {
-        return this.screenOptions && this.screenOptions.name;
+        return this.gt_screenOptions && this.gt_screenOptions.name;
       },
       set: function(v) {
         this.ac_updateScreenAttr({ name: v });
@@ -43,13 +52,11 @@ export default {
     },
     style: {
       get: function() {
-        return this.screenOptions.style;
+        return this.gt_screenOptions.style;
       }
     }
   },
-  components: {
-    ScreenStyle
-  },
+  components: { ThemeColors, ScreenStyle },
   methods: {
     ...mapActions(["ac_updateScreenAttr"])
   }

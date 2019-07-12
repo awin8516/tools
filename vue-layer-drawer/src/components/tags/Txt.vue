@@ -1,6 +1,6 @@
 <template>
-  <div :data-name="element.name" :style="element.style[$parent.mediaName]" :class="element.className">
-    <slot name="innerHTML"></slot>
+  <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :class="element.className">
+    <slot name="innerText"></slot>
   </div>
 </template>
 
@@ -15,8 +15,8 @@ export default {
       name: "text-1",
       id: "text-1",
       className: "text text-test",
-      text: "",
-      texting: true,
+      innerText: "",
+      editing: true,
       style: {
         default: {
           position: "absolute",
@@ -38,17 +38,17 @@ export default {
   },
   props: ["element"],
   mounted() {
-    this.$parent.ac_updateElementAttr({
-      contextMenu: [
-        {
-          icon: "el-icon-delete",
-          name: "编辑文字",
-          command: () => {
-            this.$parent.ac_updateElementAttr({texting:true})
-          }
-        }
-      ]
-    });
+    // this.$parent.ac_updateElementAttr({
+    //   contextMenu: [
+    //     {
+    //       icon: "el-icon-delete",
+    //       name: "编辑文字",
+    //       command: () => {
+    //         this.$parent.ac_updateElementAttr({editing:true})
+    //       }
+    //     }
+    //   ]
+    // });
   }
 };
 </script>

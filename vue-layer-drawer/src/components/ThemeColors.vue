@@ -1,0 +1,104 @@
+<template>
+  <div class="po-theme-colors">
+    <ul>
+      <li v-for="(value, index) in gt_themeColors" :key="index" :style="'background-color:'+value"><b @click="removeColor(value)"></b></li>
+    </ul>
+    <div class="add">
+      <el-color-picker show-alpha size="mini" v-model="color" @change="addColor"></el-color-picker>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+import { deepClone } from "@/utils";
+export default {
+  name: "ColorPicker",
+  data() {
+    return {
+      color: "#f30"
+    };
+  },
+  props: ["val"],
+  methods: {
+    ...mapActions(["ac_updateThemeColors"]),
+    addColor(val) {
+      let _themeColors = deepClone(this.gt_themeColors);
+      _themeColors.push(val);
+      this.ac_updateThemeColors(_themeColors);
+    },
+    removeColor(val) {
+      let _themeColors = deepClone(this.gt_themeColors);
+      const index = _themeColors.findIndex(v => v === val);
+      console.log(index);
+      _themeColors.splice(index, 1);
+      this.ac_updateThemeColors(_themeColors);
+    }
+  },
+  computed: {
+    ...mapGetters(["gt_themeColors"])
+  }
+};
+</script>
+<style lang="scss">
+.po-theme-colors {
+  ul {
+    // display: flex;
+    // flex-wrap: wrap;
+    // justify-content: space-between;
+    white-space: normal;
+    width: 105%;
+    li {
+      position: relative;
+      display: inline-block;
+      vertical-align: top;
+      font-size: 0;
+      width: 15.5%;
+      height: 0.2rem;
+      margin-right: 4%;
+      margin-bottom: 4%;
+      box-shadow: 0 0 1px rgba(0,0,0,0.1);
+      &::before {
+        content: "";
+        display: inline-block;
+        padding-bottom: 100%;
+        vertical-align: top;
+      }
+      &:hover {
+        z-index: 100;
+        transform: scale(1.2);
+        box-shadow: 0 0 1px rgba(0,0,0,0.3);
+        b {
+          position: absolute;
+          left: 100%;
+          display: inline-block;
+          vertical-align: top;
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+          background-color: rgb(0, 140, 255);
+          &::before,
+          &::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            display: inline-block;
+            width: 80%;
+            height: 1px;
+            background-color: #fff;
+          }
+          &::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+          }
+        }
+      }
+    }
+  }
+  .add {
+    border-top: 1px #eee solid;padding-top: .5em;
+    margin-top: .5em;
+  }
+}
+</style>

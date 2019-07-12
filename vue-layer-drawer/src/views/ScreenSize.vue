@@ -3,7 +3,7 @@
     <div class="po-screen-size">
       Size
       <el-select v-model="sizeSelect" @change="setSize">
-        <el-option v-for="(item, key) in screenOptions.sizeList" :key="key" :label="item.name" :value="key">{{key}}</el-option>
+        <el-option v-for="(item, key) in gt_screenOptions.sizeList" :key="key" :label="item.name" :value="key">{{key}}</el-option>
       </el-select>
       <el-input id="po-screen-width" type="text" v-range='{val:"width"}' v-model.lazy="width" placeholder="屏宽"></el-input>
       ✕
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "screenSize",
   data() {
@@ -22,23 +22,23 @@ export default {
     };
   },
   computed: {
-    ...mapState(["screenOptions"]),
+    ...mapGetters(["gt_screenOptions"]),
     width: {
       get: function() {
-        return this.screenOptions.style.width;
+        return this.gt_screenOptions.style.width;
       },
       set: function(v) {
-        const screenStyle = Object.assign({}, this.screenOptions.style);
+        const screenStyle = Object.assign({}, this.gt_screenOptions.style);
         screenStyle.width = v;
         this.ac_updateScreenStyle(screenStyle);
       }
     },
     height: {
       get: function() {
-        return this.screenOptions.style.height;
+        return this.gt_screenOptions.style.height;
       },
       set: function(v) {
-        const screenStyle = Object.assign({}, this.screenOptions.style);
+        const screenStyle = Object.assign({}, this.gt_screenOptions.style);
         screenStyle.height = v;
         this.ac_updateScreenStyle(screenStyle);
       }

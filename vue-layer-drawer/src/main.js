@@ -14,6 +14,7 @@ import {
   // Alert,
   Icon,
   Loading,
+  ColorPicker,
   MessageBox,
   Message
 } from "element-ui";
@@ -26,6 +27,7 @@ Vue.use(Button);
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(Icon);
+Vue.use(ColorPicker);
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$alert = MessageBox.alert;
 Vue.prototype.$message = Message;

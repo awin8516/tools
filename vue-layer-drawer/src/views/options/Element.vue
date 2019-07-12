@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import ElementStyle from "@/views/options/ElementStyle.vue";
 import Upload from "@/components/Upload.vue";
 import { style2object } from "@/utils";
@@ -59,8 +59,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["mediaName"]),
-    ...mapGetters(["gt_elementSelected", "gt_indexSelected"]),
+    ...mapGetters(["gt_mediaName","gt_elementSelected", "gt_indexSelected"]),
     elementSelected: {
       get: function() {
         return this.gt_elementSelected && this.gt_elementSelected;
@@ -101,7 +100,7 @@ export default {
     style: {
       get: function() {
         return (
-          this.elementSelected && this.elementSelected.style[this.mediaName]
+          this.elementSelected && this.elementSelected.style[this.gt_mediaName]
         );
       }
     }

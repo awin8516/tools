@@ -1,7 +1,7 @@
 <template>
   <img
     :data-name="element.name"
-    :style="element.style[$parent.mediaName]"
+    :style="element.style[$parent.gt_mediaName]"
     :src="element.src"
     :class="element.className"
   />

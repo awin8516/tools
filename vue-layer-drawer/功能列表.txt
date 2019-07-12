@@ -1,6 +1,10 @@
-1.relative
-2.屏幕适配
+1.relative *
+2.屏幕适配 *
 3.深度组件标签
-4.主题色系
-5.音频上传
-6.
+4.主题色系 *
+5.音频上传 
+6.localstorage *
+
+bug:
+1.clientWidth
+2.注册右健菜单

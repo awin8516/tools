@@ -15,6 +15,9 @@ const actions = {
   ac_updateScreenElement: ({ commit }, value) => {
     commit("SET_UPDATESCREENELEMENT", value);
   },
+  ac_updateThemeColors: ({ commit }, value) => {
+    commit("SET_UPDATETHEMECOLORS", value);
+  },
   ac_selectElement({ commit }, element) {
     commit("SET_SELECTELEMENT", element);
   },
@@ -28,6 +31,9 @@ const actions = {
   ac_deleteElement({ commit }, element) {
     commit("SET_DELETEELEMENT", element);
   },
+  ac_clearElement({ commit }) {
+    commit("SET_CLEARELEMENT");
+  },
   ac_updateElementAttr: ({ commit }, attr) => {
     commit("SET_UPDATEELEMENTATTR", attr);
   },
@@ -40,19 +46,35 @@ const actions = {
   ac_updateLayer({ commit }, act) {
     commit("SET_UPDATELAYER", act);
   },
-  ac_importProject({ commit }, json) {
-    const _state = JSON.parse(json);
-    commit("SET_STATE", _state);
+  ac_registerContextMenu({ commit }, menu) {
+    console.log(menu)
+    commit("SET_REGISTERCONTEXTMENU", menu);
   },
+  ac_importProject({ commit }, json) {
+    if (json) {
+      const _state = JSON.parse(json);
+      commit("SET_STATE", _state);
+    } else {
+      console.log("导入错误")
+    }
+  },
+  ac_saveProject({ state }) {
+    const _state = JSON.stringify(state);
+    window.localStorage.setItem('project', _state)
+  },
+  ac_clearProject({ commit }) {
+    window.localStorage.removeItem('project')
+    commit("SET_CLEARELEMENT");
+  },
+
   //打包下载
   ac_exportProject({ state }) {
     // console.log(state)
     const pageName = state.screenOptions.name;
     function createJson(state) {
-      return JSON.stringify(state).replace(
-        ',"el":{"_prevClass":"po-screen"}',
-        ""
-      );
+      let _state = deepClone(state)
+      delete _state.el
+      return JSON.stringify(_state)
     }
 
     function createHtml(screen) {

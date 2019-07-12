@@ -1,11 +1,12 @@
 <template>
-  <div :data-name="element.name" :style="element.style[$parent.mediaName]" :class="element.className">
-    <slot name="innerHTML"></slot>
+  <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :class="element.className">
+    <slot name="innerText"></slot>
     <slot name="children"></slot>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "Div",
   data() {
@@ -16,8 +17,8 @@ export default {
       name: "div-1",
       id: "div-1",
       className: "div div-test",
-      text: "",
-      texting: false,
+      innerText: "",
+      editing: false,
       style: {
         default: {
           position: "absolute",
@@ -34,41 +35,50 @@ export default {
           "background-size": "100% auto",
           "background-position": "left top"
         }
-      },
-      contextMenu: [
-        {
-          icon: "el-icon-delete",
-          name: "编辑文字",
-          command: () => {
-            this.$parent.ac_updateElementAttr({ texting: true });
-          }
-        }
-      ]
+      }
+      // contextMenu: [
+      //   {
+      //     icon: "el-icon-delete",
+      //     name: "编辑文字",
+      //     command: () => {
+      //       this.$parent.ac_updateElementAttr({ editing: true });
+      //     }
+      //   }
+      // ]
     };
   },
   props: ["element"],
-  beforeCreate() {
-    // this.$parent.ac_updateElementAttr({
-    //   contextMenu: [
-    //     {
-    //       icon: "el-icon-delete",
-    //       name: "编辑文字",
-    //       command: () => {
-    //         this.$parent.ac_updateElementAttr({ texting: true });
-    //       }
-    //     }
-    //   ]
-    // });
+  methods: {
+    ...mapActions(["ac_registerContextMenu"])
   },
   mounted() {
-    console.log(this)
+    console.log(this);
+    // this.contextMenu = [
+    //   {
+    //     icon: "el-icon-delete",
+    //     name: "编辑文字",
+    //     command: () => {
+    //       this.$parent.ac_updateElementAttr({ editing: true });
+    //     }
+    //   }
+    // ];
+    this.ac_registerContextMenu([
+      {
+        name: "cm_editInnerText",
+        icon: "el-icon-delete",
+        label: "编辑文字",
+        command: () => {
+          this.$parent.ac_updateElementAttr({ editing: true });
+        }
+      }
+    ]);
     // this.$parent.ac_updateElementAttr({
     //   contextMenu: [
     //     {
     //       icon: "el-icon-delete",
     //       name: "编辑文字",
     //       command: () => {
-    //         this.$parent.ac_updateElementAttr({ texting: true });
+    //         this.$parent.ac_updateElementAttr({ editing: true });
     //       }
     //     }
     //   ]

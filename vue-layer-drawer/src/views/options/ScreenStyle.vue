@@ -1,30 +1,48 @@
 <template>
   <dd :class="'po-options-'+_key">
-    <template v-if="_key == 'background-image'">
-      <label>background-image:</label>
+    <template v-if="Object.keys(styleOptions.select).includes(_key)">
+      <label>{{_key}}:</label>
+      <div class="field">
+        <el-select v-model.lazy="value" allow-create filterable>
+          <el-option v-for="(item) in styleOptions.select[_key]" :key="item" :label="item" :value="item">{{item}}</el-option>
+        </el-select>
+      </div>
+    </template>
+    <template v-else-if="styleOptions.upload.includes(_key)">
+      <label>{{_key}}:</label>
       <div class="field">
         <Upload :val.sync="value" :template="'url(#)'"></Upload>
       </div>
     </template>
+    <template v-else-if="styleOptions.color.includes(_key)">
+      <label>{{_key}}:</label>
+      <div class="field">
+        <color-picker :val.sync="value"></color-picker>
+      </div>
+    </template>
+    <template v-else-if="styleOptions.range.includes(_key)">
+      <label>{{_key}}:</label>
+      <input v-range="{val:'value'}" type="text" v-model.lazy="value" />
+    </template>
     <template v-else>
       <label>{{_key}}:</label>
-      <input v-if="ragneList.includes(_key)" v-range="{val:'value'}" type="text" v-model.lazy="value" />
-      <input v-else type="text" v-model.lazy="value" />
+      <input type="text" v-model.lazy="value" />
     </template>
   </dd>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions } from "vuex";
 import Upload from "@/components/Upload.vue";
+import ColorPicker from "@/components/ColorPicker.vue";
+import styleOptions from "@/utils/styleOptions";
 export default {
   name: "optionsScreenStyle",
   data() {
-    return {};
+    return { styleOptions: styleOptions };
   },
   props: ["_key", "_style"],
   computed: {
-    ...mapState(["ragneList"]),
     value: {
       get: function() {
         return this._style[this._key];
@@ -37,7 +55,8 @@ export default {
     }
   },
   components: {
-    Upload
+    Upload,
+    ColorPicker
   },
   methods: {
     ...mapActions(["ac_updateScreenStyle"])

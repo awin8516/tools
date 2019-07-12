@@ -52,27 +52,9 @@ const state = {
     },
     el: null
   },
+  themeColors: [],
   elementList: [],
-  mediaName: "default",
-  positionOptions: ["relative", "absolute", "fixed"],
-  ragneList: [
-    "left",
-    "top",
-    "right",
-    "bottom",
-    "width",
-    "height",
-    "margin-left",
-    "margin-top",
-    "margin-right",
-    "margin-bottom",
-    "padding-left",
-    "padding-top",
-    "padding-right",
-    "padding-bottom",
-    "font-size",
-    "line-height"
-  ]
+  mediaName: "default"
 };
 
 const store = new Vuex.Store({
@@ -80,7 +62,7 @@ const store = new Vuex.Store({
   actions,
   mutations,
   getters,
-  strict: true
+  strict: false
 });
 
 export default store;

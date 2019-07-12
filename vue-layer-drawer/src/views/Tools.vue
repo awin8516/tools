@@ -1,34 +1,50 @@
 <template>
-  <div class="po-toolbar">
-    <el-button v-for="(item,index) in tools" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.type" circle @click="ac_addElement(item)"></el-button>
+  <div class="po-save">
+    <el-button type="primary">导入<input class="file" type="file" ref="file" @change="change" accept="*.json"></el-button>
+    <el-button type="primary" @click="ac_saveProject">保存</el-button>
+    <el-button type="primary" @click="ac_clearProject">清空</el-button>
+    <el-button type="primary" @click="ac_exportProject">导出</el-button>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
-import * as Tags from "@/components/tags";
-import { deepClone } from "@/utils";
-import MSG from "@/utils/message";
+import { mapActions } from "vuex";
 export default {
-  name: "Tools",
+  name: "Div",
   data() {
-    return {
-      tools: []
-    };
+    return {};
   },
-  computed: {
-    ...mapState(["elementList"]),
-    ...mapGetters(["gt_elementSelected"])
-  },
+  props: ["val"],
   methods: {
-    ...mapActions(["ac_addElement", "ac_selectElement"])
-  },
-  mounted() {
-    for (let key in Tags) {
-      let tool = Tags[key].data();
-      tool.file = Tags[key].__file;
-      this.tools.push(tool);
+    ...mapActions(["ac_importProject", "ac_saveProject","ac_clearProject", "ac_exportProject"]),
+    change: function(e) {
+      const reader = new FileReader();
+      reader.readAsText(e.target.files[0]);
+      reader.onload = e => {
+        this.ac_importProject(e.target.result);
+      };
     }
   }
 };
 </script>
+<style lang="scss">
+.po-save {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  button {
+    overflow: hidden;
+    position: relative;
+  }
+  input.file {
+    width: 100%;
+    height: 100%;
+    font-size: 100em;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+  }
+}
+</style>

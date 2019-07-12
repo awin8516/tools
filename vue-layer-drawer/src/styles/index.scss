@@ -1,8 +1,16 @@
 html {
   font-size: 100px;
 }
+body {
+  background-color: #efefef;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
 * {
   font-size: 0.12rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 ins {
   text-decoration: none;
@@ -13,16 +21,6 @@ mark {
 }
 #app {
   padding: 10px;
-}
-body {
-  background-color: #efefef;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-}
-* {
-  padding: 0;
-  margin: 0;
-  list-style: none;
 }
 textarea {
   width: 100%;
@@ -82,6 +80,7 @@ textarea {
           top: 0 !important;
           margin: auto !important;
           position: relative !important;
+          vertical-align: top;
         }
         > img {
           user-select: none;
@@ -198,8 +197,9 @@ textarea {
     }
   }
   .po-options {
-    background-color: #fff;
+    background-color: #fdfdfd;
     padding: 10px;
+    border: 1px solid #ddd;
     font-size: 11px;
     text-align: left;
     white-space: nowrap;
@@ -209,8 +209,8 @@ textarea {
       max-width: 320px;
       vertical-align: top;
       & + .po-options-group {
-        margin-left: 15px;
-        padding-left: 15px;
+        margin-left: 20px;
+        padding-left: 20px;
         border-left: 1px #ddd solid;
       }
     }
@@ -235,12 +235,13 @@ textarea {
       input {
         font-size: inherit;
         border: 1px #ddd solid;
+        border-radius: 0;
         padding: 0.2em;
         background: #fff;
         height: 2em;
         line-height: 1;
         box-sizing: border-box;
-        box-shadow: 1px 1px 0 1px #eee inset;
+        // box-shadow: 1px 1px 0 1px #eee inset;
       }
       dd > input,
       dd > .field {
