@@ -1,8 +1,8 @@
 <template>
   <div class="po-save">
     <el-button type="primary">导入<input class="file" type="file" ref="file" @change="change" accept="*.json"></el-button>
-    <el-button type="primary" @click="ac_saveProject">保存</el-button>
     <el-button type="primary" @click="ac_clearProject">清空</el-button>
+    <el-button type="primary" @click="ac_saveProject">保存</el-button>
     <el-button type="primary" @click="ac_exportProject">导出</el-button>
   </div>
 </template>

@@ -30,7 +30,6 @@ export default {
     removeColor(val) {
       let _themeColors = deepClone(this.gt_themeColors);
       const index = _themeColors.findIndex(v => v === val);
-      console.log(index);
       _themeColors.splice(index, 1);
       this.ac_updateThemeColors(_themeColors);
     }

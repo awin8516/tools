@@ -52,7 +52,9 @@ export default {
     }
   },
   mounted() {
-    this.setSize();
+    this.$nextTick(() => {
+      this.setSize();
+    });
   }
 };
 </script>

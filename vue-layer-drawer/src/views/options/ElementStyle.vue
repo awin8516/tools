@@ -35,6 +35,7 @@
 import { mapGetters, mapActions } from "vuex";
 import Upload from "@/components/Upload.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
+import { getElementWidth } from "@/utils";
 import styleOptions from "@/utils/styleOptions";
 export default {
   name: "optionsElementStyle",
@@ -57,9 +58,11 @@ export default {
                   left: this._style["margin-left"],
                   top: this._style["margin-top"],
                   width:
-                    document.querySelector(
-                      '[data-vid="' + this.gt_elementSelected.vid + '"]'
-                    ).firstElementChild.clientWidth + "px" || 0,
+                    getElementWidth(
+                      '[data-vid="' +
+                        this.elementParams.vid +
+                        '"] > *:first-child'
+                    ) || 0,
                   "margin-left": "auto",
                   "margin-top": "auto"
                 }

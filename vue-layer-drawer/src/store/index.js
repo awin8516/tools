@@ -7,62 +7,65 @@ import getters from "./getters";
 Vue.use(Vuex);
 
 const state = {
-  screenOptions: {
-    sizeList: {
-      iphone4: {
-        width: "320px",
-        height: "416px",
-        media: "@media (min-width: 320px) and (max-height: 416px)"
+  default: {
+    screenOptions: {
+      sizeList: {
+        iphone4: {
+          width: "320px",
+          height: "416px",
+          media: "@media (min-width: 320px) and (max-height: 416px)"
+        },
+        iphone5: {
+          width: "320px",
+          height: "504px",
+          media: "@media (min-width: 320px) and (max-height: 504px)"
+        },
+        iphone6: {
+          width: "375px",
+          height: "603px",
+          media: "@media (min-width: 375px) and (max-height: 603px)"
+        },
+        iphone6Plus: {
+          width: "414px",
+          height: "672px",
+          media: "@media (min-width: 414px) and (max-height: 672px)"
+        },
+        iphone7: {
+          width: "375px",
+          height: "667px",
+          media: "@media (min-width: 375px) and (max-height: 667px)"
+        },
+        iphoneX: {
+          width: "375px",
+          height: "812px",
+          media: "@media (min-width: 375px) and (max-height: 812px)"
+        }
       },
-      iphone5: {
-        width: "320px",
-        height: "504px",
-        media: "@media (min-width: 320px) and (max-height: 504px)"
+      name: "index",
+      style: {
+        width: "",
+        height: "",
+        "background-image": "url()",
+        "background-color": "#fff",
+        "background-repeat": "no-repeat",
+        "background-size": "100% auto",
+        "background-position": "left top"
       },
-      iphone6: {
-        width: "375px",
-        height: "603px",
-        media: "@media (min-width: 375px) and (max-height: 603px)"
-      },
-      iphone6Plus: {
-        width: "414px",
-        height: "672px",
-        media: "@media (min-width: 414px) and (max-height: 672px)"
-      },
-      iphone7: {
-        width: "375px",
-        height: "667px",
-        media: "@media (min-width: 375px) and (max-height: 667px)"
-      },
-      iphoneX: {
-        width: "375px",
-        height: "812px",
-        media: "@media (min-width: 375px) and (max-height: 812px)"
-      }
+      el: null
     },
-    name: "index",
-    style: {
-      width: "",
-      height: "",
-      "background-image": "url()",
-      "background-color": "#fff",
-      "background-repeat": "no-repeat",
-      "background-size": "100% auto",
-      "background-position": "left top"
-    },
-    el: null
-  },
-  themeColors: [],
-  elementList: [],
-  mediaName: "default"
+    themeColors: [],
+    elementList: [],
+    mediaName: "default"
+  }
 };
 
+state.project = JSON.parse(JSON.stringify(state.default))
 const store = new Vuex.Store({
   state,
   actions,
   mutations,
   getters,
-  strict: false
+  strict: true
 });
 
 export default store;

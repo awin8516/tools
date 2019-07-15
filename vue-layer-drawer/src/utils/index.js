@@ -27,6 +27,23 @@ export function closest(ele, selecter) {
   return res
 }
 
+export function getStyle(obj, attr) {
+  if (obj.currentStyle) {
+    return obj.currentStyle[attr];
+  } else {
+    return getComputedStyle(obj, false)[attr];
+  }
+}
+
+export function getElementWidth(selecter) {
+  const element = document.querySelector(selecter)
+  return getStyle(element, 'width')
+}
+export function getElementHeight(selecter) {
+  const element = document.querySelector(selecter)
+  return getStyle(element, 'height')
+}
+
 export function deepClone(source) {
   if (!source && typeof source !== "object") {
     throw new Error("error arguments", "shallowClone");
@@ -56,9 +73,9 @@ export function file2base64(file) {
   return p;
 }
 
-export function resetLayerName(state, element) {
+export function resetLayerName(project, element) {
   const getLenBytype = type => {
-    return state.elementList.filter(v => v.type == type).length + 1;
+    return project.elementList.filter(v => v.type == type).length + 1;
   };
   let len = 0;
   switch (element.type) {
@@ -309,7 +326,7 @@ export function mergeJSON(Old, New) {
 }
 
 //清除不同 media 中样式重复项，保留差异项
-export function clearStyle(state) {
+export function clearSameStyle(project) {
   const merge = (base, target) => {
     for (var key in base) {
       if (typeof base[key] == "string") {
@@ -323,12 +340,12 @@ export function clearStyle(state) {
       }
     }
   }
-  for (let element of state.elementList) {
+  for (let element of project.elementList) {
     for (let key in element.style) {
-      if (key !== state.mediaName) {
-        merge(element.style[state.mediaName], element.style[key])
+      if (key !== project.mediaName) {
+        merge(element.style[project.mediaName], element.style[key])
       }
     }
   }
-  return state
+  return project
 }

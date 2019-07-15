@@ -2,99 +2,100 @@ import { deepClone, resetLayerName, mergeJSON } from "@/utils";
 import MSG from "@/utils/message";
 
 const mutations = {
-  SET_STATE: (state, component) => {
-    state = mergeJSON(state, component);
-    //强制刷新页面
-    state.themeColors = component.themeColors;
-    state.elementList = component.elementList;
-    console.log(state)
+  SET_PROJECT: (state, component) => {
+    state.project = component
+    // state = mergeJSON(state, component);
+    // //强制刷新页面
+    // state.project.themeColors = component.themeColors;
+    // state.project.elementList = component.elementList;
+    // console.log(state)
   },
   SET_UPDATEMEDIANAME: (state, component) => {
-    state.elementList.map(v => {
+    state.project.elementList.map(v => {
       if (!v.style[component]) {
-        v.style[component] = deepClone(v.style[state.mediaName]);
+        v.style[component] = deepClone(v.style[state.project.mediaName]);
       }
     });
-    state.mediaName = component;
-    state.screenOptions.style.width =
-      state.screenOptions.sizeList[component].width;
-    state.screenOptions.style.height =
-      state.screenOptions.sizeList[component].height;
+    state.project.mediaName = component;
+    state.project.screenOptions.style.width =
+      state.project.screenOptions.sizeList[component].width;
+    state.project.screenOptions.style.height =
+      state.project.screenOptions.sizeList[component].height;
   },
   SET_UPDATESCREENATTR: (state, component) => {
-    mergeJSON(state.screenOptions, component);
+    mergeJSON(state.project.screenOptions, component);
   },
   SET_UPDATESCREENSTYLE: (state, component) => {
-    state.screenOptions.style = Object.assign({}, state.screenOptions.style, component);
+    state.project.screenOptions.style = Object.assign({}, state.project.screenOptions.style, component);
   },
   SET_UPDATESCREENELEMENT: (state, component) => {
-    state.screenOptions.el = component;
+    state.default.screenOptions.el = component;
   },
   SET_UPDATETHEMECOLORS: (state, component) => {
-    state.themeColors = component;
+    state.project.themeColors = component;
   },
   SET_ADDELEMENT: (state, component) => {
-    if (!component.style[state.mediaName]) {
-      component.style[state.mediaName] = deepClone(component.style.default);
+    if (!component.style[state.project.mediaName]) {
+      component.style[state.project.mediaName] = deepClone(component.style.default);
     }
     // for(let key in state.screenOptions.sizeList){
     //   component.style[key] = deepClone(component.style.default);
     // }
     component.vid = new Date().getTime();
-    component = resetLayerName(state, component);
-    let elementSelected = state.elementList.find(v => v.selected);
+    component = resetLayerName(state.project, component);
+    let elementSelected = state.project.elementList.find(v => v.selected);
     //子元素
     if (elementSelected) {
       //必须是container容器才能加子元素
       if (elementSelected.container) {
         component.pid = elementSelected.vid;
-        state.elementList.push(component);
+        state.project.elementList.push(component);
       } else {
         alert(MSG['not-container'])
       }
     } else {
       //顶层元素
-      state.elementList.push(component);
+      state.project.elementList.push(component);
     }
     // state.elementList.push(component);
   },
   SET_DELETEELEMENT: (state, component) => {
-    let index = state.elementList.findIndex(v => v === component);
-    state.elementList.splice(index, 1);
-    if (state.elementList.length > 0) {
-      state.elementList[state.elementList.length - 1].selected = true;
+    let index = state.project.elementList.findIndex(v => v === component);
+    state.project.elementList.splice(index, 1);
+    if (state.project.elementList.length > 0) {
+      state.project.elementList[state.project.elementList.length - 1].selected = true;
     }
   },
-  SET_CLEARELEMENT: (state) => {
-    state.elementList = []
+  SET_CLEARPROJECT: (state) => {
+    state.project = deepClone(state.default)
   },
   SET_SELECTELEMENT: (state, component) => {
-    const element = state.elementList.find(v => v.vid === component.vid)
+    const element = state.project.elementList.find(v => v.vid === component.vid)
     if (element) {
-      state.elementList.map(v => (v.selected = false));
+      state.project.elementList.map(v => (v.selected = false));
       element.selected = true
-      state.elementList = deepClone(state.elementList);
+      state.project.elementList = deepClone(state.project.elementList);
     }
   },
   SET_CANCELACSELECTELEMENT: (state, component) => {
     if (component) {
       component.selected = false;
-      state.elementList = deepClone(state.elementList);
+      state.project.elementList = deepClone(state.project.elementList);
     }
   },
   SET_UPDATEELEMENTATTR: (state, component) => {
-    let element = component.vid ? state.elementList.find(v => v.vid == component.vid) : state.elementList.find(v => v.selected);
+    let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
     mergeJSON(element, component);
   },
   SET_REPLACEELEMENTATTR: (state, component) => {
-    let element = component.vid ? state.elementList.find(v => v.vid == component.vid) : state.elementList.find(v => v.selected);
+    let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
     for (const key in component) {
       element[key] = component[key]
     }
   },
   SET_UPDATESTYLE: (state, component) => {
-    let element = state.elementList.find(v => v.selected);
-    const a = (component) => {
+    let element = state.project.elementList.find(v => v.selected);
+    const formatMarginPadding = (component) => {
       for (const key in component) {
         switch (key) {
           case 'margin':
@@ -115,26 +116,27 @@ const mutations = {
       }
       return component
     }
-    element.style[state.mediaName] = Object.assign({}, element.style[state.mediaName], a(component));
+    element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
+    state.project.elementList = deepClone(state.project.elementList);
   },
   SET_UPDATELAYER: (state, act) => {
-    const index = state.elementList.findIndex(item => item.selected);
-    if (index + act >= state.elementList.length - 1) {
+    const index = state.project.elementList.findIndex(item => item.selected);
+    if (index + act >= state.project.elementList.length - 1) {
       //置顶
-      const _this = state.elementList[index];
-      state.elementList.splice(index, 1);
-      state.elementList = [...state.elementList, _this];
+      const _this = state.project.elementList[index];
+      state.project.elementList.splice(index, 1);
+      state.project.elementList = [...state.project.elementList, _this];
     } else if (index + act <= 0) {
       //置底
-      const _this = state.elementList[index];
-      state.elementList.splice(index, 1);
-      state.elementList = [_this, ...state.elementList];
+      const _this = state.project.elementList[index];
+      state.project.elementList.splice(index, 1);
+      state.project.elementList = [_this, ...state.project.elementList];
     } else {
       //上下移
-      const _this = state.elementList[index];
-      const _that = state.elementList[index + act];
-      state.elementList[index] = _that;
-      state.elementList[index + act] = _this;
+      const _this = state.project.elementList[index];
+      const _that = state.project.elementList[index + act];
+      state.project.elementList[index] = _that;
+      state.project.elementList[index + act] = _this;
     }
   },
   SET_REGISTERCONTEXTMENU: (state, menu) => {

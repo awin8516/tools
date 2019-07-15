@@ -1,4 +1,4 @@
-import { deepClone, array2Tree, object2style, formatHtml, clearStyle } from "@/utils";
+import { deepClone, array2Tree, object2style, formatHtml, clearSameStyle } from "@/utils";
 import JSZip from "jszip";
 import saveAs from "jszip/vendor/FileSaver";
 
@@ -31,9 +31,6 @@ const actions = {
   ac_deleteElement({ commit }, element) {
     commit("SET_DELETEELEMENT", element);
   },
-  ac_clearElement({ commit }) {
-    commit("SET_CLEARELEMENT");
-  },
   ac_updateElementAttr: ({ commit }, attr) => {
     commit("SET_UPDATEELEMENTATTR", attr);
   },
@@ -52,40 +49,39 @@ const actions = {
   },
   ac_importProject({ commit }, json) {
     if (json) {
-      const _state = JSON.parse(json);
-      commit("SET_STATE", _state);
+      const project = JSON.parse(json);
+      commit("SET_PROJECT", project);
     } else {
       console.log("导入错误")
     }
   },
   ac_saveProject({ state }) {
-    const _state = JSON.stringify(state);
-    window.localStorage.setItem('project', _state)
+    const project = JSON.stringify(state.project);
+    window.localStorage.setItem('project', project)
   },
   ac_clearProject({ commit }) {
-    window.localStorage.removeItem('project')
-    commit("SET_CLEARELEMENT");
+    commit("SET_CLEARPROJECT");
   },
 
   //打包下载
   ac_exportProject({ state }) {
     // console.log(state)
-    const pageName = state.screenOptions.name;
-    function createJson(state) {
-      let _state = deepClone(state)
-      delete _state.el
-      return JSON.stringify(_state)
+    const project = deepClone(state.project);
+    const pageName = project.screenOptions.name;
+    function createJson(project) {
+      delete project.screenOptions.el
+      return JSON.stringify(project)
     }
 
-    function createHtml(screen) {
-      let html = screen.el.innerHTML
+    function createHtml(project) {
+      let html = state.default.screenOptions.el.innerHTML
         .replace(
           /<ins(.*?)>|<\/ins>|style="(.*?)"|<mark(.*?)<\/mark>|<!--(.*?)-->/g,
           ""
         )
         .replace(
           /data-name="((?:(?!data-name).)*?)"\ssrc="data:image\/(.*?);base64,.*?"/g,
-          'src="image/' + pageName + '/$1-' + state.mediaName + '.$2"'
+          'src="image/' + pageName + '/$1-' + project.mediaName + '.$2"'
         )
         .replace(
           /data-name="(.*?)"/g,
@@ -114,11 +110,12 @@ const actions = {
       return doc;
     }
 
-    function createImg(screen) {
+    function createImg(project) {
+      const html = state.default.screenOptions.el.innerHTML
       let regexp = /data-name=".*?"/g;
-      const nameArr = screen.el.innerHTML.match(regexp);
+      const nameArr = html.match(regexp);
       regexp = /src=["|']?(.*?)("|'|(?=\s)|(?=>))|background-image.*?\)/g;
-      const srcArr = screen.el.innerHTML.match(regexp);
+      const srcArr = html.match(regexp);
       // console.log(srcArr)
       let imgs = [];
       srcArr &&
@@ -128,7 +125,7 @@ const actions = {
               fileExt: src
                 .match(/data:image\/(.*?);base64/)[1]
                 .replace("jpeg", "jpg"),
-              name: nameArr[index].replace(/data-name=|"|'/g, "") + '-' + state.mediaName,
+              name: nameArr[index].replace(/data-name=|"|'/g, "") + '-' + project.mediaName,
               src: src.match(/base64,(.*?)(\s|'|"|\)|&quot;)/)[1]
             });
           }
@@ -137,8 +134,8 @@ const actions = {
       return imgs;
     }
 
-    function createPageCss(_state) {
-      let style = _state.screenOptions.style
+    function createPageCss(project) {
+      let style = project.screenOptions.style
       for (const k in style) {
         if (k === "background-image" && style["background-image"] && style["background-image"].match(/data:image\/(.*?);base64/)) {
           const src = style["background-image"];
@@ -157,11 +154,11 @@ const actions = {
       });
     }
 
-    function createCss(state) {
+    function createCss(project) {
+      project = clearSameStyle(project)
       let css = "/* " + pageName + ".css */\n";
-      let _state = clearStyle(deepClone(state));
-      css += ".container-" + pageName + " {" + createPageCss(_state) + "}\n\n";
-      const tree = array2Tree(_state.elementList, "vid", "pid");
+      css += ".container-" + pageName + " {" + createPageCss(project) + "}\n\n";
+      const tree = array2Tree(project.elementList, "vid", "pid");
       // console.log(tree);
       const getClassName = className => "." + className.replace(/\s+/g, " ").split(" ").join(".");
       const getStyle = (element, key) => {
@@ -172,7 +169,7 @@ const actions = {
               const src = style["background-image"];
               // console.log(src)
               style["background-image"] = style["background-image"].replace(/.*?data:image\/(.*?);.*/g, "url(../image/" + pageName + "/" + element.name + '-' + key + ".$1)").replace(/\.jpeg/g, ".jpg");
-              if (key !== _state.mediaName) {
+              if (key !== project.mediaName) {
                 file.imgs.push({
                   fileExt: src.match(/data:image\/(.*?);base64/)[1].replace("jpeg", "jpg"),
                   name: element.name + "-" + key,
@@ -199,11 +196,11 @@ const actions = {
           }
         });
       };
-      mp(tree, "", _state.mediaName);
+      mp(tree, "", project.mediaName);
 
-      for (const key in _state.screenOptions.sizeList) {
-        const media = _state.screenOptions.sizeList[key].media;
-        if (key !== _state.mediaName) {
+      for (const key in project.screenOptions.sizeList) {
+        const media = project.screenOptions.sizeList[key].media;
+        if (key !== project.mediaName) {
           css += "\n\n";
           css += "/* " + key + " */\n";
           css += media + "{\n";
@@ -218,17 +215,17 @@ const actions = {
     let zip = new JSZip();
     let file = {};
 
-    //project.json
-    file.json = createJson(state);
-
     //HTML
-    file.html = createHtml(state.screenOptions);
+    file.html = createHtml(project);
 
     //IMAGES
-    file.imgs = createImg(state.screenOptions);
+    file.imgs = createImg(project);
 
     //CSS
-    file.css = createCss(state);
+    file.css = createCss(project);
+
+    //project.json
+    file.json = createJson(project);
 
     zip.file(pageName + ".json", file.json);
     zip.file(pageName + ".html", file.html);

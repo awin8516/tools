@@ -24,7 +24,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import * as Tags from "@/components/tags";
-import { closest } from "@/utils";
+import { closest, getElementWidth, getElementHeight } from "@/utils";
 export default {
   name: "Element",
   data() {
@@ -255,13 +255,9 @@ export default {
           }
         : {
             width:
-              document.querySelector(
-                '[data-vid="' + this.elementParams.vid + '"]'
-              ).firstElementChild.clientWidth || 0,
+              parseInt(getElementWidth('[data-vid="' + this.elementParams.vid + '"] > *:first-child')) || 0,
             height:
-              document.querySelector(
-                '[data-vid="' + this.elementParams.vid + '"]'
-              ).firstElementChild.clientHeight || 0
+              parseInt(getElementHeight('[data-vid="' + this.elementParams.vid + '"] > *:first-child')) || 0
           };
     },
     resize(el, data) {

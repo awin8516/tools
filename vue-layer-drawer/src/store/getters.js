@@ -1,21 +1,21 @@
 const getters = {
   gt_screenOptions(state) {
-    return state.screenOptions;
+    return state.project.screenOptions;
   },
   gt_elementList(state) {
-    return state.elementList;
+    return state.project.elementList;
   },
   gt_elementSelected(state) {
-    return state.elementList.find(item => item.selected);
+    return state.project.elementList.find(item => item.selected);
   },
   gt_indexSelected(state) {
-    return state.elementList.findIndex(item => item.selected);
+    return state.project.elementList.findIndex(item => item.selected);
   },
   gt_mediaName(state) {
-    return state.mediaName;
+    return state.project.mediaName;
   },
   gt_themeColors(state) {
-    return state.themeColors;
+    return state.project.themeColors;
   }
 };
 
