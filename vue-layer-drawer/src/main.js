@@ -9,6 +9,7 @@ import {
   Input,
   Select,
   Option,
+  Switch,
   Button,
   // ButtonGroup,
   // Alert,
@@ -27,6 +28,7 @@ Vue.use(Input);
 Vue.use(Button);
 Vue.use(Select);
 Vue.use(Option);
+Vue.use(Switch);
 Vue.use(Icon);
 Vue.use(ColorPicker);
 Vue.prototype.$loading = Loading.service;

@@ -1,10 +1,5 @@
 <template>
-  <img
-    :data-name="element.name"
-    :style="element.style[$parent.gt_mediaName]"
-    :src="element.src"
-    :class="element.className"
-  />
+  <img :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :src="element.attribute.src" :id="element.attribute.id" :class="element.attribute.className" />
 </template>
 
 <script>
@@ -15,9 +10,11 @@ export default {
       type: "img",
       icon: "img",
       name: "img-1",
-      id: "img-1",
-      className: "img img-test",
-      src: require("@/assets/img.jpg"),
+      attribute: {
+        id: "img-1",
+        className: "img img-test",
+        src: require("@/assets/img.jpg")
+      },
       style: {
         default: {
           position: "absolute",

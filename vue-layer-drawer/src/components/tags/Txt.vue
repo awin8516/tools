@@ -1,5 +1,5 @@
 <template>
-  <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :class="element.className">
+  <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :id="element.attribute.id" :class="element.attribute.className">
     <slot name="innerText"></slot>
   </div>
 </template>
@@ -13,10 +13,12 @@ export default {
       icon: "text",
       container: false,
       name: "text-1",
-      id: "text-1",
-      className: "text text-test",
       innerText: "",
       editing: true,
+      attribute: {
+        id: "text-1",
+        className: "text text-test"
+      },
       style: {
         default: {
           position: "absolute",

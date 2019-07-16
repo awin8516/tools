@@ -1,5 +1,14 @@
 <template>
-  <audio :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :src="element.attr.src" :autoplay="element.attr.autoplay" :class="element.attr.className"></audio>
+  <audio 
+  :data-name="element.name" 
+  :style="element.style[$parent.gt_mediaName]" 
+  :id="element.attribute.id" 
+  :class="element.attribute.className" 
+  :src="element.attribute.src" 
+  :autoplay="element.attribute.autoplay" 
+  :controls="element.attribute.controls" 
+  :loop="element.attribute.loop" 
+  :preload="element.attribute.preload"></audio>
 </template>
 
 <script>
@@ -10,12 +19,12 @@ export default {
       type: "audio",
       icon: "audio",
       name: "audio-1",
-      attr: {
+      attribute: {
         id: "audio-1",
         className: "audio audio-test",
         src: "",
-        autoplay: true,
-        controls: false,
+        autoplay: false,
+        controls: true,
         loop: false,
         preload: false
       },

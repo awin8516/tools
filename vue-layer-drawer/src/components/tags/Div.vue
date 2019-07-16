@@ -1,5 +1,5 @@
 <template>
-  <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :class="element.className">
+  <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :id="element.attribute.id" :class="element.attribute.className">
     <slot name="innerText"></slot>
     <slot name="children"></slot>
   </div>
@@ -15,10 +15,12 @@ export default {
       icon: "level",
       container: true,
       name: "div-1",
-      id: "div-1",
-      className: "div div-test",
       innerText: "",
       editing: false,
+      attribute: {
+        id: "div-1",
+        className: "div div-test"
+      },
       style: {
         default: {
           position: "absolute",
@@ -52,7 +54,7 @@ export default {
     ...mapActions(["ac_registerContextMenu"])
   },
   mounted() {
-    console.log(this);
+    // console.log(this);
     // this.contextMenu = [
     //   {
     //     icon: "el-icon-delete",

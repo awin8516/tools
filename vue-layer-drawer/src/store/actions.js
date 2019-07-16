@@ -31,6 +31,9 @@ const actions = {
   ac_deleteElement({ commit }, element) {
     commit("SET_DELETEELEMENT", element);
   },
+  ac_updateElement: ({ commit }, element) => {
+    commit("SET_UPDATEELEMENT", element);
+  },
   ac_updateElementAttr: ({ commit }, attr) => {
     commit("SET_UPDATEELEMENTATTR", attr);
   },
@@ -58,8 +61,10 @@ const actions = {
     const project = JSON.stringify(state.project);
     window.localStorage.setItem('project', project)
   },
-  ac_clearProject({ commit }) {
+  ac_clearProject({ commit, state }) {
+    const mediaName = state.project.mediaName
     commit("SET_CLEARPROJECT");
+    commit("SET_UPDATEMEDIANAME", mediaName);
   },
 
   //打包下载

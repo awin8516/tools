@@ -55,8 +55,8 @@ const styleOptions = {
     "font-size",
     "line-height"
   ],
-  upload:[
-    "src","background-image"
+  upload: [
+    "background-image"
   ]
 }
 export default styleOptions;

@@ -104,10 +104,10 @@ export default {
     ]),
     contextMenuList() {
       if (this.gt_contextMenu) {
-        console.log(this.gt_contextMenu)
+        // console.log(this.gt_contextMenu)
         return this.contextMenuDefault.concat(this.gt_contextMenu);
       } else {
-        console.log(this.gt_contextMenu)
+        // console.log(this.gt_contextMenu)
         return this.contextMenuDefault;
       }
     },
@@ -182,7 +182,7 @@ export default {
       "ac_selectElement",
       "ac_deleteElement",
       "ac_updateLayer",
-      "ac_updateElementAttr",
+      "ac_updateElement",
       "ac_replaceElementAttr",
       "ac_updateStyle"
     ]),
@@ -278,7 +278,7 @@ export default {
       this.ac_updateStyle(style);
     },
     updateText(e) {
-      this.ac_updateElementAttr({
+      this.ac_updateElement({
         innerText: e.target.value,
         editing: false,
         vid: this.elementParams.vid

@@ -82,20 +82,26 @@ export function resetLayerName(project, element) {
     case "div":
       len = getLenBytype("div");
       element.name = "div-" + len;
-      element.id = "div-" + len;
-      element.className = "div div-" + getLenBytype("div");
+      element.attribute.id = "div-" + len;
+      element.attribute.className = "div div-" + getLenBytype("div");
       break;
     case "img":
       len = getLenBytype("img");
       element.name = "img-" + len;
-      element.id = "img-" + len;
-      element.className = "img img-" + len;
+      element.attribute.id = "img-" + len;
+      element.attribute.className = "img img-" + len;
       break;
     case "txt":
       len = getLenBytype("txt");
       element.name = "txt-" + len;
-      element.id = "txt-" + len;
-      element.className = "txt txt-" + len;
+      element.attribute.id = "txt-" + len;
+      element.attribute.className = "txt txt-" + len;
+      break;
+    case "audio":
+      len = getLenBytype("audio");
+      element.name = "audio-" + len;
+      element.attribute.id = "audio-" + len;
+      element.attribute.className = "audio audio-" + len;
       break;
     default:
   }

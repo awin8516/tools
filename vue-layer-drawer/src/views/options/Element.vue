@@ -7,7 +7,7 @@
         <input type="text" v-model.lazy="name">
       </dd>
     </dl>
-    <dl>
+    <!-- <dl>
       <dd>
         <label class="h2">id:</label>
         <input type="text" v-model.lazy="id">
@@ -26,6 +26,19 @@
           <Upload :val.sync="src"></Upload>
         </div>
       </dd>
+    </dl> -->
+    <dl v-if="typeof attribute !== 'undefined'">
+      <dt class="h2">Attribute</dt>
+      <template v-for="(value, key) in attribute">
+        <ElementAttribute :key="key" :_key="key" :_attribute="attribute"></ElementAttribute>
+      </template>
+      <!-- <dd>
+        <h2 class="h2">自定义：</h2>
+        <div class="style-custom">
+          <textarea v-model="styleCustom"></textarea>
+          <div class="submit disabled0" @click="pushStyle"></div>
+        </div>
+      </dd> -->
     </dl>
     <dl v-if="typeof style !== 'undefined'">
       <dt class="h2">Style</dt>
@@ -48,6 +61,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import ElementAttribute from "@/views/options/ElementAttribute.vue";
 import ElementStyle from "@/views/options/ElementStyle.vue";
 import Upload from "@/components/Upload.vue";
 import { style2object } from "@/utils";
@@ -70,31 +84,38 @@ export default {
         return this.elementSelected && this.elementSelected.name;
       },
       set: function(v) {
-        this.ac_updateElementAttr({ name: v });
+        this.ac_updateElement({ name: v });
       }
     },
-    id: {
+    // id: {
+    //   get: function() {
+    //     return this.elementSelected && this.elementSelected.id;
+    //   },
+    //   set: function(v) {
+    //     this.ac_updateElementAttr({ id: v });
+    //   }
+    // },
+    // className: {
+    //   get: function() {
+    //     return this.elementSelected && this.elementSelected.className;
+    //   },
+    //   set: function(v) {
+    //     this.ac_updateElementAttr({ className: v });
+    //   }
+    // },
+    // src: {
+    //   get: function() {
+    //     return this.elementSelected && this.elementSelected.src;
+    //   },
+    //   set: function(v) {
+    //     this.ac_updateElementAttr({ src: v });
+    //   }
+    // },
+    attribute: {
       get: function() {
-        return this.elementSelected && this.elementSelected.id;
-      },
-      set: function(v) {
-        this.ac_updateElementAttr({ id: v });
-      }
-    },
-    className: {
-      get: function() {
-        return this.elementSelected && this.elementSelected.className;
-      },
-      set: function(v) {
-        this.ac_updateElementAttr({ className: v });
-      }
-    },
-    src: {
-      get: function() {
-        return this.elementSelected && this.elementSelected.src;
-      },
-      set: function(v) {
-        this.ac_updateElementAttr({ src: v });
+        return (
+          this.elementSelected && this.elementSelected.attribute
+        );
       }
     },
     style: {
@@ -106,11 +127,13 @@ export default {
     }
   },
   components: {
+    ElementAttribute,
     ElementStyle,
     Upload
   },
   methods: {
     ...mapActions([
+      "ac_updateElement",
       "ac_updateElementAttr",
       "ac_deleteElement",
       "ac_updateStyle"

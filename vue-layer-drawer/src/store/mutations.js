@@ -83,14 +83,18 @@ const mutations = {
       state.project.elementList = deepClone(state.project.elementList);
     }
   },
-  SET_UPDATEELEMENTATTR: (state, component) => {
+  SET_UPDATEELEMENT: (state, component) => {
     let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
     mergeJSON(element, component);
+  },
+  SET_UPDATEELEMENTATTR: (state, component) => {
+    let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
+    mergeJSON(element.attribute, component);
   },
   SET_REPLACEELEMENTATTR: (state, component) => {
     let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
     for (const key in component) {
-      element[key] = component[key]
+      element.attribute[key] = component[key]
     }
   },
   SET_UPDATESTYLE: (state, component) => {
