@@ -44,7 +44,6 @@ const actions = {
     commit("SET_UPDATELAYER", act);
   },
   ac_registerContextMenu({ commit }, menu) {
-    console.log(menu)
     commit("SET_REGISTERCONTEXTMENU", menu);
   },
   ac_importProject({ commit }, json) {

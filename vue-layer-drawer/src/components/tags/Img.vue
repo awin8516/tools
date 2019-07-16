@@ -13,7 +13,7 @@ export default {
   data() {
     return {
       type: "img",
-      icon: "picture",
+      icon: "img",
       name: "img-1",
       id: "img-1",
       className: "img img-test",

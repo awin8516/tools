@@ -10,7 +10,7 @@
     </component>
     <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
       <ul>
-        <li v-for="(item, index) in elementParams.contextMenu" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
+        <li v-for="(item, index) in contextMenuList" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
       </ul>
       <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
     </mark>
@@ -23,7 +23,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import * as Tags from "@/components/tags";
+import * as Tags from "@/components/Tags";
 import { closest, getElementWidth, getElementHeight } from "@/utils";
 export default {
   name: "Element",
@@ -100,21 +100,17 @@ export default {
       "gt_elementList",
       "gt_mediaName",
       "gt_indexSelected",
-      "ac_registerContextMenu"
+      "gt_contextMenu"
     ]),
-    // contextMenuList() {
-    //   if (this.elementParams.contextMenu) {
-    //     const contextMenu = this.contextMenuDefault.concat(
-    //       this.elementParams.contextMenu
-    //     );
-    //     this.$parent.ac_updateElementAttr({
-    //       contextMenu: contextMenu
-    //     });
-    //     return this.contextMenuDefault.concat(this.elementParams.contextMenu);
-    //   } else {
-    //     return this.contextMenuDefault;
-    //   }
-    // },
+    contextMenuList() {
+      if (this.gt_contextMenu) {
+        console.log(this.gt_contextMenu)
+        return this.contextMenuDefault.concat(this.gt_contextMenu);
+      } else {
+        console.log(this.gt_contextMenu)
+        return this.contextMenuDefault;
+      }
+    },
     style() {
       return this.elementParams.style[this.gt_mediaName];
     },
@@ -255,9 +251,17 @@ export default {
           }
         : {
             width:
-              parseInt(getElementWidth('[data-vid="' + this.elementParams.vid + '"] > *:first-child')) || 0,
+              parseInt(
+                getElementWidth(
+                  '[data-vid="' + this.elementParams.vid + '"] > *:first-child'
+                )
+              ) || 0,
             height:
-              parseInt(getElementHeight('[data-vid="' + this.elementParams.vid + '"] > *:first-child')) || 0
+              parseInt(
+                getElementHeight(
+                  '[data-vid="' + this.elementParams.vid + '"] > *:first-child'
+                )
+              ) || 0
           };
     },
     resize(el, data) {

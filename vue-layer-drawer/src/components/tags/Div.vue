@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       type: "div",
-      icon: "menu",
+      icon: "level",
       container: true,
       name: "div-1",
       id: "div-1",
@@ -62,16 +62,18 @@ export default {
     //     }
     //   }
     // ];
-    this.ac_registerContextMenu([
-      {
-        name: "cm_editInnerText",
-        icon: "el-icon-delete",
-        label: "编辑文字",
-        command: () => {
-          this.$parent.ac_updateElementAttr({ editing: true });
-        }
-      }
-    ]);
+
+    // this.ac_registerContextMenu([
+    //   {
+    //     name: "cm_editInnerText",
+    //     icon: "el-icon-delete",
+    //     label: "编辑文字",
+    //     command: () => {
+    //       this.$parent.ac_updateElementAttr({ editing: true });
+    //     }
+    //   }
+    // ]);
+
     // this.$parent.ac_updateElementAttr({
     //   contextMenu: [
     //     {

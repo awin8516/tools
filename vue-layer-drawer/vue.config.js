@@ -38,6 +38,17 @@ module.exports = {
     //if(process.env.NODE_ENV === 'production') { // 为生产环境修改配置...process.env.NODE_ENV !== 'development'
     //} else {// 为开发环境修改配置...
     //}
+    // svg rule loader
+    const svgRule = config.module.rule('svg') // 找到svg-loader
+    svgRule.uses.clear() // 清除已有的loader, 如果不这样做会添加在此loader之后
+    svgRule.exclude.add(/node_modules/) // 正则匹配排除node_modules目录
+    svgRule // 添加svg新的loader处理
+      .test(/\.svg$/)
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]',
+      })
   },
   //调整 webpack 配置 https://cli.vuejs.org/zh/guide/webpack.html#%E7%AE%80%E5%8D%95%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F
   configureWebpack: config => {

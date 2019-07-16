@@ -140,7 +140,8 @@ const mutations = {
     }
   },
   SET_REGISTERCONTEXTMENU: (state, menu) => {
-
+    state.contextMenu = state.contextMenu.concat(menu)
+    console.log(state.contextMenu)
   }
 };
 

@@ -1,12 +1,14 @@
 <template>
   <div class="po-toolbar">
-    <el-button v-for="(item,index) in tagsList" :key="index" :icon="'el-icon-'+item.icon" :title="'创建'+item.type" circle @click="ac_addElement(item)"></el-button>
+    <el-button v-for="(item,index) in tagsList" :key="index" :title="'创建'+item.type" circle @click="ac_addElement(item)">
+      <svg-icon :icon-class="item.icon"></svg-icon>
+    </el-button>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import * as Tags from "@/components/tags";
+import * as Tags from "@/components/Tags";
 import { deepClone } from "@/utils";
 import MSG from "@/utils/message";
 export default {

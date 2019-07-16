@@ -16,6 +16,9 @@ const getters = {
   },
   gt_themeColors(state) {
     return state.project.themeColors;
+  },
+  gt_contextMenu(state) {
+    return state.contextMenu;
   }
 };
 

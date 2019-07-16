@@ -10,7 +10,7 @@ export default {
   data() {
     return {
       type: "txt",
-      icon: "edit-outline",
+      icon: "text",
       container: false,
       name: "text-1",
       id: "text-1",
