@@ -24,6 +24,7 @@
       <label>{{_key}}:</label>
       <input type="text" v-model.lazy="value" />
     </template>
+    <i class="delete-param el-icon-remove" @click="ac_deleteAttribute(_key)"></i>
   </dd>
 </template>
 
@@ -52,7 +53,7 @@ export default {
     Upload
   },
   methods: {
-    ...mapActions(["ac_updateElementAttr"])
+    ...mapActions(["ac_updateElementAttr", "ac_deleteAttribute"])
   }
 };
 </script>

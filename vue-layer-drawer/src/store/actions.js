@@ -12,6 +12,9 @@ const actions = {
   ac_updateScreenStyle: ({ commit }, value) => {
     commit("SET_UPDATESCREENSTYLE", value);
   },
+  ac_deleteScreenStyle: ({ commit }, value) => {
+    commit("SET_DELETESCREENSTYLE", value);
+  },
   ac_updateScreenElement: ({ commit }, value) => {
     commit("SET_UPDATESCREENELEMENT", value);
   },
@@ -37,17 +40,20 @@ const actions = {
   ac_updateElementAttr: ({ commit }, attr) => {
     commit("SET_UPDATEELEMENTATTR", attr);
   },
+  ac_deleteAttribute({ commit }, attr) {
+    commit("SET_DELETEATTRIBUTE", attr);
+  },
   ac_replaceElementAttr: ({ commit }, attr) => {
     commit("SET_REPLACEELEMENTATTR", attr);
   },
   ac_updateStyle({ commit }, style) {
     commit("SET_UPDATESTYLE", style);
   },
+  ac_deleteStyle({ commit }, style) {
+    commit("SET_DELETESTYLE", style);
+  },
   ac_updateLayer({ commit }, act) {
     commit("SET_UPDATELAYER", act);
-  },
-  ac_registerContextMenu({ commit }, menu) {
-    commit("SET_REGISTERCONTEXTMENU", menu);
   },
   ac_importProject({ commit }, json) {
     if (json) {
@@ -88,6 +94,10 @@ const actions = {
           'src="image/' + pageName + '/$1-' + project.mediaName + '.$2"'
         )
         .replace(
+          /data-name="((?:(?!data-name).)*?)"\ssrc="data:audio\/(.*?);base64,.*?"/g,
+          'src="audio/$1.$2"'
+        )
+        .replace(
           /data-name="(.*?)"/g,
           ""
         ).replace(/\s+/g, ' ')
@@ -114,28 +124,26 @@ const actions = {
       return doc;
     }
 
-    function createImg(project) {
+    function createFile(project, type) {
       const html = state.default.screenOptions.el.innerHTML
       let regexp = /data-name=".*?"/g;
       const nameArr = html.match(regexp);
       regexp = /src=["|']?(.*?)("|'|(?=\s)|(?=>))|background-image.*?\)/g;
       const srcArr = html.match(regexp);
-      // console.log(srcArr)
-      let imgs = [];
+      const extRegExp = new RegExp("data:" + type + "\/(.*?);base64");
+      const subName = type === "image" ? '-' + project.mediaName : '';
+      let files = [];
       srcArr &&
         srcArr.forEach((src, index) => {
-          if (src.match(/data:image\/(.*?);base64/)) {
-            imgs.push({
-              fileExt: src
-                .match(/data:image\/(.*?);base64/)[1]
-                .replace("jpeg", "jpg"),
-              name: nameArr[index].replace(/data-name=|"|'/g, "") + '-' + project.mediaName,
+          if (src.match(extRegExp)) {
+            files.push({
+              fileExt: src.match(extRegExp)[1].replace("jpeg", "jpg"),
+              name: nameArr[index].replace(/data-name=|"|'/g, "") + subName,
               src: src.match(/base64,(.*?)(\s|'|"|\)|&quot;)/)[1]
             });
           }
         });
-      // console.log(imgs)
-      return imgs;
+      return files;
     }
 
     function createPageCss(project) {
@@ -222,8 +230,11 @@ const actions = {
     //HTML
     file.html = createHtml(project);
 
-    //IMAGES
-    file.imgs = createImg(project);
+    //images
+    file.imgs = createFile(project, "image");
+
+    //audio
+    file.audio = createFile(project, "audio");
 
     //CSS
     file.css = createCss(project);
@@ -240,6 +251,13 @@ const actions = {
         base64: true
       });
     });
+    let folderAudio = zip.folder("audio");
+    file.audio.forEach(element => {
+      folderAudio.file(element.name + "." + element.fileExt, element.src, {
+        base64: true
+      });
+    });
+
     let folderCss = zip.folder("css");
     folderCss.file(pageName + ".css", file.css);
     folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;}");

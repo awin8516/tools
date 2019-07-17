@@ -320,7 +320,6 @@ export function mergeJSON(Old, New) {
     }
     // 冲突了，如果是Object，看看有么有不冲突的属性
     // 不是Object 则以（Old）为准为主，
-    // console.log(key)
     if (isJSON(Old[key]) || isArray(Old[key])) {
       // arguments.callee 递归调用，并且与函数名解耦
       //arguments.callee(Old[key], New[key]);
@@ -334,11 +333,16 @@ export function mergeJSON(Old, New) {
 export function clearSameStyle(project) {
   const merge = (base, target) => {
     for (var key in base) {
-      if (typeof base[key] == "string") {
+      if (
+        base[key] === undefined ||
+        base[key] === null ||
+        typeof base[key] == "string" ||
+        typeof base[key] == "boolean"
+      ) {
         if (target[key] === base[key]) {
           delete target[key];
-          continue;
         }
+        continue;
       }
       if (isJSON(base[key]) || isArray(base[key])) {
         merge(base[key], target[key]);
@@ -353,4 +357,14 @@ export function clearSameStyle(project) {
     }
   }
   return project
+}
+
+//注册右键菜单
+export function registerContextMenu(element, menu) {
+  if (menu.sort !== undefined) {
+    element.$parent.contextMenuList.splice(menu.sort, 0, menu);
+  } else {
+    element.$parent.contextMenuList.push(menu);
+  }
+  return element.$parent.contextMenuList
 }

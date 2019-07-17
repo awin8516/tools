@@ -28,6 +28,7 @@
       <label>{{_key}}:</label>
       <input type="text" v-model.lazy="value" />
     </template>
+    <i class="delete-param el-icon-remove" @click="ac_deleteScreenStyle(_key)"></i>
   </dd>
 </template>
 
@@ -59,7 +60,7 @@ export default {
     ColorPicker
   },
   methods: {
-    ...mapActions(["ac_updateScreenStyle"])
+    ...mapActions(["ac_updateScreenStyle", "ac_deleteScreenStyle"])
   }
 };
 </script>

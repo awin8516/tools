@@ -34,7 +34,7 @@ const styleOptions = {
     "list-style-type": ["disc", "circle", "square", "decimal", "lower-roman", "upper-roman", "lower-alpha", "upper-alpha", "none", "armenian", "cjk-ideographic", "georgian", "lower-greek", "hebrew", "hiragana", "hiragana-iroha", "katakana", "katakana-iroha", "lower-latin", "upper-latin"],
     "table-layout": ["auto", "fixed"],
     "border-collapse": ["separate", "collapse"],
-    "position": ["static", "relative", "absolute", "fixed", "center", "page", "sticky"]
+    "position": ["","static", "relative", "absolute", "fixed", "center", "page", "sticky"]
   },
   color: ["background-color", "color"],
   range: [

@@ -36,7 +36,7 @@ export default {
         width: 0,
         height: 0
       },
-      contextMenuDefault: [
+      contextMenuList: [
         {
           name: "cm_zindexMoveUp",
           icon: "el-icon-upload2",
@@ -102,15 +102,6 @@ export default {
       "gt_indexSelected",
       "gt_contextMenu"
     ]),
-    contextMenuList() {
-      if (this.gt_contextMenu) {
-        // console.log(this.gt_contextMenu)
-        return this.contextMenuDefault.concat(this.gt_contextMenu);
-      } else {
-        // console.log(this.gt_contextMenu)
-        return this.contextMenuDefault;
-      }
-    },
     style() {
       return this.elementParams.style[this.gt_mediaName];
     },
@@ -283,26 +274,6 @@ export default {
         editing: false,
         vid: this.elementParams.vid
       });
-    },
-    addContextMenu() {
-      this.$nextTick(() => {
-        console.log(this.elementParams);
-        console.log(Tags.Div.data());
-      });
-      console.log(this.elementParams);
-      // if (this.elementParams.contextMenu) {
-      //   const contextMenu = this.contextMenuDefault.concat(
-      //     this.elementParams.contextMenu
-      //   );
-      //   console.log(contextMenu);
-      //   this.ac_replaceElementAttr({
-      //     contextMenu: contextMenu
-      //   });
-      // } else {
-      //   this.ac_replaceElementAttr({
-      //     contextMenu: this.contextMenuDefault
-      //   });
-      // }
     }
   },
   filters: {
@@ -315,7 +286,6 @@ export default {
   mounted() {
     try {
       this.component = this.elementParams.file.replace(/(.*\/)|.vue/g, "");
-      // this.addContextMenu();
     } catch (e) {
       throw new Error(e);
     }

@@ -10,7 +10,7 @@ const attributeOptions = {
     // "loop": ["false", "true"],
     // "preload": ["false", "true"]
   },
-  switch: ["autoplay", "controls", "loop", "preload"],
+  switch: ["bgm","autoplay", "controls", "loop", "preload"],
   upload: [
     "src"
   ]

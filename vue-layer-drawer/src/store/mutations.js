@@ -28,6 +28,16 @@ const mutations = {
   SET_UPDATESCREENSTYLE: (state, component) => {
     state.project.screenOptions.style = Object.assign({}, state.project.screenOptions.style, component);
   },
+  SET_DELETESCREENSTYLE: (state, component) => {
+    if (typeof component == 'object') {
+      component.forEach(style => {
+        delete state.project.screenOptions.style[style]
+      });
+    } else {
+      delete state.project.screenOptions.style[component]
+    }
+    state.project.screenOptions.style = deepClone(state.project.screenOptions.style);
+  },
   SET_UPDATESCREENELEMENT: (state, component) => {
     state.default.screenOptions.el = component;
   },
@@ -38,9 +48,6 @@ const mutations = {
     if (!component.style[state.project.mediaName]) {
       component.style[state.project.mediaName] = deepClone(component.style.default);
     }
-    // for(let key in state.screenOptions.sizeList){
-    //   component.style[key] = deepClone(component.style.default);
-    // }
     component.vid = new Date().getTime();
     component = resetLayerName(state.project, component);
     let elementSelected = state.project.elementList.find(v => v.selected);
@@ -57,13 +64,14 @@ const mutations = {
       //顶层元素
       state.project.elementList.push(component);
     }
-    // state.elementList.push(component);
   },
   SET_DELETEELEMENT: (state, component) => {
     let index = state.project.elementList.findIndex(v => v === component);
-    state.project.elementList.splice(index, 1);
-    if (state.project.elementList.length > 0) {
-      state.project.elementList[state.project.elementList.length - 1].selected = true;
+    if (index) {
+      state.project.elementList.splice(index, 1);
+      if (state.project.elementList.length > 0) {
+        state.project.elementList[state.project.elementList.length - 1].selected = true;
+      }
     }
   },
   SET_CLEARPROJECT: (state) => {
@@ -85,16 +93,31 @@ const mutations = {
   },
   SET_UPDATEELEMENT: (state, component) => {
     let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
-    mergeJSON(element, component);
+    element && mergeJSON(element, component);
   },
   SET_UPDATEELEMENTATTR: (state, component) => {
     let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
-    mergeJSON(element.attribute, component);
+    element && mergeJSON(element.attribute, component);
+  },
+  SET_DELETEATTRIBUTE: (state, component) => {
+    let element = state.project.elementList.find(v => v.selected);
+    if (element) {
+      if (typeof component == 'object') {
+        component.forEach(attribute => {
+          delete element.attribute[attribute]
+        });
+      } else {
+        delete element.attribute[component]
+      }
+      state.project.elementList = deepClone(state.project.elementList);
+    }
   },
   SET_REPLACEELEMENTATTR: (state, component) => {
     let element = component.vid ? state.project.elementList.find(v => v.vid == component.vid) : state.project.elementList.find(v => v.selected);
-    for (const key in component) {
-      element.attribute[key] = component[key]
+    if (element) {
+      for (const key in component) {
+        element.attribute[key] = component[key]
+      }
     }
   },
   SET_UPDATESTYLE: (state, component) => {
@@ -123,6 +146,21 @@ const mutations = {
     element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
     state.project.elementList = deepClone(state.project.elementList);
   },
+  SET_DELETESTYLE: (state, component) => {
+    let element = state.project.elementList.find(v => v.selected);
+    if (typeof component == 'object') {
+      for (const key in element.style) {
+        component.forEach(style => {
+          delete element.style[key][style]
+        });
+      }
+    } else {
+      for (const key in element.style) {
+        delete element.style[key][component]
+      }
+    }
+    state.project.elementList = deepClone(state.project.elementList);
+  },
   SET_UPDATELAYER: (state, act) => {
     const index = state.project.elementList.findIndex(item => item.selected);
     if (index + act >= state.project.elementList.length - 1) {
@@ -142,10 +180,6 @@ const mutations = {
       state.project.elementList[index] = _that;
       state.project.elementList[index + act] = _this;
     }
-  },
-  SET_REGISTERCONTEXTMENU: (state, menu) => {
-    state.contextMenu = state.contextMenu.concat(menu)
-    console.log(state.contextMenu)
   }
 };
 

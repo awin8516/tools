@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { registerContextMenu } from "@/utils";
 export default {
   name: "Div",
   data() {
@@ -31,6 +31,7 @@ export default {
           width: "100px",
           height: "100px",
           display: "block",
+          color: "",
           "background-image": "url()",
           "background-color": "#eee",
           "background-repeat": "no-repeat",
@@ -38,55 +39,19 @@ export default {
           "background-position": "left top"
         }
       }
-      // contextMenu: [
-      //   {
-      //     icon: "el-icon-delete",
-      //     name: "编辑文字",
-      //     command: () => {
-      //       this.$parent.ac_updateElementAttr({ editing: true });
-      //     }
-      //   }
-      // ]
     };
   },
   props: ["element"],
-  methods: {
-    ...mapActions(["ac_registerContextMenu"])
-  },
   mounted() {
-    // console.log(this);
-    // this.contextMenu = [
-    //   {
-    //     icon: "el-icon-delete",
-    //     name: "编辑文字",
-    //     command: () => {
-    //       this.$parent.ac_updateElementAttr({ editing: true });
-    //     }
-    //   }
-    // ];
-
-    // this.ac_registerContextMenu([
-    //   {
-    //     name: "cm_editInnerText",
-    //     icon: "el-icon-delete",
-    //     label: "编辑文字",
-    //     command: () => {
-    //       this.$parent.ac_updateElementAttr({ editing: true });
-    //     }
-    //   }
-    // ]);
-
-    // this.$parent.ac_updateElementAttr({
-    //   contextMenu: [
-    //     {
-    //       icon: "el-icon-delete",
-    //       name: "编辑文字",
-    //       command: () => {
-    //         this.$parent.ac_updateElementAttr({ editing: true });
-    //       }
-    //     }
-    //   ]
-    // });
+    registerContextMenu(this, {
+      name: "cm_editInnerText",
+      icon: "el-icon-delete",
+      label: "编辑文字",
+      sort: 4,
+      command: () => {
+        this.$parent.ac_updateElement({ editing: true });
+      }
+    });
   }
 };
 </script>

@@ -2,7 +2,7 @@
   <div class="po-upload">
     <div class="input">
       <input class="text" type="text" v-model.lazy="src">
-      <input class="file" type="file" ref="file" @change="change" accept="image/gif, image/jpeg, image/png">
+      <input class="file" type="file" ref="file" @change="change" accept="image/gif, image/jpeg, image/png, audio/*">
     </div>
     <button @click="open">选择</button>
   </div>

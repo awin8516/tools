@@ -24,8 +24,10 @@ export default {
     ...mapActions(["ac_updateThemeColors"]),
     addColor(val) {
       let _themeColors = deepClone(this.gt_themeColors);
-      _themeColors.push(val);
-      this.ac_updateThemeColors(_themeColors);
+      if (!_themeColors.includes(val)) {
+        _themeColors.push(val);
+        this.ac_updateThemeColors(_themeColors);
+      }
     },
     removeColor(val) {
       let _themeColors = deepClone(this.gt_themeColors);
@@ -56,7 +58,7 @@ export default {
       height: 0.2rem;
       margin-right: 4%;
       margin-bottom: 4%;
-      box-shadow: 0 0 1px rgba(0,0,0,0.1);
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
       &::before {
         content: "";
         display: inline-block;
@@ -66,7 +68,7 @@ export default {
       &:hover {
         z-index: 100;
         transform: scale(1.2);
-        box-shadow: 0 0 1px rgba(0,0,0,0.3);
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
         b {
           position: absolute;
           left: 100%;
@@ -96,8 +98,9 @@ export default {
     }
   }
   .add {
-    border-top: 1px #eee solid;padding-top: .5em;
-    margin-top: .5em;
+    border-top: 1px #eee solid;
+    padding-top: 0.5em;
+    margin-top: 0.5em;
   }
 }
 </style>

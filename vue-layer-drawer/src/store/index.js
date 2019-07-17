@@ -56,8 +56,7 @@ const state = {
     themeColors: [],
     elementList: [],
     mediaName: "default"
-  },
-  contextMenu: []
+  }
 };
 
 state.project = JSON.parse(JSON.stringify(state.default))

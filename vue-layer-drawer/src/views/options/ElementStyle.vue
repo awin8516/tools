@@ -11,7 +11,7 @@
     <template v-else-if="styleOptions.upload.includes(_key)">
       <label>{{_key}}:</label>
       <div class="field">
-        <Upload :val.sync="value" :template="'url(#)'"></Upload>
+        <Upload :val.sync="value" :template="'url(#)'"></Upload>        
       </div>
     </template>
     <template v-else-if="styleOptions.color.includes(_key)">
@@ -28,6 +28,7 @@
       <label>{{_key}}:</label>
       <input type="text" v-model.lazy="value" />
     </template>
+    <i class="delete-param el-icon-remove" @click="ac_deleteStyle(_key)"></i>
   </dd>
 </template>
 
@@ -60,7 +61,7 @@ export default {
                   width:
                     getElementWidth(
                       '[data-vid="' +
-                        this.elementParams.vid +
+                        this.gt_elementSelected.vid +
                         '"] > *:first-child'
                     ) || 0,
                   "margin-left": "auto",
@@ -74,6 +75,8 @@ export default {
                   width: "auto"
                 };
           style.position = v;
+        } else if(this._key == "background-image") {
+          style = { [this._key]: v };
         } else {
           style = { [this._key]: v };
         }
@@ -86,7 +89,7 @@ export default {
     ColorPicker
   },
   methods: {
-    ...mapActions(["ac_updateStyle"])
+    ...mapActions(["ac_updateStyle", "ac_deleteStyle"])
   }
 };
 </script>

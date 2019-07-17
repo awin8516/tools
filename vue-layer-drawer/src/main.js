@@ -15,6 +15,7 @@ import {
   // Alert,
   Icon,
   Loading,
+  Autocomplete,
   ColorPicker,
   MessageBox,
   Message
@@ -30,6 +31,7 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(Switch);
 Vue.use(Icon);
+Vue.use(Autocomplete);
 Vue.use(ColorPicker);
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$alert = MessageBox.alert;
