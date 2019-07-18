@@ -60,7 +60,6 @@ export default {
     cancelacSelectElement() {
       setTimeout(() => {
         this.ac_cancelacSelectElement();
-        console.log(9)
       }, 1);
     }
   },

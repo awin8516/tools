@@ -1,15 +1,13 @@
 <template>
   <div class="po-options-group">
-    <h2>页面</h2>
+    <h2><i class="el-icon-setting"></i> 页面</h2>
     <dl>
       <dd>
-        <label class="h2">name:</label>
+        <label>name:</label>
         <input type="text" v-model.lazy="name">
       </dd>
-    </dl>
-    <dl>
       <dd>
-        <label class="h2">主题色系:</label>
+        <label>主题色系:</label>
         <div class="field">
           <ThemeColors></ThemeColors>
         </div>

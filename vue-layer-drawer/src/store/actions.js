@@ -55,6 +55,9 @@ const actions = {
   ac_updateLayer({ commit }, act) {
     commit("SET_UPDATELAYER", act);
   },
+  ac_updateElementOptions({ commit }, value) {
+    commit("SET_UPDATEELEMENTOPTIONS", value);
+  },
   ac_importProject({ commit }, json) {
     if (json) {
       const project = JSON.parse(json);

@@ -122,44 +122,48 @@ const mutations = {
   },
   SET_UPDATESTYLE: (state, component) => {
     let element = state.project.elementList.find(v => v.selected);
-    const formatMarginPadding = (component) => {
-      for (const key in component) {
-        switch (key) {
-          case 'margin':
-            component["margin-top"] = component[key]
-            component["margin-right"] = component[key]
-            component["margin-bottom"] = component[key]
-            component["margin-left"] = component[key]
-            delete component.margin
-            break;
-          case 'padding':
-            component["padding-top"] = component[key]
-            component["padding-right"] = component[key]
-            component["padding-bottom"] = component[key]
-            component["padding-left"] = component[key]
-            delete component.padding
-            break;
+    if (element) {
+      const formatMarginPadding = (component) => {
+        for (const key in component) {
+          switch (key) {
+            case 'margin':
+              component["margin-top"] = component[key]
+              component["margin-right"] = component[key]
+              component["margin-bottom"] = component[key]
+              component["margin-left"] = component[key]
+              delete component.margin
+              break;
+            case 'padding':
+              component["padding-top"] = component[key]
+              component["padding-right"] = component[key]
+              component["padding-bottom"] = component[key]
+              component["padding-left"] = component[key]
+              delete component.padding
+              break;
+          }
         }
+        return component
       }
-      return component
+      element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
+      state.project.elementList = deepClone(state.project.elementList);
     }
-    element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
-    state.project.elementList = deepClone(state.project.elementList);
   },
   SET_DELETESTYLE: (state, component) => {
     let element = state.project.elementList.find(v => v.selected);
-    if (typeof component == 'object') {
-      for (const key in element.style) {
-        component.forEach(style => {
-          delete element.style[key][style]
-        });
+    if (element) {
+      if (typeof component == 'object') {
+        for (const key in element.style) {
+          component.forEach(style => {
+            delete element.style[key][style]
+          });
+        }
+      } else {
+        for (const key in element.style) {
+          delete element.style[key][component]
+        }
       }
-    } else {
-      for (const key in element.style) {
-        delete element.style[key][component]
-      }
+      state.project.elementList = deepClone(state.project.elementList);
     }
-    state.project.elementList = deepClone(state.project.elementList);
   },
   SET_UPDATELAYER: (state, act) => {
     const index = state.project.elementList.findIndex(item => item.selected);
@@ -179,6 +183,13 @@ const mutations = {
       const _that = state.project.elementList[index + act];
       state.project.elementList[index] = _that;
       state.project.elementList[index + act] = _this;
+    }
+  },
+  SET_UPDATEELEMENTOPTIONS: (state, component) => {
+    let element = state.project.elementList.find(v => v.selected);
+    if (element) {
+      element.options = Object.assign({}, element.options, component);
+      state.project.elementList = deepClone(state.project.elementList);
     }
   }
 };

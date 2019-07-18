@@ -308,22 +308,22 @@ export function isArray(o) {
 
 export function mergeJSON(Old, New) {
   for (var key in New) {
-    if (
-      Old[key] === undefined ||
-      Old[key] === null ||
-      typeof Old[key] == "string" ||
-      typeof Old[key] == "boolean"
-    ) {
-      // 不冲突的，直接赋值
-      Old[key] = New[key];
-      continue;
-    }
+    // if (
+    //   Old[key] === undefined ||
+    //   Old[key] === null ||
+    //   typeof Old[key] == "string" ||
+    //   typeof Old[key] == "boolean"
+    // ) {
+    //   // 不冲突的，直接赋值
+    //   Old[key] = New[key];
+    //   continue;
+    // }
     // 冲突了，如果是Object，看看有么有不冲突的属性
     // 不是Object 则以（Old）为准为主，
     if (isJSON(Old[key]) || isArray(Old[key])) {
-      // arguments.callee 递归调用，并且与函数名解耦
-      //arguments.callee(Old[key], New[key]);
       mergeJSON(Old[key], New[key]);
+    }else{
+      Old[key] = New[key];
     }
   }
   return Old;
@@ -333,19 +333,23 @@ export function mergeJSON(Old, New) {
 export function clearSameStyle(project) {
   const merge = (base, target) => {
     for (var key in base) {
-      if (
-        base[key] === undefined ||
-        base[key] === null ||
-        typeof base[key] == "string" ||
-        typeof base[key] == "boolean"
-      ) {
+      // if (
+      //   base[key] === undefined ||
+      //   base[key] === null ||
+      //   typeof base[key] == "string" ||
+      //   typeof base[key] == "boolean"
+      // ) {
+      //   if (target[key] === base[key]) {
+      //     delete target[key];
+      //   }
+      //   continue;
+      // }
+      if (isJSON(base[key]) || isArray(base[key])) {
+        merge(base[key], target[key]);
+      }else{
         if (target[key] === base[key]) {
           delete target[key];
         }
-        continue;
-      }
-      if (isJSON(base[key]) || isArray(base[key])) {
-        merge(base[key], target[key]);
       }
     }
   }

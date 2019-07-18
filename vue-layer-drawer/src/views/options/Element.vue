@@ -1,9 +1,9 @@
 <template>
   <div class="po-options-group po-options-el" v-if="elementSelected">
-    <h2>元素</h2>
+    <h2><i class="el-icon-setting"></i> 元素</h2>
     <dl>
       <dd>
-        <label class="h2">name:</label>
+        <label>name:</label>
         <input type="text" v-model.lazy="name">
       </dd>
     </dl>

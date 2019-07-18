@@ -10,18 +10,18 @@
 
 <script>
 import { registerContextMenu } from "@/utils";
-import "swiper/dist/css/swiper.min.css"
-import swiper from "swiper"
+import "swiper/dist/css/swiper.min.css";
+import swiper from "swiper";
 export default {
   name: "Swiper",
   data() {
     return {
       type: "swiper",
-      icon: "level",
+      icon: "swiper",
       name: "swiper-1",
       attribute: {
         id: "swiper-1",
-        className: "swiper swiper-test"
+        className: "swiper-container swiper-test"
       },
       style: {
         default: {
@@ -40,13 +40,34 @@ export default {
           "background-size": "100% auto",
           "background-position": "left top"
         }
+      },
+      options: {
+        direction: "horizontal",
+        initialSlide: 0,
+        speed: 300,
+        freeMode: false,
+        loop: false,
+        preventClicks: true,
+        preventClicksPropagation: true,
+        touchRatio: 1,
+        simulateTouch: false,
+        followFinger: true,
+        allowSlideNext: true,
+        allowSlidePrev: true,
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true
+        },
+        effect: "slide",
+        mousewheel: false
       }
     };
   },
   props: ["element"],
   mounted() {
-    console.log(swiper)
-    const a = new swiper('.swiper')
+    console.log(swiper);
+    this.swiper = new swiper(".swiper-container", this.options);
     registerContextMenu(this, {
       name: "cm_editInnerText",
       icon: "el-icon-delete",
@@ -56,6 +77,16 @@ export default {
         this.$parent.ac_updateElement({ editing: true });
       }
     });
+  },
+  watch: {
+    element: function(newVal, oldVal) {
+      console.log(9)
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.swiper.destroy(true, false);
+        this.swiper = new swiper("#"+this.element.attribute.id, this.element.options);
+      }, 500);
+    }
   }
 };
 </script>
