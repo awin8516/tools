@@ -46,14 +46,14 @@ const actions = {
   ac_replaceElementAttr: ({ commit }, attr) => {
     commit("SET_REPLACEELEMENTATTR", attr);
   },
-  ac_updateStyle({ commit }, style) {
-    commit("SET_UPDATESTYLE", style);
+  ac_updateElementStyle({ commit }, style) {
+    commit("SET_UPDATEELEMENTSTYLE", style);
   },
-  ac_deleteStyle({ commit }, style) {
-    commit("SET_DELETESTYLE", style);
+  ac_deleteElementStyle({ commit }, style) {
+    commit("SET_DELETEELEMENTSTYLE", style);
   },
-  ac_updateLayer({ commit }, act) {
-    commit("SET_UPDATELAYER", act);
+  ac_updateElementLayer({ commit }, act) {
+    commit("SET_UPDATEELEMENTLAYER", act);
   },
   ac_updateElementOptions({ commit }, value) {
     commit("SET_UPDATEELEMENTOPTIONS", value);

@@ -1,9 +1,11 @@
 <template>
   <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :id="element.attribute.id" :class="element.attribute.className">
     <ul class="swiper-wrapper">
-      <li class="swiper-slide">a</li>
-      <li class="swiper-slide">b</li>
-      <li class="swiper-slide">c</li>
+      <li class="swiper-slide"><img :src='require("@/assets/1.jpg")'></li>
+      <li class="swiper-slide"><img :src='require("@/assets/2.jpg")'></li>
+      <li class="swiper-slide"><img :src='require("@/assets/3.jpg")'></li>
+      <li class="swiper-slide"><img :src='require("@/assets/4.jpg")'></li>
+      <li class="swiper-slide"><img :src='require("@/assets/5.jpg")'></li>
     </ul>
   </div>
 </template>
@@ -66,7 +68,6 @@ export default {
   },
   props: ["element"],
   mounted() {
-    console.log(swiper);
     this.swiper = new swiper(".swiper-container", this.options);
     registerContextMenu(this, {
       name: "cm_editInnerText",
@@ -80,7 +81,6 @@ export default {
   },
   watch: {
     element: function(newVal, oldVal) {
-      console.log(9)
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         this.swiper.destroy(true, false);

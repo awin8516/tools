@@ -89,7 +89,7 @@ export default {
       "ac_updateElement",
       "ac_updateElementAttr",
       "ac_deleteElement",
-      "ac_updateStyle"
+      "ac_updateElementStyle"
     ]),
     querySearch(queryString, cb) {
       var restaurants = Object.keys(cssKey);
@@ -110,12 +110,12 @@ export default {
     },
     addStyle() {
       if (!this.state2) return;
-      this.ac_updateStyle({ [this.state2]: "" });
+      this.ac_updateElementStyle({ [this.state2]: "" });
       this.state2 = "";
     },
     pushStyle() {
       if (!this.styleCustom) return;
-      this.ac_updateStyle(style2object(this.styleCustom));
+      this.ac_updateElementStyle(style2object(this.styleCustom));
       this.styleCustom = "";
     }
   }

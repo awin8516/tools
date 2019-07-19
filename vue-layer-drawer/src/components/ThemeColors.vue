@@ -2,10 +2,8 @@
   <div class="po-theme-colors">
     <ul>
       <li v-for="(value, index) in gt_themeColors" :key="index" :style="'background-color:'+value"><b @click="removeColor(value)"></b></li>
+      <li class="add-color"><el-color-picker show-alpha size="mini" v-model="color" @change="addColor"></el-color-picker></li>
     </ul>
-    <div class="add">
-      <el-color-picker show-alpha size="mini" v-model="color" @change="addColor"></el-color-picker>
-    </div>
   </div>
 </template>
 
@@ -44,9 +42,6 @@ export default {
 <style lang="scss">
 .po-theme-colors {
   ul {
-    // display: flex;
-    // flex-wrap: wrap;
-    // justify-content: space-between;
     white-space: normal;
     width: 105%;
     li {
@@ -55,7 +50,6 @@ export default {
       vertical-align: top;
       font-size: 0;
       width: 15.5%;
-      height: 0.2rem;
       margin-right: 4%;
       margin-bottom: 4%;
       box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
@@ -96,11 +90,36 @@ export default {
         }
       }
     }
-  }
-  .add {
-    border-top: 1px #eee solid;
-    padding-top: 0.5em;
-    margin-top: 0.5em;
+    li.add-color{
+      overflow: hidden;
+      border: 1px #ccc dashed;
+      box-sizing: border-box;
+      &::before {
+        width: 2px;
+        padding-bottom: 84%;
+        background: #ccc;
+        margin-left: 48.5%;
+        margin-top: 8%;
+        margin-bottom: 8%;
+      }
+      &::after {
+        content: "";
+        width: 84%;
+        height: 2px;
+        background: #ccc;
+        position: absolute;
+        left:8%;
+        top: 48.5%;
+      }
+      div{
+        position: absolute;
+        left: -2px;
+        top: -2px;
+        opacity: 0;
+        padding: 0;
+        z-index: 10;
+      }
+    }
   }
 }
 </style>

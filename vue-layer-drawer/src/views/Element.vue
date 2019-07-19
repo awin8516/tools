@@ -8,7 +8,29 @@
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
       </template>
     </component>
-    <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
+    <mark class="po-el-controls">
+      <div v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
+        <ul>
+          <li v-for="(item, index) in contextMenuList" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
+        </ul>
+        <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
+      </div>
+      <div v-show="elementParams.editing" class="textarea">
+        <textarea v-focus="elementParams.editing" placeholder="编辑文字" @blur="updateText" :value="innerText"></textarea>
+      </div>
+      <!-- <div class="resize" v-drag="resize" @mousedown.stop="getSize"></div> -->
+      <div class="resize">
+        <s></s>
+        <s></s>
+        <s></s>
+        <s></s>
+        <b class="resize-width" v-drag="resizeWidth" @mousedown.stop="getSize"></b>
+        <b class="resize-height" v-drag="resizeHeight" @mousedown.stop="getSize"></b>
+        <b class="resize-all" v-drag="resize" @mousedown.stop="getSize"></b>
+        <b class="resize-rotate" v-drag="resizeRotate" @mousedown.stop="getSize"></b>
+      </div>
+    </mark>
+    <!-- <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
       <ul>
         <li v-for="(item, index) in contextMenuList" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
       </ul>
@@ -18,6 +40,14 @@
       <textarea v-focus="elementParams.editing" placeholder="编辑文字" @blur="updateText" :value="innerText"></textarea>
     </mark>
     <mark class="resize" v-drag="resize" @mousedown.stop="getSize"></mark>
+    <mark class="controls">
+      <s></s>
+      <s></s>
+      <s></s>
+      <s></s>
+      <b v-drag="resizeWidth" @mousedown.stop="getSize"></b>
+      <b v-drag="resizeHeight" @mousedown.stop="getSize"></b>
+    </mark> -->
   </ins>
 </template>
 
@@ -43,7 +73,7 @@ export default {
           label: "上移一层",
           command: () => {
             if (this.gt_indexSelected < this.gt_elementList.length - 1) {
-              this.ac_updateLayer(1);
+              this.ac_updateElementLayer(1);
             }
           }
         },
@@ -53,7 +83,7 @@ export default {
           label: "下移一层",
           command: () => {
             if (this.gt_indexSelected > 0) {
-              this.ac_updateLayer(-1);
+              this.ac_updateElementLayer(-1);
             }
           }
         },
@@ -63,7 +93,7 @@ export default {
           label: "置为顶层",
           command: () => {
             if (this.gt_indexSelected < this.gt_elementList.length - 1) {
-              this.ac_updateLayer(1000);
+              this.ac_updateElementLayer(1000);
             }
           }
         },
@@ -73,7 +103,7 @@ export default {
           label: "置为底层",
           command: () => {
             if (this.gt_indexSelected > 0) {
-              this.ac_updateLayer(-1000);
+              this.ac_updateElementLayer(-1000);
             }
           }
         },
@@ -117,8 +147,8 @@ export default {
         "margin-top",
         "margin-right",
         "margin-bottom",
-        "margin-left"
-        // "display"
+        "margin-left",
+        "transform"
       ];
       let styleObject = {};
       style.forEach(v => {
@@ -172,10 +202,9 @@ export default {
     ...mapActions([
       "ac_selectElement",
       "ac_deleteElement",
-      "ac_updateLayer",
+      "ac_updateElementLayer",
       "ac_updateElement",
-      "ac_replaceElementAttr",
-      "ac_updateStyle"
+      "ac_updateElementStyle"
     ]),
     contextMenu(e) {
       this.contextMenuActive = true;
@@ -225,7 +254,7 @@ export default {
             document.querySelector("#po-screen").getBoundingClientRect().top +
             "px";
         }
-        this.ac_updateStyle(style);
+        this.ac_updateElementStyle(style);
       }
     },
     hideMenu() {
@@ -266,7 +295,13 @@ export default {
       } else {
         style.height = this.size.height + data.y + "px";
       }
-      this.ac_updateStyle(style);
+      this.ac_updateElementStyle(style);
+    },
+    resizeWidth(el, data) {
+      let style = {};
+    },
+    resizeHeight(el, data) {
+      let style = {};
     },
     updateText(e) {
       this.ac_updateElement({

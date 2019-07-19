@@ -67,7 +67,7 @@ const mutations = {
   },
   SET_DELETEELEMENT: (state, component) => {
     let index = state.project.elementList.findIndex(v => v === component);
-    if (index) {
+    if (index !== undefined) {
       state.project.elementList.splice(index, 1);
       if (state.project.elementList.length > 0) {
         state.project.elementList[state.project.elementList.length - 1].selected = true;
@@ -120,7 +120,7 @@ const mutations = {
       }
     }
   },
-  SET_UPDATESTYLE: (state, component) => {
+  SET_UPDATEELEMENTSTYLE: (state, component) => {
     let element = state.project.elementList.find(v => v.selected);
     if (element) {
       const formatMarginPadding = (component) => {
@@ -145,10 +145,11 @@ const mutations = {
         return component
       }
       element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
+      console.log(element.style)
       state.project.elementList = deepClone(state.project.elementList);
     }
   },
-  SET_DELETESTYLE: (state, component) => {
+  SET_DELETEELEMENTSTYLE: (state, component) => {
     let element = state.project.elementList.find(v => v.selected);
     if (element) {
       if (typeof component == 'object') {
@@ -165,7 +166,7 @@ const mutations = {
       state.project.elementList = deepClone(state.project.elementList);
     }
   },
-  SET_UPDATELAYER: (state, act) => {
+  SET_UPDATEELEMENTLAYER: (state, act) => {
     const index = state.project.elementList.findIndex(item => item.selected);
     if (index + act >= state.project.elementList.length - 1) {
       //置顶

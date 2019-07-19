@@ -118,68 +118,96 @@ textarea {
           margin: auto !important;
           position: relative !important;
           vertical-align: top;
-          transform: none !important;
+          transform: none!important;
         }
         > img {
           user-select: none;
           vertical-align: top;
         }
-        .po-el-controls {
+        .resize {
+          display: none;
+        }
+        .controls{
           position: absolute;
-          width: 100%;
-          height: 100%;
+          width: 0;
+          height: 0;
           left: 0;
           top: 0;
-          .resize {
-            display: none;
-          }
-          .context-menu {
-            position: absolute;
-            z-index: 10000;
-            text-align: left;
-            background: #fff;
-            border: 1px #eee solid;
-            box-shadow: 2px 2px 5px 0px #eee;
-            li {
-              padding: 0.3em 0.5em 0.3em 0.3em;
-              border-bottom: 1px #aaa solid;
-              white-space: nowrap;
-              i {
-                margin-right: 0.5em;
-              }
-              &:hover {
-                background-color: #000;
-                color: #fff;
-              }
-            }
-            .focus-filed {
-              width: 0;
-              height: 0;
-              overflow: hidden;
-              position: absolute;
-              opacity: 0;
-            }
-          }
-          .textarea textarea {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            appearance: none;
-            background: #fff;
-            border: none;
-            resize: none;
-            font-size: inherit;
-            font-family: inherit;
-          }
+
         }
         &.active {
+          &:before {
+            content: '';
+            position: absolute;
+            width: 10%;
+            padding-bottom: 10%;
+            right: -5px;
+            top: -5px;
+            border-top: 1px #f30 solid;
+            border-right: 1px #f30 solid;
+          }
+          &:after {
+            content: '';
+            position: absolute;
+            width: 10%;
+            padding-bottom: 10%;
+            left: -5px;
+            bottom: -5px;
+            border-left: 1px #f30 solid;
+            border-bottom: 1px #f30 solid;
+          }
           > .resize {
             display: block;
             z-index: 2;
           }
+          >.controls{
+            display: block;
+            z-index: 2;
+          }
+        }
+        &.v-draging {
+          box-shadow: 0 0 10px 0 rgb(0, 195, 255);
+        }
+        .context-menu {
+          position: absolute;
+          z-index: 10000;
+          text-align: left;
+          background: #fff;
+          border: 1px #eee solid;
+          box-shadow: 2px 2px 5px 0px #eee;
+          li {
+            padding: 0.3em 0.5em 0.3em 0.3em;
+            border-bottom: 1px #aaa solid;
+            white-space: nowrap;
+            i {
+              margin-right: 0.5em;
+            }
+            &:hover {
+              background-color: #000;
+              color: #fff;
+            }
+          }
+          .focus-filed {
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            position: absolute;
+            opacity: 0;
+          }
+        }
+        .textarea textarea {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 10;
+          appearance: none;
+          background: #fff;
+          border: none;
+          resize: none;
+          font-size: inherit;
+          font-family: inherit;
         }
       }
     }
@@ -245,11 +273,11 @@ textarea {
     dl {
       position: relative;
       padding-left: 0em;
-      dt {
+      dt{
         min-height: 2em;
       }
       dd {
-        padding-left: 1em;
+        padding-left: 1em; 
         white-space: nowrap;
         &.po-options-type {
           display: none;

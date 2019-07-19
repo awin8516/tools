@@ -28,7 +28,7 @@
       <label>{{_key}}:</label>
       <input type="text" v-model.lazy="value" />
     </template>
-    <i class="delete-param el-icon-remove" @click="ac_deleteStyle(_key)"></i>
+    <i class="delete-param el-icon-remove" @click="ac_deleteElementStyle(_key)"></i>
   </dd>
 </template>
 
@@ -80,7 +80,7 @@ export default {
         } else {
           style = { [this._key]: v };
         }
-        this.ac_updateStyle(style);
+        this.ac_updateElementStyle(style);
       }
     }
   },
@@ -89,7 +89,7 @@ export default {
     ColorPicker
   },
   methods: {
-    ...mapActions(["ac_updateStyle", "ac_deleteStyle"])
+    ...mapActions(["ac_updateElementStyle", "ac_deleteElementStyle"])
   }
 };
 </script>
