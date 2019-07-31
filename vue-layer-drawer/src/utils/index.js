@@ -35,6 +35,31 @@ export function getStyle(obj, attr) {
   }
 }
 
+export function getTransform(style, attr) {
+  let r
+  if (style.transform) {
+    let regExp = {
+      translate: /translate\((.*?),\s*(.*?)\)/,
+      rotate: /rotate\((.*?)deg\)/,
+      scale: /scale\((.*?)\)/
+    }
+    r = style.transform.match(regExp[attr])
+  } else {
+    r = []
+  }
+  switch (attr) {
+    case 'translate':
+      return {
+        x: r[1] || 0,
+        y: r[2] || 0,
+      }
+    case 'rotate':
+      return parseInt(r[1]) || 0
+    case 'scale':
+      return parseInt(r[1]) || 0
+  }
+}
+
 export function getElementWidth(selecter) {
   const element = document.querySelector(selecter)
   return getStyle(element, 'width')
@@ -322,7 +347,7 @@ export function mergeJSON(Old, New) {
     // 不是Object 则以（Old）为准为主，
     if (isJSON(Old[key]) || isArray(Old[key])) {
       mergeJSON(Old[key], New[key]);
-    }else{
+    } else {
       Old[key] = New[key];
     }
   }
@@ -346,7 +371,7 @@ export function clearSameStyle(project) {
       // }
       if (isJSON(base[key]) || isArray(base[key])) {
         merge(base[key], target[key]);
-      }else{
+      } else {
         if (target[key] === base[key]) {
           delete target[key];
         }

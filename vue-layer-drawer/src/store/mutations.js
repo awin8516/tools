@@ -145,7 +145,6 @@ const mutations = {
         return component
       }
       element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
-      console.log(element.style)
       state.project.elementList = deepClone(state.project.elementList);
     }
   },

@@ -12,6 +12,9 @@ body {
   margin: 0;
   list-style: none;
 }
+img{
+  max-width: 100%;
+}
 ins {
   text-decoration: none;
 }
@@ -27,7 +30,7 @@ textarea {
   height: 5em;
 }
 .po-screen-size {
-  padding: 1em;
+  padding-bottom: 1em;
   .el-input {
     display: inline-block;
     width: 80px;
@@ -89,7 +92,7 @@ textarea {
         background-color: #bbb;
         border: solid 2px #bbb; /*滑动条边框*/
       }
-      * {
+      *:not(i) {
         &::before,
         &::after {
           content: '';
@@ -125,14 +128,7 @@ textarea {
           vertical-align: top;
         }
         .po-el-controls {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 0;
-          .resize {
-            display: none;
-          }
+          display: none;
           .context-menu {
             position: absolute;
             z-index: 10000;
@@ -174,12 +170,110 @@ textarea {
             font-size: inherit;
             font-family: inherit;
           }
+          .resize-group {
+            s {
+              position: absolute;
+              z-index: 100;
+              &:nth-child(1),
+              &:nth-child(3) {
+                width: 100%;
+                height: 0;
+                border-top: 1px #0095f8 dashed;
+              }
+              &:nth-child(2),
+              &:nth-child(4) {
+                width: 0;
+                height: 100%;
+                border-left: 1px #0095f8 dashed;
+              }
+              &:nth-child(1) {
+                left: 0;
+                top: 0;
+              }
+              &:nth-child(2) {
+                right: 0;
+                top: 0;
+              }
+              &:nth-child(3) {
+                left: 0;
+                bottom: 0;
+              }
+              &:nth-child(4) {
+                left: 0;
+                top: 0;
+              }
+            }
+            b {
+              position: absolute;
+              z-index: 100;
+              display: inline-block;
+              width: 10px;
+              height: 10px;
+              font-size: 0;
+              line-height: 0;
+              border-radius: 50%;
+              border: 1px #0095f8 solid;
+              background-color: #fff;
+              text-align: center;
+              text-indent: -2px;
+              &::before {
+                display: inline-block;
+                width: 30%;
+                height: 30%;
+                border-top: 1px #0095f8 solid;
+                border-right: 1px #0095f8 solid;
+                font-size: 0;
+                vertical-align: middle;
+                line-height: 0;
+              }
+              &::after {
+                display: inline-block;
+                width: 0;
+                height: 100%;
+                vertical-align: middle;
+                font-size: 0;
+                line-height: 0;
+              }
+              &.resize-width {
+                right: -5px;
+                top: 50%;
+                margin-top: -5px;
+                &::before {
+                  transform: rotate(45deg);
+                }
+              }
+              &.resize-height {
+                left: 50%;
+                bottom: -5px;
+                margin-left: -5px;
+                &::before {
+                  transform: rotate(135deg);
+                }
+              }
+              &.resize-all {
+                right: -5px;
+                bottom: -5px;
+                &::before {
+                  transform: rotate(90deg);
+                }
+              }
+            }
+            .resize-rotate {
+              position: absolute;
+              display: inline-block;
+              right: -20px;
+              bottom: -20px;
+            }
+          }
         }
         &.active {
-          > .resize {
+          > mark.po-el-controls {
             display: block;
             z-index: 2;
           }
+        }
+        .swiper-slide img{
+          max-width: 100%;
         }
       }
     }

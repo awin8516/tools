@@ -19,7 +19,7 @@
         <textarea v-focus="elementParams.editing" placeholder="编辑文字" @blur="updateText" :value="innerText"></textarea>
       </div>
       <!-- <div class="resize" v-drag="resize" @mousedown.stop="getSize"></div> -->
-      <div class="resize">
+      <div class="resize-group">
         <s></s>
         <s></s>
         <s></s>
@@ -27,7 +27,7 @@
         <b class="resize-width" v-drag="resizeWidth" @mousedown.stop="getSize"></b>
         <b class="resize-height" v-drag="resizeHeight" @mousedown.stop="getSize"></b>
         <b class="resize-all" v-drag="resize" @mousedown.stop="getSize"></b>
-        <b class="resize-rotate" v-drag="resizeRotate" @mousedown.stop="getSize"></b>
+        <i class="resize-rotate el-icon-refresh" v-drag="resizeRotate" @mousedown.stop="getSize" ></i>
       </div>
     </mark>
     <!-- <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
@@ -54,7 +54,12 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import * as Tags from "@/components/Tags";
-import { closest, getElementWidth, getElementHeight } from "@/utils";
+import {
+  closest,
+  getElementWidth,
+  getElementHeight,
+  getTransform
+} from "@/utils";
 export default {
   name: "Element",
   data() {
@@ -267,7 +272,8 @@ export default {
       this.size = this.isAbsolute
         ? {
             width: parseInt(this.style.width) || 0,
-            height: parseInt(this.style.height) || 0
+            height: parseInt(this.style.height) || 0,
+            rotate: getTransform(this.style, "rotate")
           }
         : {
             width:
@@ -281,7 +287,8 @@ export default {
                 getElementHeight(
                   '[data-vid="' + this.elementParams.vid + '"] > *:first-child'
                 )
-              ) || 0
+              ) || 0,
+            rotate: getTransform(this.style, "rotate")
           };
     },
     resize(el, data) {
@@ -298,10 +305,15 @@ export default {
       this.ac_updateElementStyle(style);
     },
     resizeWidth(el, data) {
-      let style = {};
+      this.ac_updateElementStyle({ width: this.size.width + data.x + "px" });
     },
     resizeHeight(el, data) {
-      let style = {};
+      this.ac_updateElementStyle({ height: this.size.height + data.y + "px" });
+    },
+    resizeRotate(el, data) {
+      this.ac_updateElementStyle({
+        transform: "rotate(" + (this.size.rotate + data.y) + "deg)"
+      });
     },
     updateText(e) {
       this.ac_updateElement({
