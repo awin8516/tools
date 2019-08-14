@@ -2,7 +2,9 @@
   <div class="po-theme-colors">
     <ul>
       <li v-for="(value, index) in gt_themeColors" :key="index" :style="'background-color:'+value"><b @click="removeColor(value)"></b></li>
-      <li class="add-color"><el-color-picker show-alpha size="mini" v-model="color" @change="addColor"></el-color-picker></li>
+      <li class="add-color"><i class="el-icon-circle-plus-outline">
+          <el-color-picker show-alpha size="mini" v-model="color" @change="addColor"></el-color-picker>
+        </i></li>
     </ul>
   </div>
 </template>
@@ -90,28 +92,21 @@ export default {
         }
       }
     }
-    li.add-color{
+    li.add-color {
       overflow: hidden;
-      border: 1px #ccc dashed;
+      // border: 1px #ccc dashed;
       box-sizing: border-box;
-      &::before {
-        width: 2px;
-        padding-bottom: 84%;
-        background: #ccc;
-        margin-left: 48.5%;
-        margin-top: 8%;
-        margin-bottom: 8%;
-      }
+      &::before,
       &::after {
-        content: "";
-        width: 84%;
-        height: 2px;
-        background: #ccc;
-        position: absolute;
-        left:8%;
-        top: 48.5%;
+        display: none;
       }
-      div{
+      &:hover {
+        box-shadow: none;
+      }
+      .el-icon-circle-plus-outline {
+        font-size: 20px;
+      }
+      div {
         position: absolute;
         left: -2px;
         top: -2px;

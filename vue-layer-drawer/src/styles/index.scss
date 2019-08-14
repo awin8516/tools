@@ -115,6 +115,10 @@ textarea {
       .po-el-item {
         position: relative;
         display: block;
+        &.type-img,
+        &.type-input{
+          display: inline-block;
+        }
         > :first-child {
           left: 0 !important;
           top: 0 !important;
@@ -235,6 +239,7 @@ textarea {
                 line-height: 0;
               }
               &.resize-width {
+                cursor: e-resize;
                 right: -5px;
                 top: 50%;
                 margin-top: -5px;
@@ -243,6 +248,7 @@ textarea {
                 }
               }
               &.resize-height {
+                cursor: s-resize;
                 left: 50%;
                 bottom: -5px;
                 margin-left: -5px;
@@ -251,6 +257,7 @@ textarea {
                 }
               }
               &.resize-all {
+                cursor: se-resize;
                 right: -5px;
                 bottom: -5px;
                 &::before {

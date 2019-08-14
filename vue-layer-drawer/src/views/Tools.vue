@@ -1,9 +1,9 @@
 <template>
   <div class="po-save">
-    <el-button type="primary" icon="el-icon-folder-opened">导入<input class="file" type="file" ref="file" @change="change" accept="*.json"></el-button>
-    <el-button type="primary" icon="el-icon-delete" @click="ac_clearProject">清空</el-button>
-    <el-button type="primary" icon="el-icon-finished" @click="ac_saveProject">保存</el-button>
-    <el-button type="primary" icon="el-icon-download" @click="ac_exportProject">导出</el-button>
+    <el-button type="primary" icon="el-icon-folder-opened" size="mini">导入<input class="file" type="file" ref="file" @change="change" accept="*.json"></el-button>
+    <el-button type="primary" icon="el-icon-delete" size="mini" @click="ac_clearProject">清空</el-button>
+    <el-button type="primary" icon="el-icon-finished" size="mini" @click="ac_saveProject">保存</el-button>
+    <el-button type="primary" icon="el-icon-download" size="mini" @click="ac_exportProject">导出</el-button>
   </div>
 </template>
 

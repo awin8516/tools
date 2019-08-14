@@ -4,7 +4,7 @@
       <label>{{_key}}:</label>
       <div class="field">
         <el-select v-model.lazy="value" allow-create filterable>
-          <el-option v-for="(item) in styleOptions.select[_key]" :key="item" :label="item" :value="item">{{item}}</el-option>
+          <el-option v-for="(item) in styleOptions.select[_key]" :key="item" :label="item" :value="item" size="mini">{{item}}</el-option>
         </el-select>
       </div>
     </template>

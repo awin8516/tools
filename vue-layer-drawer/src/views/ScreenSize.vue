@@ -2,12 +2,12 @@
   <div>
     <div class="po-screen-size">
       Size
-      <el-select v-model="sizeSelect" @change="setSize">
-        <el-option v-for="(item, key) in gt_screenOptions.sizeList" :key="key" :label="item.name" :value="key">{{key}}</el-option>
+      <el-select v-model="sizeSelect" @change="setSize" size="mini">
+        <el-option v-for="(item, key) in gt_screenOptions.sizeList" :key="key" :label="item.name" :value="key" size="mini">{{key}}</el-option>
       </el-select>
-      <el-input id="po-screen-width" type="text" v-range='{val:"width"}' v-model.lazy="width" placeholder="屏宽"></el-input>
+      <el-input id="po-screen-width" type="text" v-range='{val:"width"}' v-model.lazy="width" placeholder="屏宽" size="mini"></el-input>
       ✕
-      <el-input id="po-screen-height" type="text" v-range='{val:"height"}' v-model.lazy="height" placeholder="屏高"></el-input>
+      <el-input id="po-screen-height" type="text" v-range='{val:"height"}' v-model.lazy="height" placeholder="屏高" size="mini"></el-input>
     </div>
   </div>
 </template>
