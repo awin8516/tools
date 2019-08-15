@@ -1,9 +1,9 @@
 export function object2style(style) {
   return JSON.stringify(style)
-    .replace("{", "")
-    .replace("}", "")
-    .replace(/"/g, "")
-    .replace(/,/g, ";");
+    .replace('{"', '')
+    .replace('"}', ';')
+    .replace(/":"/g, ':')
+    .replace(/","/g, ';');
 }
 
 export function style2object(style) {
@@ -19,7 +19,10 @@ export function style2object(style) {
 
 export function closest(ele, selecter) {
   const key = selecter.indexOf('.') !== -1 ? 'className' : selecter.indexOf('#') !== -1 ? 'id' : 'tagName'
-  const value = selecter.replace(/\.|#/g, '')
+  let value = selecter.replace(/\.|#/g, '')
+  if (key == 'tagName') {
+    value = value.toLocaleUpperCase()
+  }
   let res = ele
   while (res && res[key].indexOf(value) == -1) {
     res = res.parentElement
@@ -28,6 +31,7 @@ export function closest(ele, selecter) {
 }
 
 export function getStyle(obj, attr) {
+  if (!obj) return
   if (obj.currentStyle) {
     return obj.currentStyle[attr];
   } else {
@@ -67,6 +71,54 @@ export function getElementWidth(selecter) {
 export function getElementHeight(selecter) {
   const element = document.querySelector(selecter)
   return getStyle(element, 'height')
+}
+export function getOutertWidth(style) {
+  const width = style.width;
+  const paddingLeft = style['padding-left'] || style['padding']
+  for (const key in style) {
+
+  }
+}
+
+export function styleSplit(key, value) {
+  value = value.trim().replace(/\s+/g, ' ')
+  switch (key) {
+    case 'margin': case 'padding':
+      if (!value.match(/\s/g)) {
+        return {
+          top: value,
+          right: value,
+          bottom: value,
+          left: value
+        }
+      }
+      if (value.match(/\s/g).length == 3) {
+        const arr = value.split(' ')
+        return {
+          top: arr[0],
+          right: arr[1],
+          bottom: arr[2],
+          left: arr[3]
+        }
+      } else if (value.match(/\s/g).length == 2) {
+        const arr = value.split(' ')
+        return {
+          top: arr[0],
+          right: arr[1],
+          bottom: arr[2],
+          left: arr[1]
+        }
+      } else if (value.match(/\s/g).length == 1) {
+        const arr = value.split(' ')
+        return {
+          top: arr[0],
+          right: arr[1],
+          bottom: arr[0],
+          left: arr[1]
+        }
+      }
+  }
+
 }
 
 export function deepClone(source) {
@@ -127,6 +179,18 @@ export function resetLayerName(project, element) {
       element.name = "audio-" + len;
       element.attribute.id = "audio-" + len;
       element.attribute.className = "audio audio-" + len;
+      break;
+    case "input":
+      len = getLenBytype("input");
+      element.name = "input-" + len;
+      element.attribute.id = "input-" + len;
+      element.attribute.className = "input input-" + len;
+      break;
+    case "swiper":
+      len = getLenBytype("swiper");
+      element.name = "swiper-" + len;
+      element.attribute.id = "swiper-" + len;
+      element.attribute.className = "swiper-container swiper-" + len;
       break;
     default:
   }

@@ -29,7 +29,6 @@ const actions = {
   },
   ac_addElement({ commit }, element) {
     commit("SET_ADDELEMENT", element);
-    commit("SET_SELECTELEMENT", element);
   },
   ac_deleteElement({ commit }, element) {
     commit("SET_DELETEELEMENT", element);
@@ -174,6 +173,7 @@ const actions = {
       let css = "/* " + pageName + ".css */\n";
       css += ".container-" + pageName + " {" + createPageCss(project) + "}\n\n";
       const tree = array2Tree(project.elementList, "vid", "pid");
+      // console.log(project);
       // console.log(tree);
       const getClassName = className => "." + className.replace(/\s+/g, " ").split(" ").join(".");
       const getStyle = (element, key) => {
@@ -201,8 +201,8 @@ const actions = {
       };
       const mp = (_tree, parentClassName, key) => {
         _tree.forEach(element => {
-          if (element.className) {
-            const className = getClassName(element.className);
+          if (element.attribute.className) {
+            const className = getClassName(element.attribute.className);
             const style = getStyle(element, key);
             if (style) {
               css += (parentClassName ? parentClassName + " " : "") + className + "{" + style + "}\n";
@@ -245,7 +245,7 @@ const actions = {
     //project.json
     file.json = createJson(project);
 
-    zip.file(pageName + ".json", file.json);
+    zip.file(pageName + "-project.json", file.json);
     zip.file(pageName + ".html", file.html);
     let folderImg = zip.folder("image");
     let imgsub = folderImg.folder(pageName);

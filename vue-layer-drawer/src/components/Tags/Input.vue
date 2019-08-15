@@ -23,7 +23,6 @@ export default {
           width: "120px",
           height: "30px",
           padding: "0 5px",
-          display: "block",
           border: "1px #ddd solid",
           "border-radius": "3px",
           color: "",

@@ -18,7 +18,6 @@
       <div v-show="elementParams.editing" class="textarea">
         <textarea v-focus="elementParams.editing" placeholder="编辑文字" @blur="updateText" :value="innerText"></textarea>
       </div>
-      <!-- <div class="resize" v-drag="resize" @mousedown.stop="getSize"></div> -->
       <div class="resize-group">
         <s></s>
         <s></s>
@@ -27,27 +26,9 @@
         <b class="resize-width" v-drag="resizeWidth" @mousedown.stop="getSize"></b>
         <b class="resize-height" v-drag="resizeHeight" @mousedown.stop="getSize"></b>
         <b class="resize-all" v-drag="resize" @mousedown.stop="getSize"></b>
-        <i class="resize-rotate el-icon-refresh" v-drag="resizeRotate" @mousedown.stop="getSize" ></i>
+        <i class="resize-rotate el-icon-refresh" v-drag="resizeRotate" @mousedown.stop="getSize"></i>
       </div>
     </mark>
-    <!-- <mark v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
-      <ul>
-        <li v-for="(item, index) in contextMenuList" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
-      </ul>
-      <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
-    </mark>
-    <mark v-show="elementParams.editing" class="textarea">
-      <textarea v-focus="elementParams.editing" placeholder="编辑文字" @blur="updateText" :value="innerText"></textarea>
-    </mark>
-    <mark class="resize" v-drag="resize" @mousedown.stop="getSize"></mark>
-    <mark class="controls">
-      <s></s>
-      <s></s>
-      <s></s>
-      <s></s>
-      <b v-drag="resizeWidth" @mousedown.stop="getSize"></b>
-      <b v-drag="resizeHeight" @mousedown.stop="getSize"></b>
-    </mark> -->
   </ins>
 </template>
 
@@ -141,54 +122,147 @@ export default {
       return this.elementParams.style[this.gt_mediaName];
     },
     itemStyle: function() {
-      const style = [
-        "position",
-        "width",
-        "left",
-        "top",
-        "right",
-        "bottom",
-        "margin",
-        "margin-top",
-        "margin-right",
-        "margin-bottom",
-        "margin-left",
-        "transform"
-      ];
       let styleObject = {};
-      style.forEach(v => {
-        if (typeof this.style[v] !== "undefined") {
-          if (v == "width") {
-            if (this.style.position == "relative") {
-              const padding =
-                (parseInt(this.style["padding-left"]) || 0) +
-                (parseInt(this.style["padding-right"]) || 0);
-              // console.log(this.style[v])
-              // styleObject[v] = ((parseInt(this.style[v]) || 0) + padding) + "px";
-              if (this.style[v] == "auto") {
-                styleObject[v] = this.style[v];
-              } else {
-                styleObject[v] =
-                  (parseInt(this.style[v]) || 0) + padding + "px";
+      const styleOptions = {
+        fixed: [
+          "position",
+          "left",
+          "top",
+          "right",
+          "bottom",
+          "margin",
+          "margin-top",
+          "margin-right",
+          "margin-bottom",
+          "margin-left",
+          "transform"
+        ],
+        absolute: [
+          "position",
+          "left",
+          "top",
+          "right",
+          "bottom",
+          "margin",
+          "margin-top",
+          "margin-right",
+          "margin-bottom",
+          "margin-left",
+          "transform"
+        ],
+        relative: [
+          "position",
+          "width",
+          "left",
+          "top",
+          "right",
+          "bottom",
+          "margin",
+          "margin-top",
+          "margin-right",
+          "margin-bottom",
+          "margin-left",
+          "transform"
+        ]
+      };
+      const done = position => {
+        // console.log(position)
+        position = position || 'relative'
+        styleOptions[position].forEach(v => {
+          if (typeof this.style[v] !== "undefined") {
+            // console.log(v+"--"+this.style[v])
+            if (position == "fixed") {
+              console.log("-------------------fixed--------------------")
+              if (v == "left" || v == "top") {
+                const rect = document.querySelector("#po-screen").getBoundingClientRect()[v] + "px";
+                styleObject[v] = (parseInt(this.style[v]) || 0) + rect;
+                styleObject.display = 'inline-block';
               }
+            } else if (position == "absolute") {
+              console.log("-------------------absolute--------------------")
+              styleObject[v] = this.style[v];
+              styleObject.display = 'inline-block';
+            } else if (position == "relative") {
+              console.log("-------------------relative--------------------")
+              console.log(v+"--"+this.style[v])
+              if (v == "width"){
+                // const padding =
+                //   (parseInt(this.style["padding-left"]) || 0) +
+                //   (parseInt(this.style["padding-right"]) || 0);
+                if (this.style[v] == "auto") {
+                  styleObject[v] = this.style[v];
+                } else {
+                  styleObject[v] =( parseInt(getElementWidth('[data-vid="' + this.elementParams.vid + '"] > *:first-child')) || 0 ) +'px'   
+                }
+              }
+            } else {
+              console.log("-------------------else--------------------")
+              styleObject[v] = this.style[v];
             }
-          } else if (v == "left" && this.style.position == "fixed") {
-            styleObject[v] =
-              (parseInt(this.style[v]) || 0) +
-              document.querySelector("#po-screen").getBoundingClientRect()
-                .left +
-              "px";
-          } else if (v == "top" && this.style.position == "fixed") {
-            styleObject[v] =
-              (parseInt(this.style[v]) || 0) +
-              document.querySelector("#po-screen").getBoundingClientRect().top +
-              "px";
-          } else {
-            styleObject[v] = this.style[v];
           }
-        }
-      });
+        });
+      };
+      done(this.style.position);
+      console.log(styleObject)
       return styleObject;
+
+      // const style = [
+      //   "position",
+      //   "width",
+      //   "left",
+      //   "top",
+      //   "right",
+      //   "bottom",
+      //   "margin",
+      //   "margin-top",
+      //   "margin-right",
+      //   "margin-bottom",
+      //   "margin-left",
+      //   "transform"
+      // ];
+      // style.forEach(v => {
+      //   if (typeof this.style[v] !== "undefined") {
+          // if (v == "width") {
+          //   if (this.style.position == "relative") {
+          //     const padding =
+          //       (parseInt(this.style["padding-left"]) || 0) +
+          //       (parseInt(this.style["padding-right"]) || 0);
+          //     if (this.style[v] == "auto") {
+          //       styleObject[v] = this.style[v];
+          //     } else {
+          //       styleObject[v] =
+          //         (parseInt(this.style[v]) || 0) + padding + "px";
+          //     }
+          //   }
+          // } else if (v == "left" && this.style.position == "fixed") {
+          //   styleObject[v] =
+          //     (parseInt(this.style[v]) || 0) +
+          //     document.querySelector("#po-screen").getBoundingClientRect()
+          //       .left +
+          //     "px";
+          // } else if (v == "top" && this.style.position == "fixed") {
+          //   styleObject[v] =
+          //     (parseInt(this.style[v]) || 0) +
+          //     document.querySelector("#po-screen").getBoundingClientRect().top +
+          //     "px";
+          // } else {
+          //   styleObject[v] = this.style[v];
+          // }
+          // if (this.style.position == "fixed") {
+          //   if (v == "left" || v == "top") {
+          //     const rect =
+          //       document.querySelector("#po-screen").getBoundingClientRect()[
+          //         v
+          //       ] + "px";
+          //     styleObject[v] = (parseInt(this.style[v]) || 0) + rect;
+          //   }
+          // } else if (this.style.position == "absolute") {
+          // } else if (v == "top" && this.style.position == "relative") {
+          // } else {
+          // }
+      //   }
+      // });
+      // return styleObject;
     },
     isAbsolute: function() {
       return this.style.position === "absolute";

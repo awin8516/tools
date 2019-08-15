@@ -256,7 +256,7 @@ textarea {
     font-size: 11px;
     text-align: left;
     white-space: nowrap;
-    > .po-options-group {
+    > .po-options-panel {
       white-space: normal;
       display: inline-block;
       max-width: 320px;
@@ -264,7 +264,7 @@ textarea {
       > h2 {
         font-size: 1.2em;
       }
-      & + .po-options-group {
+      & + .po-options-panel {
         margin-left: 20px;
         padding-left: 20px;
         border-left: 1px #ddd solid;

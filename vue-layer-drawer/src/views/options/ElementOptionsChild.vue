@@ -1,6 +1,6 @@
 <template>
   <dl>
-    <dt v-if="_key" class="h2">{{_key}} <i class="el-icon-arrow-down"></i></dt>
+    <dt v-if="_key" class="h2">{{_key}}</dt>
     <template v-for="(value, key) in options">
       <dd v-if="typeof value == 'object'" :key="key">
         <ElementOptionsChild :options="options[key]" :_key="key" :parentKey="key"></ElementOptionsChild>

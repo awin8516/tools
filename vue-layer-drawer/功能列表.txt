@@ -11,6 +11,9 @@
 11.旋转 *
 12.CSS 百分比
 13.根据容器类型 切换成relative时
+14.居中功能
+15.格式刷
+
 
 bug:
-
+padding 简写 addstyle

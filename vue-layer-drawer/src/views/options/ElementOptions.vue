@@ -1,14 +1,12 @@
 <template>
-  <div class="po-options-group po-options-el" v-if="options">
-    <h2><i class="el-icon-setting"></i> 组件设置</h2>
-
-    <template>
-      <ElementOptionsChild :options="options"></ElementOptionsChild>
-    </template>
-
-    <!-- <div class="po-options-foot">
-      <el-button icon="el-icon-delete" @click="">立即更新</el-button>
-    </div> -->
+  <div class="po-options-panel po-options-el" v-if="options">
+    <div class="panel-hd">
+      组件
+      <panel-fold target=".po-options-panel" closed="po-options-panel-closed"></panel-fold>
+    </div>
+    <div class="panel-bd scrollstyle">
+      <ElementOptionsChild :options="options" _key="Options"></ElementOptionsChild>
+    </div>
   </div>
 </template>
 
@@ -22,9 +20,9 @@ export default {
   },
   computed: {
     ...mapGetters(["gt_elementSelected"]),
-    options(){
-      return this.gt_elementSelected && this.gt_elementSelected.options
-    } 
+    options() {
+      return this.gt_elementSelected && this.gt_elementSelected.options;
+    }
   },
   components: { ElementOptionsChild }
 };

@@ -5,7 +5,7 @@ import store from "./store/index";
 import { closest } from "@/utils";
 
 import {
-  // Checkbox,
+  Checkbox,
   Input,
   Select,
   Option,
@@ -24,7 +24,12 @@ import '@/icons' // icon
 import "element-ui/lib/theme-chalk/index.css";
 import "@/styles/index.scss";
 
+import PanelGroup from "@/components/PanelGroup.vue";
+import PanelFold from "@/components/PanelFold.vue";
+Vue.component('panel-group', PanelGroup)
+Vue.component('panel-fold', PanelFold)
 Vue.config.productionTip = false;
+Vue.use(Checkbox);
 Vue.use(Input);
 Vue.use(Button);
 Vue.use(Select);

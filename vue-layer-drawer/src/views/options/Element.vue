@@ -1,37 +1,38 @@
 <template>
-  <div class="po-options-group po-options-el" v-if="elementSelected">
-    <h2><i class="el-icon-setting"></i> 元素</h2>
-    <dl>
-      <dd>
-        <label>name:</label>
-        <input type="text" v-model.lazy="name">
-      </dd>
-    </dl>
-    <dl v-if="typeof attribute !== 'undefined'">
-      <dt class="h2">Attribute</dt>
-      <template v-for="(value, key) in attribute">
-        <ElementAttribute :key="key" :_key="key" :_attribute="attribute"></ElementAttribute>
-      </template>
-    </dl>
-    <dl v-if="typeof style !== 'undefined'">
-      <dt class="h2">Style</dt>
-      <template v-for="(value, key) in style">
-        <ElementStyle :key="key" :_key="key" :_style="style"></ElementStyle>
-      </template>
-      <dd>
-        <el-autocomplete class="inline-input" v-model="state2" :fetch-suggestions="querySearch" placeholder="请输入" :trigger-on-focus="false" @select="addStyle"><template slot="prepend">添加样式</template></el-autocomplete>
-      </dd>
-
-      <dd>
-        <h2 class="h2">自定义：</h2>
-        <div class="style-custom">
-          <textarea v-model="styleCustom"></textarea>
-          <div class="submit disabled0" @click="pushStyle"></div>
-        </div>
-      </dd>
-    </dl>
-    <div class="po-options-foot">
-      <el-button icon="el-icon-delete" @click="ac_deleteElement(gt_indexSelected)">删除元素</el-button>
+  <div class="po-options-panel po-options-el" v-if="elementSelected">
+    <div class="panel-hd">
+      元素
+      <panel-fold target=".po-options-panel" closed="po-options-panel-closed"></panel-fold>
+    </div>
+    <div class="panel-bd scrollstyle">
+      <dl>
+        <dt class="h2">基础属性：</dt>
+        <dd>
+          <label>name:</label>
+          <input type="text" v-model.lazy="name">
+        </dd>
+      </dl>
+      <dl v-if="typeof attribute !== 'undefined'">
+        <dt class="h2">Attribute</dt>
+        <template v-for="(value, key) in attribute">
+          <ElementAttribute :key="key" :_key="key" :_attribute="attribute"></ElementAttribute>
+        </template>
+      </dl>
+      <dl v-if="typeof style !== 'undefined'">
+        <dt class="h2">Style</dt>
+        <template v-for="(value, key) in style">
+          <ElementStyle :key="key" :_key="key" :_style="style"></ElementStyle>
+        </template>
+        <dd>
+          <add-style @command="addStyle"></add-style>
+        </dd>
+        <dd>
+          <custom-style @command="pushStyle"></custom-style>
+        </dd>
+      </dl>
+      <!-- <div class="po-options-foot">
+        <el-button icon="el-icon-delete" @click="ac_deleteElement(gt_indexSelected)">删除元素</el-button>
+      </div> -->
     </div>
   </div>
 </template>
@@ -41,13 +42,12 @@ import { mapGetters, mapActions } from "vuex";
 import ElementAttribute from "@/views/options/ElementAttribute.vue";
 import ElementStyle from "@/views/options/ElementStyle.vue";
 import Upload from "@/components/Upload.vue";
-import { style2object } from "@/utils";
-import cssKey from "@/utils/cssKey";
+import AddStyle from "@/components/AddStyle.vue";
+import CustomStyle from "@/components/CustomStyle.vue";
 export default {
   name: "optionsElement",
   data() {
     return {
-      state2: "",
       styleCustom: "margin:10px;\npadding:20px;"
     };
   },
@@ -82,41 +82,21 @@ export default {
   components: {
     ElementAttribute,
     ElementStyle,
-    Upload
+    Upload,
+    AddStyle,
+    CustomStyle
   },
   methods: {
     ...mapActions([
       "ac_updateElement",
-      "ac_updateElementAttr",
       "ac_deleteElement",
       "ac_updateElementStyle"
     ]),
-    querySearch(queryString, cb) {
-      var restaurants = Object.keys(cssKey);
-      var results = queryString
-        ? restaurants.filter(this.createFilter(queryString)).map(v => {
-            return (v = { value: v });
-          })
-        : restaurants;
-      // 调用 callback 返回建议列表的数据
-      cb(results);
+    addStyle(style) {
+      this.ac_updateElementStyle({ [style]: "" });
     },
-    createFilter(queryString) {
-      return restaurant => {
-        return (
-          restaurant.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-        );
-      };
-    },
-    addStyle() {
-      if (!this.state2) return;
-      this.ac_updateElementStyle({ [this.state2]: "" });
-      this.state2 = "";
-    },
-    pushStyle() {
-      if (!this.styleCustom) return;
-      this.ac_updateElementStyle(style2object(this.styleCustom));
-      this.styleCustom = "";
+    pushStyle(style) {
+      this.ac_updateElementStyle(style);
     }
   }
 };

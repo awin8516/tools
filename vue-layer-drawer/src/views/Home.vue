@@ -3,7 +3,7 @@
     <ScreenSize></ScreenSize>
     <div id="po-main" class="po-main">
       <div class="po-body">
-        <div id="po-screen" class="po-screen" ref="screen" v-drag:po-el-item :style="gt_screenOptions.style" @mousedown.self="cancelacSelectElement">
+        <div id="po-screen" class="po-screen scrollstyle" ref="screen" v-drag:po-el-item :style="gt_screenOptions.style" @mousedown.self="cancelacSelectElement">
           <template v-for="item in gt_elementList">
             <Element v-if="!item.pid" :key="item.vid" :elementParams.sync="item"></Element>
           </template>

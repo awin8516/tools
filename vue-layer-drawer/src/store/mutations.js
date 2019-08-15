@@ -1,4 +1,4 @@
-import { deepClone, resetLayerName, mergeJSON } from "@/utils";
+import { deepClone, resetLayerName, mergeJSON, styleSplit } from "@/utils";
 import MSG from "@/utils/message";
 
 const mutations = {
@@ -45,6 +45,7 @@ const mutations = {
     state.project.themeColors = component;
   },
   SET_ADDELEMENT: (state, component) => {
+    component = deepClone(component);
     if (!component.style[state.project.mediaName]) {
       component.style[state.project.mediaName] = deepClone(component.style.default);
     }
@@ -57,12 +58,16 @@ const mutations = {
       if (elementSelected.container) {
         component.pid = elementSelected.vid;
         state.project.elementList.push(component);
+        state.project.elementList.map(v => (v.selected = false));
+        component.selected = true
       } else {
         alert(MSG['not-container'])
       }
     } else {
       //顶层元素
       state.project.elementList.push(component);
+      state.project.elementList.map(v => (v.selected = false));
+      component.selected = true
     }
   },
   SET_DELETEELEMENT: (state, component) => {
@@ -122,22 +127,25 @@ const mutations = {
   },
   SET_UPDATEELEMENTSTYLE: (state, component) => {
     let element = state.project.elementList.find(v => v.selected);
+
     if (element) {
       const formatMarginPadding = (component) => {
         for (const key in component) {
           switch (key) {
             case 'margin':
-              component["margin-top"] = component[key]
-              component["margin-right"] = component[key]
-              component["margin-bottom"] = component[key]
-              component["margin-left"] = component[key]
+              const margin = styleSplit(key, component[key])
+              component["margin-top"] = margin.top
+              component["margin-right"] = margin.right
+              component["margin-bottom"] = margin.bottom
+              component["margin-left"] = margin.left
               delete component.margin
               break;
             case 'padding':
-              component["padding-top"] = component[key]
-              component["padding-right"] = component[key]
-              component["padding-bottom"] = component[key]
-              component["padding-left"] = component[key]
+              const padding = styleSplit(key, component[key])
+              component["padding-top"] = padding.top
+              component["padding-right"] = padding.right
+              component["padding-bottom"] = padding.bottom
+              component["padding-left"] = padding.left
               delete component.padding
               break;
           }
