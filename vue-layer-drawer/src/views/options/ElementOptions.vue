@@ -2,7 +2,7 @@
   <div class="po-options-panel po-options-el" v-if="options">
     <div class="panel-hd">
       组件
-      <panel-fold target=".po-options-panel" closed="po-options-panel-closed"></panel-fold>
+      <panel-fold target=".po-options-panel" toggleClass="po-options-panel-closed"></panel-fold>
     </div>
     <div class="panel-bd scrollstyle">
       <ElementOptionsChild :options="options" _key="Options"></ElementOptionsChild>

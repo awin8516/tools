@@ -1,9 +1,11 @@
 <template>
-  <div class="po-upload">
+  <div class="po-input-button po-color-picker">
     <div class="input">
       <input class="text" type="text" v-model.lazy="value">
     </div>
-    <el-color-picker v-model="value" show-alpha :predefine="gt_themeColors"></el-color-picker>
+    <button>
+      <el-color-picker v-model="value" show-alpha :predefine="gt_themeColors"></el-color-picker>
+    </button>
   </div>
 </template>
 
@@ -30,23 +32,30 @@ export default {
 };
 </script>
 <style lang="scss">
-.po-upload {
-  display: flex;
-  overflow: hidden;
-  .input {
-    .text {
-      width: 100%;
-    }
+.po-color-picker {
+  button {
+    background: none;
+    outline: none;
   }
   .el-color-picker {
-    display: block;
-    height: auto;
-    margin-left: 0.2em;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     .el-color-picker__trigger {
-      width: 0.25rem;
+      width: 100%;
       height: 100%;
       padding: 0;
       border: none;
+      line-height: 1;
+      outline: none;
+    }
+    .el-color-picker__color {
+      outline: none;
+    }
+    * {
+      outline: none;
     }
   }
 }

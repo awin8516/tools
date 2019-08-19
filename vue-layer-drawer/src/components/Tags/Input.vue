@@ -12,6 +12,7 @@ export default {
       icon: "input",
       name: "input-1",
       innerText: "",
+      tagSort:700,
       attribute: {
         type: "text",
         id: "input-1",

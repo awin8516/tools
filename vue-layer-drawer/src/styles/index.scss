@@ -52,6 +52,9 @@ body {
 img {
   max-width: 100%;
 }
+input:focus{
+  // outline:rgb(0, 174, 255) solid 1px;
+}
 ins {
   text-decoration: none;
 }
@@ -93,16 +96,16 @@ textarea {
   .po-body {
     .po-screen {
       overflow: auto;
-      *:not(i) {
-        &::before,
-        &::after {
-          content: '';
-          display: block;
-          clear: both;
-          width: 100%;
-          overflow: hidden;
-        }
-      }
+      // *:not(i) {
+      //   &::before,
+      //   &::after {
+      //     content: '';
+      //     display: block;
+      //     clear: both;
+      //     width: 100%;
+      //     overflow: hidden;
+      //   }
+      // }
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
       background-color: #fff;
       &::before,
@@ -117,7 +120,8 @@ textarea {
         position: relative;
         display: block;
         &.type-img,
-        &.type-input {
+        &.type-input,
+        &.type-audio {
           display: inline-block;
         }
         > :first-child {
@@ -141,6 +145,7 @@ textarea {
             background: #fff;
             border: 1px #eee solid;
             box-shadow: 2px 2px 5px 0px #aaa;
+            transform-origin: left top;
             li {
               padding: 0.3em 0.5em 0.3em 0.3em;
               border-bottom: 1px #aaa solid;
@@ -215,26 +220,28 @@ textarea {
               position: absolute;
               z-index: 100;
               display: inline-block;
-              width: 10px;
-              height: 10px;
+              width: 20px;
+              height: 20px;
               font-size: 0;
               line-height: 0;
               border-radius: 50%;
               border: 1px #0095f8 solid;
               background-color: #fff;
               text-align: center;
-              text-indent: -2px;
+              transform: scale(0.66);
               &::before {
+                content: "";
                 display: inline-block;
                 width: 30%;
                 height: 30%;
-                border-top: 1px #0095f8 solid;
-                border-right: 1px #0095f8 solid;
+                border-top: 2px #0095f8 solid;
+                border-right: 2px #0095f8 solid;
                 font-size: 0;
                 vertical-align: middle;
                 line-height: 0;
               }
               &::after {
+                content: "";
                 display: inline-block;
                 width: 0;
                 height: 100%;
@@ -244,9 +251,10 @@ textarea {
               }
               &.resize-width {
                 cursor: e-resize;
-                right: -5px;
+                right: -10px;
                 top: 50%;
-                margin-top: -5px;
+                margin-top: -10px;
+                text-indent: -2px;
                 &::before {
                   transform: rotate(45deg);
                 }
@@ -254,16 +262,17 @@ textarea {
               &.resize-height {
                 cursor: s-resize;
                 left: 50%;
-                bottom: -5px;
-                margin-left: -5px;
+                bottom: -10px;
+                margin-left: -10px;
                 &::before {
+                  margin-top: -2px;
                   transform: rotate(135deg);
                 }
               }
               &.resize-all {
                 cursor: se-resize;
-                right: -5px;
-                bottom: -5px;
+                right: -10px;
+                bottom: -10px;
                 &::before {
                   transform: rotate(90deg);
                 }
@@ -274,6 +283,7 @@ textarea {
               display: inline-block;
               right: -20px;
               bottom: -20px;
+              color: #0095f8;
             }
           }
         }
@@ -284,7 +294,7 @@ textarea {
           }
         }
         .swiper-slide img {
-          max-width: 100%;
+          width: 100%;
         }
       }
     }
@@ -340,10 +350,12 @@ textarea {
       max-width: 320px;
       vertical-align: top;
       overflow: hidden;
+      padding: 0 2px;
       > .panel-hd {
+        margin: 0 -2px;
         padding: 2px 25px 2px 5px;
         box-shadow: 0 1px 0 0 #ddd;
-        background-color: #e9e9e9;
+        background-color: #f1f1f1;
         position: relative;
         .panel-fold {
           position: absolute;
@@ -374,6 +386,14 @@ textarea {
       }
     }
     > .po-options-panel-closed {
+      > .panel-hd {
+        padding: 25px 5px 5px 5px;
+        width: 1em;
+        .panel-fold {
+          top: 3px;
+          transform: none;
+        }
+      }
       > .panel-bd,
       &::after {
         display: none;
@@ -417,7 +437,37 @@ textarea {
       }
       .field {
         display: inline-block;
-        vertical-align: top;
+        vertical-align: top;        
+      }
+      .po-input-button {
+        display: flex;
+        overflow: hidden;
+        .input {
+          .text {
+            width: 100%;
+          }
+        }
+        button {
+          position: relative;
+          color: #fff;
+          background: rgb(0, 140, 255);
+          border-radius: 0.3em;
+          border: none;
+          width: 0.4rem;
+          margin-left: 0.2em;
+        }
+        input.file {
+          width: 0;
+          height: 0;
+          font-size: 0;
+          margin: 0;
+          padding: 0;
+          opacity: 0;
+          position: absolute;
+          overflow: hidden;
+          left: 0;
+          z-index: -1;
+        }
       }
       input {
         font-size: inherit;

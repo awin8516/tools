@@ -1,5 +1,5 @@
 <template>
-  <div class="panel-fold"><i :class="[ isClosed ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right']" @click="toggle"></i></div>
+  <div class="panel-fold"><i :class="[ isClosed  ? 'el-icon-plus' : 'el-icon-minus']" @click="toggle"></i></div>
 </template>
 
 <script>
@@ -11,23 +11,20 @@ export default {
       isClosed: false
     };
   },
-  props: ["target", "closed"],
+  props: ["target", "toggleClass", "closed"],
   methods: {
-    toggle() {
-      this.isClosed = !this.isClosed;
+    toggle(status) {
+      this.isClosed = typeof status !== "boolean" ? !this.isClosed : status;
       const act = this.isClosed ? "add" : "remove";
-      closest(this.$el, this.target).classList[act](this.closed);
+      closest(this.$el, this.target).classList[act](this.toggleClass);
+    }
+  },
+  watch: {
+    closed: function(newVal, oldVal) {
+      this.toggle(newVal);
     }
   }
 };
 </script>
 <style lang="scss">
-.panel-fold {
-  // padding: 0 5px;
-  // margin: -10px;
-  // margin-bottom: 10px;
-  // border-bottom: 1px #ddd solid;
-  // background-color: #e9e9e9;
-  // text-align: right;
-}
 </style>

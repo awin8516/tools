@@ -21,6 +21,7 @@ export default {
       type: "swiper",
       icon: "swiper",
       name: "swiper-1",
+      tagSort: 600,
       attribute: {
         id: "swiper-1",
         className: "swiper-container swiper-test"
@@ -69,24 +70,34 @@ export default {
   props: ["element"],
   mounted() {
     this.swiper = new swiper(".swiper-container", this.options);
-    registerContextMenu(this, {
-      name: "cm_editInnerText",
-      icon: "el-icon-delete",
-      label: "编辑文字",
-      sort: 4,
-      command: () => {
-        this.$parent.ac_updateElement({ editing: true });
-      }
-    });
+    // registerContextMenu(this, {
+    //   name: "cm_editInnerText",
+    //   icon: "el-icon-delete",
+    //   label: "编辑文字",
+    //   sort: 4,
+    //   command: () => {
+    //     this.$parent.ac_updateElement({ editing: true });
+    //   }
+    // });
   },
   watch: {
     element: function(newVal, oldVal) {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         this.swiper.destroy(true, false);
-        this.swiper = new swiper("#"+this.element.attribute.id, this.element.options);
+        this.swiper = new swiper(
+          "#" + this.element.attribute.id,
+          this.element.options
+        );
       }, 500);
     }
   }
 };
 </script>
+
+<style lang="scss">
+.swiper-container,
+.swiper-wrapper {
+  z-index: initial;
+}
+</style>

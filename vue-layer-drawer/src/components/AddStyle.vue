@@ -1,5 +1,5 @@
 <template>
-  <el-autocomplete class="add-style inline-input" v-model="selected" :fetch-suggestions="querySearch" placeholder="请输入" :trigger-on-focus="false" @select="addStyle"><template slot="prepend">添加样式</template></el-autocomplete>
+  <el-autocomplete class="add-style inline-input" v-model="selected" :fetch-suggestions="querySearch" placeholder="请输入" :trigger-on-focus="false" @select="addStyle" popper-class="add-style-options"><template slot="prepend">添加样式</template></el-autocomplete>
 </template>
 
 <script>
@@ -39,5 +39,15 @@ export default {
 .add-style{
   width: 100%;
   box-sizing: border-box;
+  .el-input-group__prepend{
+    width: 91px;
+    text-align: center;
+  }
+  .el-input__inner{
+    width: 10em;
+  }
+}
+.add-style-options{
+  width: 210px !important;
 }
 </style>

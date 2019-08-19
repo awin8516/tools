@@ -119,19 +119,18 @@ Vue.directive("drag", {
                 top: posStart.top + clientEnd.y
               };
 
-              let maxLeft = el.clientWidth - argElement.clientWidth;
-              let maxTop = el.clientHeight - argElement.clientHeight;
-
-              if (position == "absolute" || position == "fixed") {
-                posEnd.left =
-                  posEnd.left < 0
-                    ? 0
-                    : posEnd.left > maxLeft
-                      ? maxLeft
-                      : posEnd.left;
-                posEnd.top =
-                  posEnd.top < 0 ? 0 : posEnd.top > maxTop ? maxTop : posEnd.top;
-              }
+              // let maxLeft = el.clientWidth - argElement.clientWidth;
+              // let maxTop = el.clientHeight - argElement.clientHeight;
+              // if (position == "absolute" || position == "fixed") {
+              //   posEnd.left =
+              //     posEnd.left < 0
+              //       ? 0
+              //       : posEnd.left > maxLeft
+              //         ? maxLeft
+              //         : posEnd.left;
+              //   posEnd.top =
+              //     posEnd.top < 0 ? 0 : posEnd.top > maxTop ? maxTop : posEnd.top;
+              // }
 
               //移动当前元素
               argElement.style[posKey.x] = posEnd.left + "px";

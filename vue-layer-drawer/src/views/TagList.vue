@@ -1,16 +1,15 @@
 <template>
   <div class="po-toolbar">
-    <el-button v-for="(item,index) in tagsList" :key="index" :title="'创建'+item.type" circle @click="ac_addElement(item)">
+    <el-button v-for="(item,index) in tagsList" :key="index" :title="'创建'+item.type" size="mini" circle @click="ac_addElement(item)">
       <svg-icon :icon-class="item.icon"></svg-icon>
     </el-button>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapActions } from "vuex";
 import * as Tags from "@/components/Tags";
-import { deepClone } from "@/utils";
-import MSG from "@/utils/message";
+import { arraySort } from "@/utils";
 export default {
   name: "TagList",
   data() {
@@ -18,11 +17,8 @@ export default {
       tagsList: []
     };
   },
-  computed: {
-    ...mapGetters(["gt_elementSelected"])
-  },
   methods: {
-    ...mapActions(["ac_addElement", "ac_selectElement"])
+    ...mapActions(["ac_addElement"])
   },
   mounted() {
     for (let key in Tags) {
@@ -30,6 +26,7 @@ export default {
       tag.file = Tags[key].__file;
       this.tagsList.push(tag);
     }
+    arraySort(this.tagsList, 'tagSort')
   }
 };
 </script>

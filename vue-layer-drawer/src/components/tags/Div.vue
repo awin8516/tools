@@ -17,6 +17,7 @@ export default {
       name: "div-1",
       innerText: "",
       editing: false,
+      tagSort: 1000,
       attribute: {
         id: "div-1",
         className: "div div-test"

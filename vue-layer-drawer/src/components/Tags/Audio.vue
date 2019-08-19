@@ -14,6 +14,7 @@ export default {
       type: "audio",
       icon: "audio",
       name: "audio-1",
+      tagSort: 400,
       attribute: {
         id: "audio-1",
         className: "audio audio-test",

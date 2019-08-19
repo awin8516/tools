@@ -10,6 +10,7 @@ export default {
       type: "img",
       icon: "img",
       name: "img-1",
+      tagSort: 900,
       attribute: {
         id: "img-1",
         className: "img img-test",

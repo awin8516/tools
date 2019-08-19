@@ -9,9 +9,9 @@
       </template>
     </component>
     <mark class="po-el-controls">
-      <div v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="'left:'+contextMenuPos.left+'px;top:'+contextMenuPos.top+'px'">
+      <div v-show="contextMenuActive && elementParams.selected" class="context-menu" :style="contextMenuStyle">
         <ul>
-          <li v-for="(item, index) in contextMenuList" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
+          <li v-for="(item, index) in contextMenuList2" :key="index" @click="item.command(),contextMenuActive = false"><i :class='item.icon'></i>{{item.label}}</li>
         </ul>
         <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
       </div>
@@ -167,43 +167,49 @@ export default {
       };
       const done = position => {
         // console.log(position)
-        position = position || 'relative'
+        position = position || "relative";
         styleOptions[position].forEach(v => {
           if (typeof this.style[v] !== "undefined") {
             // console.log(v+"--"+this.style[v])
             if (position == "fixed") {
-              console.log("-------------------fixed--------------------")
+              // console.log("-------------------fixed--------------------")
               if (v == "left" || v == "top") {
-                const rect = document.querySelector("#po-screen").getBoundingClientRect()[v] + "px";
+                const rect =
+                  document.querySelector("#po-screen").getBoundingClientRect()[
+                    v
+                  ] + "px";
                 styleObject[v] = (parseInt(this.style[v]) || 0) + rect;
-                styleObject.display = 'inline-block';
+                styleObject.display = "inline-block";
               }
             } else if (position == "absolute") {
-              console.log("-------------------absolute--------------------")
+              // console.log("-------------------absolute--------------------")
               styleObject[v] = this.style[v];
-              styleObject.display = 'inline-block';
+              styleObject.display = "inline-block";
             } else if (position == "relative") {
-              console.log("-------------------relative--------------------")
-              console.log(v+"--"+this.style[v])
-              if (v == "width"){
+              // console.log("-------------------relative--------------------")
+              // console.log(v+"--"+this.style[v])
+              if (v == "width") {
                 // const padding =
                 //   (parseInt(this.style["padding-left"]) || 0) +
                 //   (parseInt(this.style["padding-right"]) || 0);
                 if (this.style[v] == "auto") {
                   styleObject[v] = this.style[v];
                 } else {
-                  styleObject[v] =( parseInt(getElementWidth('[data-vid="' + this.elementParams.vid + '"] > *:first-child')) || 0 ) +'px'   
+                  styleObject.display = "inline-block";
+                  // styleObject[v] =( parseInt(getElementWidth('[data-vid="' + this.elementParams.vid + '"] > *:first-child')) || 0 ) +'px'
                 }
+              } else {
+                styleObject[v] = this.style[v];
               }
             } else {
-              console.log("-------------------else--------------------")
+              // console.log("-------------------else--------------------")
               styleObject[v] = this.style[v];
             }
           }
         });
       };
       done(this.style.position);
-      console.log(styleObject)
+      // console.log(styleObject)
       return styleObject;
 
       // const style = [
@@ -222,47 +228,58 @@ export default {
       // ];
       // style.forEach(v => {
       //   if (typeof this.style[v] !== "undefined") {
-          // if (v == "width") {
-          //   if (this.style.position == "relative") {
-          //     const padding =
-          //       (parseInt(this.style["padding-left"]) || 0) +
-          //       (parseInt(this.style["padding-right"]) || 0);
-          //     if (this.style[v] == "auto") {
-          //       styleObject[v] = this.style[v];
-          //     } else {
-          //       styleObject[v] =
-          //         (parseInt(this.style[v]) || 0) + padding + "px";
-          //     }
-          //   }
-          // } else if (v == "left" && this.style.position == "fixed") {
-          //   styleObject[v] =
-          //     (parseInt(this.style[v]) || 0) +
-          //     document.querySelector("#po-screen").getBoundingClientRect()
-          //       .left +
-          //     "px";
-          // } else if (v == "top" && this.style.position == "fixed") {
-          //   styleObject[v] =
-          //     (parseInt(this.style[v]) || 0) +
-          //     document.querySelector("#po-screen").getBoundingClientRect().top +
-          //     "px";
-          // } else {
-          //   styleObject[v] = this.style[v];
-          // }
-          // if (this.style.position == "fixed") {
-          //   if (v == "left" || v == "top") {
-          //     const rect =
-          //       document.querySelector("#po-screen").getBoundingClientRect()[
-          //         v
-          //       ] + "px";
-          //     styleObject[v] = (parseInt(this.style[v]) || 0) + rect;
-          //   }
-          // } else if (this.style.position == "absolute") {
-          // } else if (v == "top" && this.style.position == "relative") {
-          // } else {
-          // }
+      // if (v == "width") {
+      //   if (this.style.position == "relative") {
+      //     const padding =
+      //       (parseInt(this.style["padding-left"]) || 0) +
+      //       (parseInt(this.style["padding-right"]) || 0);
+      //     if (this.style[v] == "auto") {
+      //       styleObject[v] = this.style[v];
+      //     } else {
+      //       styleObject[v] =
+      //         (parseInt(this.style[v]) || 0) + padding + "px";
+      //     }
+      //   }
+      // } else if (v == "left" && this.style.position == "fixed") {
+      //   styleObject[v] =
+      //     (parseInt(this.style[v]) || 0) +
+      //     document.querySelector("#po-screen").getBoundingClientRect()
+      //       .left +
+      //     "px";
+      // } else if (v == "top" && this.style.position == "fixed") {
+      //   styleObject[v] =
+      //     (parseInt(this.style[v]) || 0) +
+      //     document.querySelector("#po-screen").getBoundingClientRect().top +
+      //     "px";
+      // } else {
+      //   styleObject[v] = this.style[v];
+      // }
+      // if (this.style.position == "fixed") {
+      //   if (v == "left" || v == "top") {
+      //     const rect =
+      //       document.querySelector("#po-screen").getBoundingClientRect()[
+      //         v
+      //       ] + "px";
+      //     styleObject[v] = (parseInt(this.style[v]) || 0) + rect;
+      //   }
+      // } else if (this.style.position == "absolute") {
+      // } else if (v == "top" && this.style.position == "relative") {
+      // } else {
+      // }
       //   }
       // });
       // return styleObject;
+    },
+    contextMenuStyle() {
+      let style = {
+        left: this.contextMenuPos.left + "px",
+        top: this.contextMenuPos.top + "px"
+      };
+      if (this.style.transform) {
+        const rotate = getTransform(this.style, "rotate");
+        style.transform = "rotate(" + -rotate + "deg)";
+      }
+      return style;
     },
     isAbsolute: function() {
       return this.style.position === "absolute";
@@ -274,6 +291,26 @@ export default {
       get: function() {
         return this.elementParams && this.elementParams.innerText;
       }
+    },
+    contextMenuList2() {
+      if (this.style.position == "absolute") {
+        if (this.contextMenuList.every(v => v.name !== "cm_align")) {
+          this.contextMenuList.push({
+            name: "cm_align",
+            icon: "el-icon-download",
+            label: "对齐",
+            command: () => {
+              if (this.gt_indexSelected > 0) {
+                this.ac_updateElementLayer(-1);
+              }
+            }
+          });
+        }
+      } else {
+        const index = this.contextMenuList.findIndex(v => v.name == "cm_align");
+        index >= 0 && this.contextMenuList.splice(index, 1);
+      }
+      return this.contextMenuList;
     }
   },
   components: Tags,

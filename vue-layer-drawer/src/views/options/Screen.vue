@@ -2,17 +2,17 @@
   <div class="po-options-panel">
     <div class="panel-hd">
       页面
-      <panel-fold target=".po-options-panel" closed="po-options-panel-closed"></panel-fold>
+      <panel-fold target=".po-options-panel" toggleClass="po-options-panel-closed" :closed="!!gt_elementSelected"></panel-fold>
     </div>
     <div class="panel-bd scrollstyle">
       <panel-group>
         <dt class="h2">基础属性：</dt>
         <dd>
-          <label>name:</label>
+          <label title="name">name:</label>
           <input type="text" v-model.lazy="name">
         </dd>
         <dd>
-          <label>主题色系:</label>
+          <label title="主题色系">主题色系:</label>
           <div class="field">
             <ThemeColors></ThemeColors>
           </div>
@@ -46,7 +46,7 @@ export default {
     return { state2: "", styleCustom: "margin:10px;\npadding:20px;" };
   },
   computed: {
-    ...mapGetters(["gt_screenOptions"]),
+    ...mapGetters(["gt_screenOptions", "gt_elementSelected"]),
     name: {
       get: function() {
         return this.gt_screenOptions && this.gt_screenOptions.name;

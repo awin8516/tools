@@ -452,6 +452,34 @@ export function clearSameStyle(project) {
   return project
 }
 
+export function arraySort(array, propertyName, sort) {
+  const s = (array, propertyName, sort) => {
+    sort = sort || -1
+    if (!array[0]) {
+      return
+    } else if (array[0][propertyName] === undefined || array[0][propertyName] === null) {
+      return
+    }
+    // 属性值为非数字
+    if (typeof array[0][propertyName] !== 'number') {
+      return function (object1, object2) {
+        var value1 = object1[propertyName]
+        var value2 = object2[propertyName]
+        return sort < 0 ? value2.localeCompare(value1) : value1.localeCompare(value2)
+      }
+    } else {
+      return function (object1, object2) {
+        // 属性值为数字
+        var value1 = parseFloat(object1[propertyName])
+        var value2 = parseFloat(object2[propertyName])
+        return sort < 0 ? value2 - value1 : value1 - value2
+      }
+    }
+  }
+
+  array.sort(s(array, propertyName, sort))
+}
+
 //注册右键菜单
 export function registerContextMenu(element, menu) {
   if (menu.sort !== undefined) {

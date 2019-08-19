@@ -152,7 +152,8 @@ const mutations = {
         }
         return component
       }
-      element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
+      // element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], formatMarginPadding(component));
+      element.style[state.project.mediaName] = Object.assign({}, element.style[state.project.mediaName], component);
       state.project.elementList = deepClone(state.project.elementList);
     }
   },
@@ -163,11 +164,23 @@ const mutations = {
         for (const key in element.style) {
           component.forEach(style => {
             delete element.style[key][style]
+            if(style == 'position'){
+              delete element.style[key].left
+              delete element.style[key].top
+              delete element.style[key].right
+              delete element.style[key].bottom
+            }
           });
         }
       } else {
         for (const key in element.style) {
           delete element.style[key][component]
+          if(component == 'position'){
+            delete element.style[key].left
+            delete element.style[key].top
+            delete element.style[key].right
+            delete element.style[key].bottom
+          }
         }
       }
       state.project.elementList = deepClone(state.project.elementList);

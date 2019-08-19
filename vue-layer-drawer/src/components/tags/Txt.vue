@@ -16,6 +16,7 @@ export default {
       name: "text-1",
       innerText: "",
       editing: true,
+      tagSort: 800,
       attribute: {
         id: "text-1",
         className: "text text-test"

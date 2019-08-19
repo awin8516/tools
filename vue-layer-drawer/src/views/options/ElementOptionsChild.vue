@@ -1,5 +1,5 @@
 <template>
-  <dl>
+  <panel-group>
     <dt v-if="_key" class="h2">{{_key}}</dt>
     <template v-for="(value, key) in options">
       <dd v-if="typeof value == 'object'" :key="key">
@@ -7,7 +7,7 @@
       </dd>
       <ElementOption v-else :key="key" :_key="key" :_options="options" :_parentKey="parentKey"></ElementOption>
     </template>
-  </dl>
+  </panel-group>
 </template>
 
 <script>

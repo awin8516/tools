@@ -2,23 +2,23 @@
   <div class="po-options-panel po-options-el" v-if="elementSelected">
     <div class="panel-hd">
       元素
-      <panel-fold target=".po-options-panel" closed="po-options-panel-closed"></panel-fold>
+      <panel-fold target=".po-options-panel" toggleClass="po-options-panel-closed"></panel-fold>
     </div>
     <div class="panel-bd scrollstyle">
-      <dl>
+      <panel-group>
         <dt class="h2">基础属性：</dt>
         <dd>
-          <label>name:</label>
+          <label title="name">name:</label>
           <input type="text" v-model.lazy="name">
         </dd>
-      </dl>
-      <dl v-if="typeof attribute !== 'undefined'">
+      </panel-group>
+      <panel-group v-if="typeof attribute !== 'undefined'">
         <dt class="h2">Attribute</dt>
         <template v-for="(value, key) in attribute">
           <ElementAttribute :key="key" :_key="key" :_attribute="attribute"></ElementAttribute>
         </template>
-      </dl>
-      <dl v-if="typeof style !== 'undefined'">
+      </panel-group>
+      <panel-group v-if="typeof style !== 'undefined'">
         <dt class="h2">Style</dt>
         <template v-for="(value, key) in style">
           <ElementStyle :key="key" :_key="key" :_style="style"></ElementStyle>
@@ -29,7 +29,7 @@
         <dd>
           <custom-style @command="pushStyle"></custom-style>
         </dd>
-      </dl>
+      </panel-group>
       <!-- <div class="po-options-foot">
         <el-button icon="el-icon-delete" @click="ac_deleteElement(gt_indexSelected)">删除元素</el-button>
       </div> -->
