@@ -1,4 +1,5 @@
 import { deepClone, array2Tree, object2style, formatHtml, clearSameStyle } from "@/utils";
+import MSG from "@/utils/message";
 import JSZip from "jszip";
 import saveAs from "jszip/vendor/FileSaver";
 
@@ -29,6 +30,9 @@ const actions = {
   },
   ac_addElement({ commit }, element) {
     commit("SET_ADDELEMENT", element);
+    // if(element.children && element.children.length){
+    //   commit("SET_ADDELEMENT", element.children[0]);
+    // }
   },
   ac_deleteElement({ commit }, element) {
     commit("SET_DELETEELEMENT", element);
@@ -62,7 +66,7 @@ const actions = {
       const project = JSON.parse(json);
       commit("SET_PROJECT", project);
     } else {
-      console.log("导入错误")
+      alert(MSG['error-import-project'])
     }
   },
   ac_saveProject({ state }) {
