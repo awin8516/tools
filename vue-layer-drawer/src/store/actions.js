@@ -62,11 +62,12 @@ const actions = {
     commit("SET_UPDATEELEMENTOPTIONS", value);
   },
   ac_importProject({ commit }, json) {
+    console.log(json)
     if (json) {
       const project = JSON.parse(json);
       commit("SET_PROJECT", project);
     } else {
-      alert(MSG['error-import-project'])
+      console.log(MSG['error-import-project'])
     }
   },
   ac_saveProject({ state }) {

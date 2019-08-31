@@ -1,9 +1,3 @@
-<template>
-  <div :data-name="element.name" :style="element.style[$parent.gt_mediaName]" :id="element.attribute.id" :class="element.attribute.className">
-    <slot name="innerText"></slot>
-    <slot name="children"></slot>
-  </div>
-</template>
 
 <script>
 import { registerContextMenu } from "@/utils";
@@ -12,15 +6,18 @@ export default {
   data() {
     return {
       type: "div",
+      tagName: "div",
       icon: "level",
       container: true,
-      name: "div-1",
+      // name: "div-1",
       innerText: "",
       editing: false,
       tagSort: 1000,
+      // children:[],
+      className: "div div-test",
       attribute: {
         id: "div-1",
-        className: "div div-test"
+        "data-name": "div-1"
       },
       style: {
         default: {
@@ -42,6 +39,24 @@ export default {
       }
     };
   },
+  // render: function(createElement) {
+  //   return createElement(
+  //     "div", // 标签名称
+  //     {
+  //       class: this.element.attribute.className,
+  //       style: this.element.style[this.$parent.gt_mediaName],
+  //       attrs: {
+  //         id: this.element.attribute.id,
+  //         "data-name": this.element.name
+  //       }
+  //     },
+  //     [
+  //       // 子节点数组
+  //       this.$slots.innerText,
+  //       this.$slots.children
+  //     ]
+  //   );
+  // },
   props: ["element"],
   mounted() {
     registerContextMenu(this, {

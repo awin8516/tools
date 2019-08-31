@@ -6,7 +6,7 @@ const getters = {
     return state.project.elementList;
   },
   gt_elementSelected(state) {
-    return state.project.elementList.find(item => item.selected);
+    return state.project.elementSelected;
   },
   gt_indexSelected(state) {
     return state.project.elementList.findIndex(item => item.selected);

@@ -23,10 +23,11 @@ export default {
   mounted() {
     for (let key in Tags) {
       let tag = Tags[key].data();
-      tag.file = Tags[key].__file;
+      tag.children = tag.children || [];
+      // tag.file = Tags[key].__file;
       this.tagsList.push(tag);
     }
-    arraySort(this.tagsList, 'tagSort')
+    arraySort(this.tagsList, "tagSort");
   }
 };
 </script>

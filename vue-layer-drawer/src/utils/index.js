@@ -158,9 +158,9 @@ export function resetLayerName(project, element) {
   switch (element.type) {
     case "div":
       len = getLenBytype("div");
-      element.name = "div-" + len;
+      element.attribute['data-name'] = "div-" + len;
       element.attribute.id = "div-" + len;
-      element.attribute.className = "div div-" + getLenBytype("div");
+      element.className = "div div-" + getLenBytype("div");
       break;
     case "img":
       len = getLenBytype("img");

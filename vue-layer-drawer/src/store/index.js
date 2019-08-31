@@ -55,11 +55,13 @@ const state = {
     },
     themeColors: [],
     elementList: [],
+    elementSelected: null,
     mediaName: "default"
   }
 };
 
 state.project = JSON.parse(JSON.stringify(state.default))
+console.log(state.project)
 const store = new Vuex.Store({
   state,
   actions,
