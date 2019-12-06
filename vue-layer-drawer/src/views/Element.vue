@@ -2,7 +2,7 @@
   <ins class="po-el-item" :data-vid="elementParams.vid" :data-pid="elementParams.pid" :class="[style.position,'type-'+elementParams.type,{'active':elementParams.selected}]" :style="itemStyle" @mousedown="mouseDown" @mouseup="draging = false" @mousemove="mouseMove" @contextmenu.prevent="contextMenu">
     <component :is="component" :element="elementParams">
       <template slot="innerText">
-        {{elementParams.innerText}}
+        {{innerHTML}}
       </template>
       <template v-for="item in gt_elementList" slot="children">
         <Element v-if="item.pid == elementParams.vid" :key="item.vid" :data-vid="item.vid" :class="{'active':item.selected}" :elementParams.sync="item"></Element>
@@ -118,6 +118,10 @@ export default {
       "gt_indexSelected",
       "gt_contextMenu"
     ]),
+    innerHTML() {
+      return this.elementParams.innerText && this.elementParams.innerText.replace(/\n/g, "<br>");
+      // return 'DFASDFASDF'
+    },
     style() {
       return this.elementParams.style[this.gt_mediaName];
     },
