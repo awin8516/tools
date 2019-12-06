@@ -15,8 +15,14 @@ export default {
       icon: "level",
       container: true,
       name: "div-1",
-      innerText: "",
-      editing: false,
+      contextMenuList: [
+        {
+          icon: "el-icon-delete",
+          label: "编辑文字",
+          sort: 5,
+          command: "editInnerText"
+        }
+      ],
       tagSort: 1000,
       attribute: {
         id: "div-1",
@@ -44,15 +50,15 @@ export default {
   },
   props: ["element"],
   mounted() {
-    registerContextMenu(this, {
-      name: "cm_editInnerText",
-      icon: "el-icon-delete",
-      label: "编辑文字",
-      sort: 4,
-      command: () => {
-        this.$parent.ac_updateElement({ editing: true });
-      }
-    });
+    // registerContextMenu(this, {
+    //   name: "cm_editInnerText",
+    //   icon: "el-icon-delete",
+    //   label: "编辑文字",
+    //   sort: 4,
+    //   command: () => {
+    //     this.$parent.ac_updateElement({ editing: true });
+    //   }
+    // });
   }
 };
 </script>

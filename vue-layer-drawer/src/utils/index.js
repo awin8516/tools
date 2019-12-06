@@ -150,7 +150,7 @@ export function file2base64(file) {
   return p;
 }
 
-export function resetLayerName(project, element) {
+export function formatElement(project, element) {
   const getLenBytype = type => {
     return project.elementList.filter(v => v.type == type).length + 1;
   };
@@ -194,6 +194,13 @@ export function resetLayerName(project, element) {
       break;
     default:
   }
+  element = Object.assign({
+    innerText: "",
+    contextMenuActive: false,
+    contextMenuPos: { left: 0, top: 0 },
+    editing: false
+  }, element)
+
   return element
 }
 

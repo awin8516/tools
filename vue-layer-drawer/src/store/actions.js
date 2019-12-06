@@ -66,7 +66,7 @@ const actions = {
       const project = JSON.parse(json);
       commit("SET_PROJECT", project);
     } else {
-      alert(MSG['error-import-project'])
+      // alert(MSG['error-import-project'])
     }
   },
   ac_saveProject({ state }) {

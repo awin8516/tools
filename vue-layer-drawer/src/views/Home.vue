@@ -2,17 +2,18 @@
   <div>
     <ScreenSize></ScreenSize>
     <div id="po-main" class="po-main">
-      <div class="po-body">
-        <div id="po-screen" class="po-screen scrollstyle" ref="screen" v-drag:po-el-item :style="gt_screenOptions.style" @mousedown.self="cancelacSelectElement">
-          <template v-for="item in gt_elementList">
-            <Element v-if="!item.pid" :key="item.vid" :elementParams.sync="item"></Element>
-          </template>
-        </div>
-        <div class="resize" v-drag="resize" @mousedown="getSize"></div>
-        <Tools></Tools>
+      <div id="po-screen" class="po-screen scrollstyle" ref="screen" v-drag:po-el-item :style="gt_screenOptions.style" @mousedown.self="cancelacSelectElement">
+        <template v-for="item in gt_elementList">
+          <Element v-if="!item.pid" :key="item.vid" :elementParams.sync="item"></Element>
+        </template>
       </div>
-      <TagList></TagList>
-      <Options></Options>
+      <div class="po-setting">
+        <TagList></TagList>
+        <Options></Options>
+      </div>
+      <ContextMenu></ContextMenu>
+      <div class="po-resize" v-drag="resize" @mousedown="getSize"></div>
+      <Tools></Tools>
     </div>
   </div>
 </template>
@@ -21,6 +22,7 @@
 import { mapGetters, mapActions } from "vuex";
 import ScreenSize from "@/views/ScreenSize.vue";
 import Element from "@/views/Element.vue";
+import ContextMenu from "@/views/ContextMenu.vue";
 import TagList from "@/views/TagList.vue";
 import Options from "@/views/options/Main.vue";
 import Tools from "@/views/Tools.vue";
@@ -37,7 +39,7 @@ export default {
   computed: {
     ...mapGetters(["gt_screenOptions", "gt_elementList"])
   },
-  components: { ScreenSize, Element, TagList, Options, Tools },
+  components: { ScreenSize, Element, ContextMenu, TagList, Options, Tools },
   methods: {
     ...mapActions([
       "ac_updateScreenStyle",

@@ -7,5 +7,5 @@ const requireAll = r => {
 }
 const req = require.context('./', false, /\.vue$/)
 const tags = requireAll(req);
-
+// console.log(tags)
 module.exports = tags

@@ -1,4 +1,4 @@
-import { deepClone, resetLayerName, mergeJSON, styleSplit } from "@/utils";
+import { deepClone, formatElement, mergeJSON, styleSplit } from "@/utils";
 import MSG from "@/utils/message";
 
 const mutations = {
@@ -50,7 +50,7 @@ const mutations = {
       component.style[state.project.mediaName] = deepClone(component.style.default);
     }
     component.vid = new Date().getTime();
-    component = resetLayerName(state.project, component);
+    component = formatElement(state.project, component);
     let elementSelected = state.project.elementList.find(v => v.selected);
     //子元素
     if (elementSelected) {
