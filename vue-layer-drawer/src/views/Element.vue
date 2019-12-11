@@ -207,14 +207,14 @@ export default {
     ]),
     contextMenu(e) {
       if (e.target.tagName != "B") {
-        console.log(e);
         // this.$nextTick(() => {
         //   this.$refs.focusFiled.focus();
         // });
+        document.querySelector('#context-menu-filed').focus();
         this.ac_updateElement({
           contextMenuPos: {
-            left: e.offsetX + parseInt(e.target.style.left),
-            top: e.offsetY + parseInt(e.target.style.left)
+            left: e.pageX - document.querySelector('#po-main').offsetLeft,
+            top: e.pageY - document.querySelector('#po-main').offsetTop
           },
           contextMenuActive: true
         });

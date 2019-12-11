@@ -82,6 +82,7 @@ const actions = {
   //打包下载
   ac_exportProject({ state }) {
     // console.log(state)
+    const projectJson = deepClone(state.project);
     const project = deepClone(state.project);
     const pageName = project.screenOptions.name;
     function createJson(project) {
@@ -165,6 +166,8 @@ const actions = {
             src: src.match(/base64,(.*?)(\s|'|"|\)|&quot;)/)[1]
           });
           break;
+        }else if(!style[k] || style[k] === 'url()'){
+          delete style[k]
         }
       }
       return object2style(style).replace(/([0-9]+)px/g, pixel => {
@@ -196,6 +199,8 @@ const actions = {
                 });
               }
               break;
+            }else if(!style[k] || style[k] === 'url()'){
+              delete style[k]
             }
           }
           return object2style(style).replace(/([0-9]+)px/g, pixel => {
@@ -208,7 +213,7 @@ const actions = {
           if (element.attribute.className) {
             const className = getClassName(element.attribute.className);
             const style = getStyle(element, key);
-            if (style) {
+            if ( className && style && style !== "{}") {
               css += (parentClassName ? parentClassName + " " : "") + className + "{" + style + "}\n";
             }
             element.children.length && mp(element.children, className, key);
@@ -247,7 +252,7 @@ const actions = {
     file.css = createCss(project);
 
     //project.json
-    file.json = createJson(project);
+    file.json = createJson(projectJson);
 
     zip.file(pageName + "-project.json", file.json);
     zip.file(pageName + ".html", file.html);
@@ -267,7 +272,7 @@ const actions = {
 
     let folderCss = zip.folder("css");
     folderCss.file(pageName + ".css", file.css);
-    folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;}");
+    folderCss.file("common.css", "html{font-size:100px;}*{font-size:0.12rem;margin:0;padding:0}");
 
     zip.generateAsync({ type: "blob" }).then(content => {
       saveAs(content, pageName + ".zip");

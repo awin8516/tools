@@ -18,12 +18,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import {
-  closest,
-  getElementWidth,
-  getElementHeight,
-  getTransform
-} from "@/utils";
+import { getElementWidth, getElementHeight, getTransform } from "@/utils";
 export default {
   name: "ElementControls",
   data() {

@@ -3,7 +3,7 @@
     <ul>
       <li v-for="(item, index) in contextMenuList" :key="index" @click="command(item)"><i :class='item.icon'></i>{{item.label}}</li>
     </ul>
-    <input class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
+    <input id="context-menu-filed" class="focus-filed" ref="focusFiled" @blur="hideMenu" type="text">
   </div>
 </template>
 
@@ -45,7 +45,6 @@ export default {
   computed: {
     ...mapGetters([
       "gt_elementList",
-      "gt_mediaName",
       "gt_indexSelected",
       "gt_elementSelected"
     ]),
@@ -81,11 +80,9 @@ export default {
   },
   methods: {
     ...mapActions([
-      "ac_selectElement",
       "ac_deleteElement",
       "ac_updateElementLayer",
-      "ac_updateElement",
-      "ac_updateElementStyle"
+      "ac_updateElement"
     ]),
     zindexMoveUp() {
       if (this.gt_indexSelected < this.gt_elementList.length - 1) {

@@ -14,9 +14,15 @@ export default {
       icon: "text",
       container: false,
       name: "text-1",
-      innerText: "",
-      editing: true,
       tagSort: 800,
+      contextMenuList: [
+        {
+          icon: "el-icon-delete",
+          label: "编辑文字",
+          sort: 5,
+          command: "editInnerText"
+        }
+      ],
       attribute: {
         id: "text-1",
         className: "text text-test"
@@ -42,17 +48,6 @@ export default {
       }
     };
   },
-  props: ["element"],
-  mounted() {
-    registerContextMenu(this, {
-      name: "cm_editInnerText",
-      icon: "el-icon-delete",
-      label: "编辑文字",
-      sort: 4,
-      command: () => {
-        this.$parent.ac_updateElement({ editing: true });
-      }
-    });
-  }
+  props: ["element"]
 };
 </script>

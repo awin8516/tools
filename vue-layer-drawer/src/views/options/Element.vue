@@ -1,7 +1,7 @@
 <template>
   <div class="po-options-panel po-options-el" v-if="elementSelected">
     <div class="panel-hd">
-      元素
+      元素 {{path}}
       <panel-fold target=".po-options-panel" toggleClass="po-options-panel-closed"></panel-fold>
     </div>
     <div class="panel-bd scrollstyle">
@@ -56,6 +56,14 @@ export default {
     elementSelected: {
       get: function() {
         return this.gt_elementSelected && this.gt_elementSelected;
+      }
+    },
+    path: {
+      get: function() {
+        // if(this.gt_elementSelected){
+        //   console.log(this.gt_elementSelected)
+        // }
+        return this.gt_elementSelected && this.gt_elementSelected.type.toUpperCase();
       }
     },
     name: {

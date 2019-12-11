@@ -198,6 +198,7 @@ export function formatElement(project, element) {
     innerText: "",
     contextMenuActive: false,
     contextMenuPos: { left: 0, top: 0 },
+    contextMenuList:[],
     editing: false
   }, element)
 

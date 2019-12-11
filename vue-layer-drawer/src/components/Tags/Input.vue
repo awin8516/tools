@@ -11,7 +11,6 @@ export default {
       type: "input",
       icon: "input",
       name: "input-1",
-      innerText: "",
       tagSort:700,
       attribute: {
         type: "text",
@@ -36,17 +35,6 @@ export default {
       }
     };
   },
-  props: ["element"],
-  mounted() {
-    // registerContextMenu(this, {
-    //   name: "cm_editInnerText",
-    //   icon: "el-icon-delete",
-    //   label: "编辑文字",
-    //   sort: 4,
-    //   command: () => {
-    //     this.$parent.ac_updateElement({ editing: true });
-    //   }
-    // });
-  }
+  props: ["element"]
 };
 </script>

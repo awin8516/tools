@@ -61,7 +61,6 @@ export default {
           "background-repeat": "no-repeat",
           "background-size": "100% auto"
         };
-        console.log(style)
         this.ac_updateElementStyle(style);
       } else {
         const style = {};
