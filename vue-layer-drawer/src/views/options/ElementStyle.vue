@@ -21,8 +21,11 @@
       </div>
     </template>
     <template v-else-if="styleOptions.range.includes(_key)">
-      <label :title="_key">{{_key}}:</label>
-      <input v-range="{val:'value'}" type="text" v-model.lazy="value" />
+      <label :title="_key">*{{_key}}:</label>
+      <!-- <input v-range="{val:'value'}" type="text" v-model.lazy="value" /> -->
+      <div class="field">
+        <el-input-number v-model.lazy="value" controls-position="right"></el-input-number>
+      </div>
     </template>
     <template v-else>
       <label :title="_key">{{_key}}:</label>
@@ -48,7 +51,14 @@ export default {
     ...mapGetters(["gt_elementSelected"]),
     value: {
       get: function() {
-        return this.gt_elementSelected && this._style[this._key];
+        if (this.gt_elementSelected) {
+          if (styleOptions.range.includes(this._key)) {
+            return parseInt(this._style[this._key]);
+          } else {
+            return this._style[this._key];
+          }
+        }
+        return null;
       },
       set: function(v) {
         let style;
@@ -76,8 +86,11 @@ export default {
                 };
           style.position = v;
         } else if (styleOptions.range.includes(this._key)) {
-          const val = v.indexOf("px") == -1 ? v + "px" : v;
-          style = { [this._key]: val };
+          // console.log(v);
+          // if (v && isNaN(v)) {
+            // const val = v.indexOf("px") == -1 ? v + "px" : v;
+            style = { [this._key]: v + "px" };
+          // }
         } else {
           style = { [this._key]: v };
         }

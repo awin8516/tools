@@ -7,6 +7,7 @@ import { closest } from "@/utils";
 import {
   Checkbox,
   Input,
+  InputNumber,
   Select,
   Option,
   Switch,
@@ -31,6 +32,7 @@ Vue.component('panel-fold', PanelFold)
 Vue.config.productionTip = false;
 Vue.use(Checkbox);
 Vue.use(Input);
+Vue.use(InputNumber);
 Vue.use(Button);
 Vue.use(Select);
 Vue.use(Option);

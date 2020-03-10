@@ -457,6 +457,35 @@ textarea {
         dd > .field {
           width: 10em;
         }
+        dd .el-input-number{
+          width: 100%;
+          line-height: 1;
+          > span{
+            border:1px #DCDFE6 solid;
+            width: 1.75em;
+            height: 0.87em;
+            line-height: 1;
+            i{
+              vertical-align: top;
+            }
+            &:hover{
+              border:1px #409eff solid;
+              color: #409eff;
+            }
+          }
+          .el-input-number__increase{
+            right: 0;
+            top: 0;
+          }
+          .el-input-number__decrease{
+            right: 0;
+            bottom: 0;
+          }
+          .el-input{
+            padding-right: 2em;
+            box-sizing: border-box;
+          }
+        }
         dd > .delete-param {
           display: inline-block;
           vertical-align: middle;
