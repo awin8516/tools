@@ -21,7 +21,6 @@
     // 通过js获取图像数据
     var canvas_obj = document.getElementById("myCanvas");   // 获取canvas标签对象
     var canvasWidth = canvas_obj.width;
-    console.log(canvasWidth)
     var ctx = canvas_obj.getContext("2d");                  // 设置在画布上绘图的环境
     var img_obj = document.getElementById("img");           // 获取img标签对象
     img_obj.onload = function(){
@@ -44,113 +43,125 @@
         }
         console.log(imgArr)
 
-        //找到符合像素点索引值
-        var pixelIndex = []
+        //找到符合像素点集
+        var pixels = []
         for(var i=0; i<imgArr.length; i++){
             var imgRange = getRange(imgArr[i])
             // console.log(imgRange)
             if(imgRange.includes(color.join("-"))){
-                pixelIndex.push({rgb:imgArr[i],index:i,left:i%canvasWidth,top:parseInt(i/canvasWidth)})
+                pixels.push({rgb:imgArr[i],index:i,left:i%canvasWidth,top:parseInt(i/canvasWidth)})
             }
         }
-        console.log(pixelIndex)
-        // console.log(pixelIndex[0]%40) //left
-        // console.log(parseInt(pixelIndex[0]/40)) //top
+        console.log(pixels)
+
         
-        //找到符合左上顶点索引值
-        var lineArr = []
-        var vertexIndex = []
-        var vertex = pixelIndex[0]
-        var _left = null
-        var _top = null
-        var _index = null
-        var currentIndex = 0;
-        for(var i=0; i<pixelIndex.length; i++){
-            // vertex.push(pixelIndex[i])
-            // if(vertexIndex.length == 0){//记录首个顶点
-            //     vertexIndex.push(pixelIndex[i])
-            // }
-            // if(_left == null){
-            //     _left = pixelIndex[i].left
-            // }
-            // if(_top == null){
-            //     _top = pixelIndex[i].top
-            // }
-            if(_index == null){
-                _index = pixelIndex[i].index
-                lineArr[currentIndex] = [];
-                lineArr[currentIndex].push(pixelIndex[i]);
-            }
-            
-            if(pixelIndex[i].index - _index < nearPix ){  
-                lineArr[currentIndex].push(pixelIndex[i]);
-                // if( pixelIndex[i].left - _left < 3 ){//代表横向相邻两个点
-                    
-                // }else{
+        /********************
+         * 像素集按同块分隔
+         ********************/
+        var pixelRects = [];
+        var currentPixel = null;
+        var rectIndex = -1;
+        var resultData = []
 
-                // }
-                // _left = pixelIndex[i].left
-                // _top = pixelIndex[i].top
-            }else{//代表换行了
-                currentIndex++;
-                lineArr[currentIndex] = [];
-                lineArr[currentIndex].push(pixelIndex[i]);
-            }
-            _index = pixelIndex[i].index
-
-            // if(pixelIndex[i].top == _top &&  (pixelIndex[i].left - _left) < 3 ){ //代表横向相邻两个点            
-            //     _left = pixelIndex[i].left
-            //     _top = pixelIndex[i].top
-            // }else{//代表换行了
-
-            // }
-
-
-            // if(Math.abs(pixelIndex[i].left - vertex.left) > 5 ){
-
-            // }
+        //新的像素块
+        function newRect(pixel){
+            rectIndex++;
+            pixelRects[rectIndex] = [];
+            currentPixel = pixel;
+            pixelRects[rectIndex].push(currentPixel);
         }
 
-        console.log(lineArr);
-
-        //找到符合像素块点索引值
-        var rects = []
-        var currentIndex = 0
-        var tempPorint = null
-        for(var i=0; i<lineArr.length; i++){
-
-            if(rects.length == 0){//记录首个顶点
-                rects[currentIndex] = []
-                rects[currentIndex].push(lineArr[i]);
-                tempPorint = lineArr[i][0]
+        //当前像素点是否属于已存在的像素块
+        function findRectByPixel(pixel){
+            var res = null;
+            for(var i=0; i<pixelRects.length; i++){
+                var rect = pixelRects[i];
+                if( pixel.top - rect[rect.length-1].top < nearPix  && 
+                    Math.abs(pixel.index % canvasWidth - rect[0].index % canvasWidth)  < nearPix){
+                    res = i;
+                    break;
+                }else{
+                    res = null;
+                }
             }
+            return res;
+        }
 
-            if(   Math.abs(lineArr[i][0].left - tempPorint.left) < nearPix &&  Math.abs(lineArr[i][0].top - tempPorint.top) < nearPix  ){
-                rects[currentIndex].push(lineArr[i]);
+        for(var i=0; i<pixels.length; i++){
+            var pixel = pixels[i];
+            if(pixelRects.length == 0){//记录首个顶点
+                newRect(pixel);
+            };
+            if(pixel.index - currentPixel.index < nearPix ){//横向相邻的点
+                pixelRects[rectIndex].push(pixel);
             }else{
-                currentIndex++;
-                rects[currentIndex].push(lineArr[i]);
-                tempPorint = lineArr[i][0]
+                if(pixel.top == currentPixel.top ){//代表横向跳格了
+                    var hasRect = findRectByPixel(pixel)
+                    if(hasRect != null){
+                        rectIndex = hasRect;
+                        pixelRects[rectIndex].push(pixel);
+                    }else{
+                        newRect(pixel);
+                    }
+                }else{//换行了
+                    if( pixel.top - currentPixel.top < nearPix  && 
+                        Math.abs(pixel.index % canvasWidth - pixelRects[rectIndex][0].index % canvasWidth)  < nearPix ){
+                        //同区块换行
+                        pixelRects[rectIndex].push(pixel);
+                    }else{
+                        //不同区块换行
+                        var hasRect = findRectByPixel(pixel)
+                        if(hasRect != null){
+                            rectIndex = hasRect;
+                            pixelRects[rectIndex].push(pixel);
+                        }else{
+                            newRect(pixel);
+                        }
+                    }
+                }
             }
+            currentPixel = pixel;
         }
 
+        for(var i=0; i<pixelRects.length; i++){
+            var rect = pixelRects[i];
+            var lefts = rect.map(p => p.left );
+            var tops  = rect.map(p => p.top );
+            var l = {
+                min:Math.min(...lefts),
+                max:Math.max(...lefts)
+            }
+            var t = {
+                min:Math.min(...tops),
+                max:Math.max(...tops)
+            }
+            resultData.push({
+                left:l.min,
+                top:t.min,
+                width:l.max - l.min,
+                height:t.max - t.min,
+                center:[l.min + (l.max - l.min)/2,t.min + (t.max - t.min)/2]
+            })
+        }
+        console.log(resultData)
+
+
+
+        console.log(pixelRects) 
 
         function getRange(color){
             var r = []
             for(var i=-deviation; i<=deviation; i++){
-                var a = color[0]+i
-                if(a < 0 ) a = 0
-                if(a > 255 ) a = 255
-                var b = color[1]+i
-                if(b < 0 ) b = 0
-                if(b > 255 ) b = 255
-                var c = color[2]+i
-                if(c < 0 ) c = 0
-                if(c > 255 ) c = 255
+                var a = color[0]+i;
+                if(a < 0 ) a = 0;
+                if(a > 255 ) a = 255;
+                var b = color[1]+i;
+                if(b < 0 ) b = 0;
+                if(b > 255 ) b = 255;
+                var c = color[2]+i;
+                if(c < 0 ) c = 0;
+                if(c > 255 ) c = 255;
                 
-                if(color[0]+i >= 0 && color[0]+i <= 255){
-                    
-                }
                 r.push(  a+"-"+color[1]+"-"+color[2]  );
                 r.push(  color[0]+"-"+b+"-"+color[2]  );
                 r.push(  color[0]+"-"+color[1]+"-"+c  );
@@ -159,22 +170,9 @@
                 r.push(  a+"-"+color[1]+"-"+c  );
                 r.push(  a+"-"+b+"-"+c  );
             }
-            return r
+            return r;
         }
 
-        // // 将js数组转化为tensor数据，并reshape
-        // var imgMat = tf.tensor(imgArr);
-        // var img = imgMat.reshape([1,448, 448, 3]);
-
-        // const MODEL_URL = './web_model/model.json';             // 模型文件名
-        // async function fun(){	                                // 预测函数
-        //     const model = await tf.loadGraphModel(MODEL_URL);	// 加载图模型
-        //     var predictData = model.predict(img);               // 预测
-        //     console.log(predictData.shape);
-        //     predictData.print()
-        //     }
-
-        // fun()	//调用函数
     }
 </script>
 </body>
