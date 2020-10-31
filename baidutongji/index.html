@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>baidutongji</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+<style>
+</style>
+</head>
+<body>
+	<script>
+		var fd = new FormData();
+		fd.append("name", "f");
+		var data = {
+			siteId: 11772361,
+			area: "all",
+			visitor: "all",
+			st: "1598716800000",
+			et: "1598803200000",
+			st2: "0",
+			et2: "0",
+			indicators: "pv_count,visitor_count,ip_count,bounce_ratio,avg_visit_time",
+			clientDevice: "all",
+			order: "pv_count,desc",
+			offset: "0",
+			isPromotion: false,
+			reportId: "",
+			method: "homepage/getSitesInfoList",
+			queryId: ""
+		}
+
+		for(var key in data){
+			console.log(key+":"+data[key]);
+			// fd.append(key, data[key]);
+		};
+		fd.forEach((value, key) => {
+			console.log(`key ${key}: value ${value}`);
+		})
+
+		$.ajax({
+			type: "POST",
+			url: "https://tongji.baidu.com/web/25283302/ajax/post",
+			processData: false,
+            contentType: false,
+			data: fd,
+			dataType: "jsonp",
+			success: function (res) {
+				console.log(res)
+			}
+		});
+	</script>
+</body>
+</html>

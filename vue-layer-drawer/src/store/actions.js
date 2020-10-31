@@ -173,6 +173,21 @@ const actions = {
       return object2style(style).replace(/([0-9]+)px/g, pixel => {
         return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
       });
+
+      // let a = object2style(style);
+      // a = a.replace(/width:([0-9]+)px/g, pixel => {
+      //   return "width:"+(parseInt(pixel.substr(6) ) /1500*100).toFixed(4) + "%";
+      // });
+      // a = a.replace(/height:([0-9]+)px/g, pixel => {
+      //   return "height:"+(parseInt(pixel.substr(7) ) /3637*100).toFixed(4) + "%";
+      // });
+      // a = a.replace(/left:([0-9]+)px/g, pixel => {
+      //   return "left:"+(parseInt(pixel.substr(5) ) /1500*100).toFixed(4) + "%";
+      // });
+      // a = a.replace(/top:([0-9]+)px/g, pixel => {
+      //   return "top:"+(parseInt(pixel.substr(4) ) /3637*100).toFixed(4) + "%";
+      // });
+      // return a
     }
 
     function createCss(project) {
@@ -203,9 +218,24 @@ const actions = {
               delete style[k]
             }
           }
-          return object2style(style).replace(/([0-9]+)px/g, pixel => {
-            return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
+          // return object2style(style).replace(/([0-9]+)px/g, pixel => {
+          //   return (parseInt(pixel) * 0.01).toFixed(2) + "rem";
+          // });
+
+          let a = object2style(style);
+          a = a.replace(/width:([0-9]+)px/g, pixel => {
+            return "width:"+(parseInt(pixel.substr(6) ) /1500*100).toFixed(4) + "%";
           });
+          a = a.replace(/height:([0-9]+)px/g, pixel => {
+            return "height:"+(parseInt(pixel.substr(7) ) /3637*100).toFixed(4) + "%";
+          });
+          a = a.replace(/left:([0-9]+)px/g, pixel => {
+            return "left:"+(parseInt(pixel.substr(5) ) /1500*100).toFixed(4) + "%";
+          });
+          a = a.replace(/top:([0-9]+)px/g, pixel => {
+            return "top:"+(parseInt(pixel.substr(4) ) /3637*100).toFixed(4) + "%";
+          });
+          return a
         }
       };
       const mp = (_tree, parentClassName, key) => {

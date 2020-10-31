@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>批量请求接口</title>
+    <meta charset="utf-8">
+    <meta name="description" content="为抗疫英雄打CALL，冠军竞猜赢超值好礼＞＞">
+    <meta name="viewport" content="width=device-width,target-densitydpi=device-dpi,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="format-detection" content="email=no" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <style>
+        body{background-color: #eee;}
+        *{font-size: 12px;}
+        b{color: #ff0000;}
+        .toolbar{background-color: #666;border: #666 1px solid;padding: 5px;color: #fff;;}
+        #list{height: calc( 50vh - 135px );overflow-y: scroll;background-color: #fff;border: #ddd 1px solid;padding: 1px;margin-top: 8px;}
+        #list i{display: inline-block;width: 80px;font-style: normal;}
+        input,button{height: 28px;font-size: 14px;line-height: 24px;vertical-align: middle; padding: 0 5px;border:none;}
+        button{height: 28px;padding: 0 20px;}
+
+        #taskcounts{font-size: 18px;vertical-align: middle;display: inline-block;margin-left: 20px;}
+        #taskcounts::before{content: "剩余任务个数：";}
+        #nexttime{font-size: 18px;vertical-align: middle;display: inline-block;margin-left: 50px;}
+        #textarea{display: block; width: 100%; height: calc( 50vh ); border: #ddd 1px solid;background: #fff;margin-top: 8px;padding: 5px;box-sizing: border-box;resize: none;}
+        #textarea[readOnly]{background: #eee;color: #666;}
+        #iframe{border: #ddd 1px solid;background: #fffcde;margin-top: 8px;box-sizing: border-box;vertical-align: top;}
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <input id="min" type="text" placeholder="最小时间间隔"> 毫秒 
+        <input id="max" type="text" placeholder="最大时间间隔"> 毫秒
+        <button id="button" onclick="reset();"> 开始 </button>
+        <button id="pause" onclick="pause();"> 暂停 </button>
+        <span id="taskcounts">0</span>
+        <span id="nexttime"></span>
+    </div>
+    <textarea name="" id="textarea" placeholder="请输入刷量接口完整带参数URL列表,多个以英文逗号分隔"></textarea>
+    <iframe id="iframe" src="" frameborder="0" width="100%" height="50"></iframe>
+<div id="list"></div>
+</body>
+<script>
+    var url = "https:www.baidu.com"
+    var taskcounts = document.querySelector("#taskcounts");
+    var textarea = document.querySelector("#textarea");
+    var iframe = document.querySelector("#iframe");
+    var list = document.querySelector("#list");
+    var min = document.querySelector("#min");
+    var max = document.querySelector("#max");
+    var button = document.querySelector("#button");
+    var nexttime = document.querySelector("#nexttime");
+    var DATA = null;
+    var rand = null
+    var randFn = function(){return Math.floor(Math.random() * (rand[1] - rand[0] + 1)) + rand[0];};
+    
+    var index = 0;
+    var timer = false
+    var timerCountdown = false
+    var html = ""
+    var a = function(){
+        if(index >= DATA.length){
+            clearTimeout(timer);
+            console.log("任务完成！");
+            html += "任务完成！";
+            pause();
+            alert("任务完成！")
+        }else{
+            console.log(DATA[index]);
+            iframe.src = DATA[index];
+            html += "<i>【"+(index+1)+"】</i>" + DATA[index].replace(/mobile=(.*?)&/g,"mobile=<b>$1</b>&")+"<br>"
+            index++;
+            var time = randFn();
+            console.log(time)
+            countdown(parseInt(time/1000))
+            taskcounts.innerHTML = DATA.length - index;
+            // console.log(iframe.document.all.body.innerHTML)
+            timer = setTimeout(a,time);
+        }
+        list.innerHTML = html;
+        list.scrollTop = DATA.length * 20;
+    };
+
+    // textarea.onchange = function(){
+    //     DATA = textarea.value.replace(/[\r\n|\n]/g,"").split(",");
+    //     taskcounts.innerHTML = DATA.length;
+    //     index = 0
+    //     console.log(DATA)
+    // }
+
+    function reset(){
+        if(!min.value || !max.value){
+            alert("请输入最小最大时间间隔！")
+            return false
+        }
+        if(!textarea.value){
+            alert("请输入刷量接口完整带参数URL列表!")
+            return false
+        }
+        DATA = textarea.value.replace(/[\r\n|\n]/g,"").split(",");
+        rand = [parseInt(min.value),parseInt(max.value)];
+        console.log(rand);
+        textarea.readOnly = true;
+        nexttime.innerHTML = "准备中..."
+        if(!timer){
+            timer = setTimeout(a, randFn());
+        }
+    }
+
+    function pause(){
+        clearTimeout(timer);
+        clearTimeout(timerCountdown);
+        timer = false;
+        nexttime.innerHTML = "";        
+        textarea.readOnly = false;
+    }
+
+    function countdown(DATA){
+        var m = DATA-1
+        clearTimeout(timerCountdown);
+        if(m < 0){
+            clearTimeout(timerCountdown);
+        }else{
+            timerCountdown = setInterval(function(){
+                nexttime.innerHTML = "下一次请求在 "+ m + " 秒后";
+                m--;
+            }, 1000);
+        }
+        
+    }
+
+    
+</script>
+</html>
