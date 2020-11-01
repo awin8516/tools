@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TinyYOLO</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+</head>
+<body>
+<!-- <canvas id="myCanvas" width="2" height="2"> -->
+<!-- <canvas id="myCanvas" width="2" height="2"> -->
+<!-- <canvas id="myCanvas" width="40" height="50"> -->
+<canvas id="myCanvas" width="170" height="135">
+    <!-- <img src="./01.png" id="img" alt=""/> -->
+    <!-- <img src="./px4.jpg" id="img" alt=""/> -->
+    <!-- <img src="./03.jpg" id="img" alt=""/> -->
+    <img src="./06.png" id="img" alt=""/>
+</canvas>
+
+<script>
+    // 通过js获取图像数据
+    var canvas_obj = document.getElementById("myCanvas");   // 获取canvas标签对象
+    var canvasWidth = canvas_obj.width;
+    var ctx = canvas_obj.getContext("2d");                  // 设置在画布上绘图的环境
+    var img_obj = document.getElementById("img");           // 获取img标签对象
+    img_obj.onload = function(){
+
+        var color = [255,0,0]
+        ctx.fillStyle = 'rgb('+color[0]+','+color[1]+','+color[2]+')';
+        ctx.fillRect(0,0,canvas_obj.width,canvas_obj.height);
+        ctx.drawImage(img_obj, 0, 0);                           // 将图片绘制到画布上
+        
+        var deviation = 5;
+        var nearPix = 10;
+
+        var imgData_obj = ctx.getImageData(0,0,canvas_obj.width,canvas_obj.height);    // 获取画布上的图像像素矩阵
+        var imgData = imgData_obj.data;     // 获取到的数据为一维数组，包含图像的RGBA四个通道数据
+        // console.log(imgData);
+
+        // 将获取到的图像数据去除A通道
+        var imgArr = [];
+        for(var i=0; i<imgData.length; i += 4){
+            imgArr.push([imgData[i], imgData[i+1], imgData[i+2]])
+        }
+        // console.log(imgArr)
+
+        //找到符合像素点集
+        var pixels = []
+        for(var i=0; i<imgArr.length; i++){
+            var imgRange = getRange(imgArr[i])
+            // console.log(imgRange)
+            if(imgRange.includes(color.join("-"))){
+                pixels.push({rgb:imgArr[i],index:i,left:i%canvasWidth,top:parseInt(i/canvasWidth)})
+            }
+        }
+        // console.log(pixels)
+
+        
+        /********************
+         * 像素集按同块分隔
+         ********************/
+        var pixelRects = [];
+        var currentPixel = null;
+        var rectIndex = -1;
+        var resultData = []
+
+        //新的像素块
+        function newRect(pixel){
+            rectIndex++;
+            pixelRects[rectIndex] = [];
+            currentPixel = pixel;
+            pixelRects[rectIndex].push(currentPixel);
+        }
+
+        //当前像素点是否属于已存在的像素块
+        function findRectByPixel(pixel){
+            var res = null;
+            for(var i=0; i<pixelRects.length; i++){
+                var rect = pixelRects[i];
+                if( pixel.top - rect[rect.length-1].top < nearPix  && 
+                    Math.abs(pixel.index % canvasWidth - rect[0].index % canvasWidth)  < nearPix){
+                    res = i;
+                    break;
+                }else{
+                    res = null;
+                }
+            }
+            return res;
+        }
+
+        for(var i=0; i<pixels.length; i++){
+            var pixel = pixels[i];
+            if(pixelRects.length == 0){//记录首个顶点
+                newRect(pixel);
+            };
+            if(pixel.index - currentPixel.index < nearPix ){//横向相邻的点
+                pixelRects[rectIndex].push(pixel);
+            }else{
+                if(pixel.top == currentPixel.top ){//代表横向跳格了
+                    var hasRect = findRectByPixel(pixel)
+                    if(hasRect != null){
+                        rectIndex = hasRect;
+                        pixelRects[rectIndex].push(pixel);
+                    }else{
+                        newRect(pixel);
+                    }
+                }else{//换行了
+                    if( pixel.top - currentPixel.top < nearPix  && 
+                        Math.abs(pixel.index % canvasWidth - pixelRects[rectIndex][0].index % canvasWidth)  < nearPix ){
+                        //同区块换行
+                        pixelRects[rectIndex].push(pixel);
+                    }else{
+                        //不同区块换行
+                        var hasRect = findRectByPixel(pixel)
+                        if(hasRect != null){
+                            rectIndex = hasRect;
+                            pixelRects[rectIndex].push(pixel);
+                        }else{
+                            newRect(pixel);
+                        }
+                    }
+                }
+            }
+            currentPixel = pixel;
+        }
+        console.log(pixelRects) 
+
+        for(var i=0; i<pixelRects.length; i++){
+            var rect = pixelRects[i];
+            var lefts = rect.map(p => p.left );
+            var tops  = rect.map(p => p.top );
+            var l = {
+                min:Math.min(...lefts),
+                max:Math.max(...lefts)
+            }
+            var t = {
+                min:Math.min(...tops),
+                max:Math.max(...tops)
+            }
+            resultData.push({
+                left:l.min,
+                top:t.min,
+                width:l.max - l.min,
+                height:t.max - t.min,
+                center:[l.min + (l.max - l.min)/2,t.min + (t.max - t.min)/2]
+            })
+        }
+        console.log(resultData)
+
+
+
+
+        function getRange(color){
+            var r = []
+            for(var i=-deviation; i<=deviation; i++){
+                var a = color[0]+i;
+                if(a < 0 ) a = 0;
+                if(a > 255 ) a = 255;
+                var b = color[1]+i;
+                if(b < 0 ) b = 0;
+                if(b > 255 ) b = 255;
+                var c = color[2]+i;
+                if(c < 0 ) c = 0;
+                if(c > 255 ) c = 255;
+                
+                r.push(  a+"-"+color[1]+"-"+color[2]  );
+                r.push(  color[0]+"-"+b+"-"+color[2]  );
+                r.push(  color[0]+"-"+color[1]+"-"+c  );
+                r.push(  a+"-"+b+"-"+color[2]  );
+                r.push(  color[0]+"-"+b+"-"+c  );
+                r.push(  a+"-"+color[1]+"-"+c  );
+                r.push(  a+"-"+b+"-"+c  );
+            }
+            return r;
+        }
+
+    }
+</script>
+</body>
+</html>

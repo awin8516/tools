@@ -2,74 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>pixel</title>
-    <style>
-        canvas{
-
-        }
-    </style>
+    <title>TinyYOLO</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
 </head>
 <body>
-    <input type="file" id="file" multiple>
-    <button id="button">查找坐标</button>
-    <img id="img" src="" alt="">
-    <canvas id="myCanvas"></canvas>
+<!-- <canvas id="myCanvas" width="2" height="2"> -->
+<!-- <canvas id="myCanvas" width="2" height="2"> -->
+<!-- <canvas id="myCanvas" width="40" height="50"> -->
+<canvas id="myCanvas" width="170" height="135">
+    <!-- <img src="./01.png" id="img" alt=""/> -->
+    <!-- <img src="./px4.jpg" id="img" alt=""/> -->
+    <!-- <img src="./03.jpg" id="img" alt=""/> -->
+    <img src="./06.png" id="img" alt=""/>
+</canvas>
 
 <script>
+    // 通过js获取图像数据
+    var canvas_obj = document.getElementById("myCanvas");   // 获取canvas标签对象
+    var canvasWidth = canvas_obj.width;
+    var ctx = canvas_obj.getContext("2d");                  // 设置在画布上绘图的环境
+    var img_obj = document.getElementById("img");           // 获取img标签对象
+    img_obj.onload = function(){
 
-    var ob = {
-        file:document.querySelector("#file"),
-        button:document.querySelector("#button"),
-        img:document.querySelector("#img"),
-        canvas:document.querySelector("#myCanvas")
-    }
-
-    var IMGS = [0,1];
-    var imgIndex = 0
-    
-
-    ob.file.onchange = function(e){
-        // console.log(e);
-        // console.log(this.files);
-
-        if (this.files && this.files[0]){
-            IMGS = Array.prototype.slice.call(this.files);
-        }
-    }
-
-    ob.button.onclick = function(){
-        mapFiles()
-    }
-
-    function mapFiles(){
-        if(imgIndex < IMGS.length){
-            ob.img.src = window.URL.createObjectURL(IMGS[imgIndex]);
-            ob.img.onload = function(){
-                console.log(ob.img.width);
-                console.log(ob.img.height);
-                getPos(ob.img);
-                imgIndex++;
-                mapFiles()
-            }
-        }
-    }
-
-    function getPos(img){
-        ob.canvas.width = img.width;
-        ob.canvas.height = img.height;
-        var ctx = ob.canvas.getContext("2d");                  // 设置在画布上绘图的环境
         var color = [0,255,0]
         ctx.fillStyle = 'rgb('+color[0]+','+color[1]+','+color[2]+')';
-        ctx.fillRect(0,0,ob.canvas.width,ob.canvas.height);
-        ctx.drawImage(img, 0, 0);                           // 将图片绘制到画布上
+        ctx.fillRect(0,0,canvas_obj.width,canvas_obj.height);
+        ctx.drawImage(img_obj, 0, 0);                           // 将图片绘制到画布上
         
-        var deviation = 0;
+        var deviation = 2;
         var nearPix = 2;
 
-        // 获取画布上的图像像素矩阵
-        // 获取到的数据为一维数组，包含图像的RGBA四个通道数据
-        var imgData = ctx.getImageData(0,0,ob.canvas.width,ob.canvas.height).data;    
-        
+        var imgData_obj = ctx.getImageData(0,0,canvas_obj.width,canvas_obj.height);    // 获取画布上的图像像素矩阵
+        var imgData = imgData_obj.data;     // 获取到的数据为一维数组，包含图像的RGBA四个通道数据
         // console.log(imgData);
 
         // 将获取到的图像数据去除A通道
@@ -85,7 +50,7 @@
             var imgRange = getRange(imgArr[i])
             // console.log(imgRange)
             if(imgRange.includes(color.join("-"))){
-                pixels.push({rgb:imgArr[i],index:i,left:i%ob.canvas.width,top:parseInt(i/ob.canvas.width)})
+                pixels.push({rgb:imgArr[i],index:i,left:i%canvasWidth,top:parseInt(i/canvasWidth)})
             }
         }
         // console.log(pixels)
@@ -148,7 +113,7 @@
             }
             currentPixel = pixel;
         }
-        console.log(pixellines)
+        // console.log(pixellines)
 
         
         for(var i=0; i<pixellines.length; i++){
@@ -177,6 +142,18 @@
             var rect = pixelRects[i];
             var indexOfMax = 0;
             var max = rect.reduce( (a,c,i) => c.length > a ? (indexOfMax = i,c.length) : a, 0)
+            console.log(indexOfMax)
+
+            // var lefts = rect.map(p => p.left );
+            // var tops  = rect.map(p => p.top );
+            // var l = {
+            //     min:Math.min(...lefts),
+            //     max:Math.max(...lefts)
+            // }
+            // var t = {
+            //     min:Math.min(...tops),
+            //     max:Math.max(...tops)
+            // }
             var data = {
                 left:rect[indexOfMax][0].left,
                 top:rect[0][0].top,
@@ -186,7 +163,11 @@
             data.center = [data.left + data.width/2, data.top + data.height/2]
             resultData.push(data)
         }
-        console.log(resultData);
+        console.log(resultData)
+
+
+
+        // console.log(pixelRects) 
 
         function getRange(color){
             var r = []
@@ -211,7 +192,8 @@
             }
             return r;
         }
-    };
+
+    }
 </script>
 </body>
 </html>
