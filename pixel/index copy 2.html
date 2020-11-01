@@ -82,10 +82,6 @@
             display: inline-block;
             vertical-align: middle;
         }
-        #nearPix{
-            padding: 1px 5px;
-            width: 200px;
-        }
         button{padding: 1px 10px;}
         .canvas{
             width: 0;
@@ -156,7 +152,6 @@
             display: inline-block;
             position: relative;
             vertical-align: top;
-            background: url(alpha.jpg);
         }
         .preview-box img{
             display: block;
@@ -165,6 +160,7 @@
             position: absolute;
             box-shadow: 0 0 10px #ff0000 inset;
             display: block;
+            background: url(alpha.jpg);
         }
         .preview b{
             position: absolute;
@@ -209,7 +205,6 @@
 <body>
     <div class="pick">
         <input type="file" id="file" class="file" multiple>
-        <input type="text" id="nearPix" placeholder="容差，默认为4：值范围3-8">
         <button id="button" class="button">查找坐标</button>
         <button id="save" class="save" disabled>复制JSON</button>
         <a id="btnTips" class="btn-tips">使用说明</a>
@@ -231,7 +226,6 @@
 
     var ob = {
         file:document.querySelector("#file"),
-        nearPix:document.querySelector("#nearPix"),
         button:document.querySelector("#button"),
         img:document.querySelector("#img"),
         canvas:document.querySelector("#canvas"),
@@ -305,7 +299,7 @@
                 mapFiles()
             }
         }else{
-            // ob.button.disabled = "disabled";
+            ob.button.disabled = "disabled";
             ob.save.disabled = "";
         }
     }
@@ -315,6 +309,7 @@
         var textarea = document.createElement("textarea");
         textarea.className = "clipboard-textarea"
         textarea.value = JSON.stringify(listData)
+        // textarea.value = "9999"
         document.body.appendChild(textarea);
         textarea.select(); // 选择对象
         document.execCommand("Copy");
@@ -325,13 +320,13 @@
         ob.canvas.width = img.width;
         ob.canvas.height = img.height;
         var ctx = ob.canvas.getContext("2d");                  // 设置在画布上绘图的环境
-        var color = [0,255,0];
-        var colorRange = getRange(color, 60);
+        var color = [0,255,0]
         ctx.fillStyle = 'rgb('+color[0]+','+color[1]+','+color[2]+')';
         ctx.fillRect(0,0,ob.canvas.width,ob.canvas.height);
         ctx.drawImage(img, 0, 0);                           // 将图片绘制到画布上
         
-        var nearPix = ob.nearPix.value || 4;
+        var deviation = 1;
+        var nearPix = 2;
 
         // 获取画布上的图像像素矩阵
         // 获取到的数据为一维数组，包含图像的RGBA四个通道数据
@@ -349,11 +344,13 @@
         //找到符合像素点集
         var pixels = []
         for(var i=0; i<imgArr.length; i++){
-            if(colorRange.includes(imgArr[i].join("-"))){
+            var imgRange = getRange(imgArr[i])
+            // console.log(imgRange)
+            if(imgRange.includes(color.join("-"))){
                 pixels.push({rgb:imgArr[i],index:i,left:i%ob.canvas.width,top:parseInt(i/ob.canvas.width)})
             }
         }
-        console.log(pixels)
+        // console.log(pixels)
 
         
         /********************
@@ -388,10 +385,10 @@
             var res = null;
             for(var i=0; i<pixelRects.length; i++){
                 var rect = pixelRects[i];
-                var lastLine = rect[rect.length-1]
-                if( line[0].top - lastLine[0].top < nearPix &&
-                    line[0].left < lastLine[lastLine.length - 1].left &&
-                    line[line.length-1].left > lastLine[0].left){
+                var last = rect[rect.length-1]
+                if( line[0].top - last[0].top < nearPix &&
+            line[0].left < last[last.length - 1].left &&
+            line[line.length-1].left > last[0].left){
                     res = i;
                     break;
                 }else{
@@ -444,7 +441,7 @@
 
         for(var i=0; i<pixelRects.length; i++){
             var rect = pixelRects[i];
-            if(rect.length > 4){//过滤掉非常小的块；
+            if(rect.length > 10){//过滤掉非常小的块；
                 var indexOfMax = 0;
                 var max = rect.reduce( (a,c,i) => c.length > a ? (indexOfMax = i,c.length) : a, 0)
                 var data = {
@@ -460,160 +457,30 @@
         // console.log(resultData);
         callback && callback(resultData);
 
-        
-    };
-
-    function getRange(color, range){
-        var range = range || 3;
-        var r = [];
-        for(var i=-range; i<=range; i++){
-            /*+++*/
-            var a = color[0]+i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]+i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]+i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
-            /*---*/
-            var a = color[0]-i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]-i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]-i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
-            /*++-*/
-            var a = color[0]+i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]+i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]-i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
-            /*-++*/
-            var a = color[0]-i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]+i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]+i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
-            /*+-+*/
-            var a = color[0]+i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]-i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]+i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
-            /*+--*/
-            var a = color[0]+i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]-i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]-i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
-            /*-+-*/
-            var a = color[0]-i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]+i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]-i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
-            /*--+*/
-            var a = color[0]-i;
-            if(a < 0 ) a = 0;
-            if(a > 255 ) a = 255;
-            var b = color[1]-i;
-            if(b < 0 ) b = 0;
-            if(b > 255 ) b = 255;
-            var c = color[2]+i;
-            if(c < 0 ) c = 0;
-            if(c > 255 ) c = 255;
-
-            r.push(  a+"-"+color[1]+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+color[2]  );
-            r.push(  color[0]+"-"+b+"-"+c  );
-            r.push(  a+"-"+color[1]+"-"+c  );
-            r.push(  a+"-"+b+"-"+c  );
+        function getRange(color){
+            var r = []
+            for(var i=-deviation; i<=deviation; i++){
+                var a = color[0]+i;
+                if(a < 0 ) a = 0;
+                if(a > 255 ) a = 255;
+                var b = color[1]+i;
+                if(b < 0 ) b = 0;
+                if(b > 255 ) b = 255;
+                var c = color[2]+i;
+                if(c < 0 ) c = 0;
+                if(c > 255 ) c = 255;
+                
+                r.push(  a+"-"+color[1]+"-"+color[2]  );
+                r.push(  color[0]+"-"+b+"-"+color[2]  );
+                r.push(  color[0]+"-"+color[1]+"-"+c  );
+                r.push(  a+"-"+b+"-"+color[2]  );
+                r.push(  color[0]+"-"+b+"-"+c  );
+                r.push(  a+"-"+color[1]+"-"+c  );
+                r.push(  a+"-"+b+"-"+c  );
+            }
+            return r;
         }
-        return r;
-    }
+    };
 </script>
 </body>
 </html>

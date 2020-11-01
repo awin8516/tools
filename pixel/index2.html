@@ -10,11 +10,11 @@
 <!-- <canvas id="myCanvas" width="2" height="2"> -->
 <!-- <canvas id="myCanvas" width="2" height="2"> -->
 <!-- <canvas id="myCanvas" width="40" height="50"> -->
-<canvas id="myCanvas" width="170" height="135">
+<canvas id="myCanvas" width="1280" height="720">
     <!-- <img src="./01.png" id="img" alt=""/> -->
     <!-- <img src="./px4.jpg" id="img" alt=""/> -->
     <!-- <img src="./03.jpg" id="img" alt=""/> -->
-    <img src="./06.png" id="img" alt=""/>
+    <img src="./044.jpg" id="img" alt=""/>
 </canvas>
 
 <script>
@@ -25,7 +25,7 @@
     var img_obj = document.getElementById("img");           // 获取img标签对象
     img_obj.onload = function(){
 
-        var color = [255,0,0]
+        var color = [0,255,0]
         ctx.fillStyle = 'rgb('+color[0]+','+color[1]+','+color[2]+')';
         ctx.fillRect(0,0,canvas_obj.width,canvas_obj.height);
         ctx.drawImage(img_obj, 0, 0);                           // 将图片绘制到画布上
