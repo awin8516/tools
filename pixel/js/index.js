@@ -83,7 +83,6 @@ window.onload = function () {
                 ob.blockSelected.classList.add("selected")
                 ob.html.classList.add("editing")
                 editEvent.on(ob.blockSelected);
-                console.log(1)
             }
         }else{
             if(ob.blockSelected){
@@ -91,7 +90,6 @@ window.onload = function () {
                 ob.blockSelected = null
                 editEvent.off(ob.blockSelected);
                 ob.html.classList.remove("editing")
-                console.log(0)
             }
         }
     }
