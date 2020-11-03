@@ -168,8 +168,8 @@ button {
   background-color: #fff;
   display: inline-block;
 }
-.editing .preview-scroll {    
-  pointer-events:none;
+.editing .preview-scroll {
+  pointer-events: none;
 }
 .preview-box {
   display: inline-block;
@@ -197,7 +197,7 @@ button {
   border: 1px #00ff00 dashed;
   box-shadow: 0 0 20px #00ff00 inset;
   display: block;
-  pointer-events:auto;
+  pointer-events: auto;
   b {
     position: absolute;
     width: 20px;
@@ -206,8 +206,22 @@ button {
     display: none;
     margin: -10px;
   }
+  s{
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    left: 50%;
+    top: 100%;
+    margin-left: -20px;
+    margin-top: 10px;
+    border: 0px #9a9e9a solid;
+    border-radius: 50%;
+    display: none;
+    cursor: pointer;
+    background: url(../image/trash.svg) #ff6b6b no-repeat center / 16px 16px ;
+  }
   &.selected {
-    b {
+    * {
       display: block;
     }
     b:nth-child(1) {
@@ -223,12 +237,19 @@ button {
     b:nth-child(3) {
       right: 0;
       bottom: 0;
-      border-width: 0 2px 2px  0 ;
+      border-width: 0 2px 2px 0;
     }
     b:nth-child(4) {
       left: 0;
       bottom: 0;
       border-width: 0 0 2px 2px;
+    }
+  }
+  &.shift-down {
+    b:nth-child(1),
+    & b:nth-child(2),
+    & b:nth-child(4) {
+      display: none;
     }
   }
 }
@@ -272,6 +293,48 @@ button {
 .tips.show {
   display: block;
 }
+
+.contextmenu{
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    min-width: 100px;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1;
+    background-color: #fff;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    display: none;
+    li{
+        padding: 10px;
+        cursor: pointer;
+        &:hover{
+            color: #409eff;
+        }
+    }
+    li +li {
+        border-top: 1px #eee solid;
+    }
+    &.show{
+        display: block;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 * {
   scrollbar-face-color: #cccccc; /*面子*/

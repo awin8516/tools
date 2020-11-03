@@ -33,15 +33,22 @@
         <canvas id="canvas" class="canvas"></canvas>
     </div>
     <ul id="result" class="result block"></ul>
-    <div id="preview" class="preview">
+    <div id="preview" class="preview" data-contextmenu="contextmenuPreview">
         <div class="preview-tips"></div>
         <div class="preview-scroll">
             <div id="previewBox" class="preview-box"><img id="previewImg" class="preview-img" src=""></div>
         </div>
         <b id="previewClose" class="preview-close">╳</b>
     </div>
-    <img id="tips" class="tips" src="tips.jpg" alt="">
+    <img id="tips" class="tips" src="image/tips.jpg" alt="">
 
+    <div id="contextmenuBox" class="contextmenu-box">        
+        <ul id="contextmenuPreview" class="contextmenu contextmenu-preview">
+            <li data-common="createBlock">新建坐标</li>
+            <!-- <li data-common="editBlock">编辑坐标</li>
+            <li data-common="delBlock">删除坐标</li> -->
+        </ul>
+    </div>
 <script src="./js/index.js"></script>
 </body>
 </html>

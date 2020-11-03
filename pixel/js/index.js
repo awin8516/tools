@@ -18,13 +18,16 @@ window.onload = function () {
         previewClose: document.querySelector("#previewClose"),
         btnTips: document.querySelector("#btnTips"),
         tips: document.querySelector("#tips"),
-        blockSelected:null
+        contextmenuBox: document.querySelector("#contextmenuBox"),
+        contextmenuActive: null,
+        blockSelected: null
     }
 
     var IMGS = [];
     var imgIndex = 0;
     var listData = [];
     var JSONData = [];
+    var keyShift = false;
 
 
     ob.file.onchange = function (e) {
@@ -34,14 +37,17 @@ window.onload = function () {
             ob.button.disabled = "";
         }
     }
-
     ob.button.onclick = function () {
         imgIndex = 0;
         ob.result.innerHTML = "";
         listData = [];
-        mapFiles();
+        mapFiles(function (data) {
+            ob.save.disabled = "";
+            JSONData = Object.assign([], data);
+            alert("任务完成")
+        });
     }
-    ob.save.onclick = function(){
+    ob.save.onclick = function () {
         copy2Clipboard(JSONData);
     }
     ob.result.addEventListener("click", preview, false);
@@ -49,118 +55,42 @@ window.onload = function () {
     ob.previewClose.onclick = function () { ob.preview.classList.remove("show") }
     ob.btnTips.onclick = function () { ob.tips.classList.add("show") };
     ob.tips.onclick = function () { ob.tips.classList.remove("show") };
+    document.oncontextmenu = contextmenu;
+    document.addEventListener("click", menuCommon, false);
 
+    /**
+     * 预览&修正
+     * @param {*} e 
+     */
     function preview(e) {
-        // console.log(e.target.dataset.index);
         var index = e.target.dataset.index;
         if (index != undefined && e.target.tagName == 'BUTTON') {
             var html = '<img class="preview-img" src="' + window.URL.createObjectURL(IMGS[index]) + '">';
-            JSONData[index].forEach((block, i) => {
-                var s = formatStyle(block);
-                html += '<div class="preview-block" data-img="'+index+'" data-block="'+i+'" style="' + s.style + '" title="'+s.title+'"><b></b><b></b><b></b><b></b></div>'
-            });
+            html += createBlock(index)
             ob.previewBox.innerHTML = html;
             ob.blocks = Array.prototype.slice.call(document.querySelectorAll(".preview-block"))
             ob.preview.classList.add("show")
         }
     }
 
-    function formatStyle(block){
-        return {
-            style:'left:' + block.left + 'px;top:' + block.top + 'px;width:' + block.width + 'px;height:' + block.height + 'px;center:' + block.center + ';',
-            title:'坐标：\n'+'left: ' + block.left + 'px\ntop: ' + block.top + 'px\nwidth: ' + block.width + 'px\nheight: ' + block.height + 'px\ncenter: ' + block.center
-        }
-    }
-    
-    function editPos(e) {
-        var index = e.target.dataset.block;
-        if (index != undefined) {
-            if(e.target !== ob.blockSelected){
-                ob.blocks.forEach(b=>{
-                    b.classList.remove("selected")
-                })
-                ob.blockSelected = e.target
-                ob.blockSelected.classList.add("selected")
-                ob.html.classList.add("editing")
-                editEvent.on(ob.blockSelected);
-            }
-        }else{
-            if(ob.blockSelected){
-                ob.blockSelected.classList.remove("selected")
-                ob.blockSelected = null
-                editEvent.off(ob.blockSelected);
-                ob.html.classList.remove("editing")
-            }
-        }
+    /**
+     * 生成色块HTML
+     * @param {*} e 
+     */
+    function createBlock(index) {
+        var html = ""
+        JSONData[index].forEach((block, i) => {
+            var s = formatStyle(block);
+            html += '<div class="preview-block" data-img="' + index + '" data-block="' + i + '" style="' + s.style + '" title="' + s.title + '"><b></b><b></b><b></b><b></b><s></s></div>'
+        });
+        return html
     }
 
-    var editEvent = {
-        on :function(el){
-            document.onkeydown = function(e){
-                // console.log(e);
-                var code = e.key || e.keyCode || e.which;
-                if(code == "w" || code == 87){
-                    gradually(ob.blockSelected, "top", -1);
-                }
-                if(code == "a" || code == 65){
-                    gradually(ob.blockSelected, "left", -1);
-                }
-                if(code == "s" || code == 83){
-                    gradually(ob.blockSelected, "top", 1);
-                }
-                if(code == "d" || code == 68){
-                    gradually(ob.blockSelected, "left", 1);
-                };
-                updateJSON(ob.blockSelected)
-            }
-
-            document.onmousewheel = function(e){
-                // console.log(e);
-                var delta = e.deltaY;
-                blockResize(ob.blockSelected, delta)
-                updateJSON(ob.blockSelected)
-            }
-        },
-        off:function(el){
-            document.onkeydown = null
-            document.onmousewheel = null
-        }
-    }
-
-    function gradually(el, name, step){
-        el.style[name] = (parseInt(el.style[name]) + step) +"px";
-    }
-    function blockResize(el, delta){
-        var x = 4;
-        var y = parseInt(parseInt(el.style.height) / parseInt(el.style.width) * x );
-        if(delta>0){
-            gradually(el, "width", x);
-            gradually(el, "height", y);
-            gradually(el, "left", -x/2);
-            gradually(el, "top", -y/2);
-        }else{
-            gradually(el, "width", -x);
-            gradually(el, "height", -y);
-            gradually(el, "left", x/2);
-            gradually(el, "top", y/2);
-        }
-    }
-    function updateJSON(el){
-        var style = el.style;
-        var img = el.dataset.img;
-        var block = el.dataset.block;
-
-        JSONData[img][block].left = parseInt(style.left);
-        JSONData[img][block].top = parseInt(style.top);
-        JSONData[img][block].width = parseInt(style.width);
-        JSONData[img][block].height = parseInt(style.height);
-        JSONData[img][block].center = [parseInt(style.left) + parseInt(style.width)/2, parseInt(style.top) + parseInt(style.height)/2];
-
-        var s = formatStyle(JSONData[img][block]);
-        el.title = s.title;
-    }
-
-    function mapFiles() {
+    /**
+     * 开始任务
+     * @param {*} callback 
+     */
+    function mapFiles(callback) {
         if (IMGS.length <= 0) {
             alert("请选择素材图片");
             return false;
@@ -174,31 +104,34 @@ window.onload = function () {
             ob.img.onload = function () {
                 getPos(ob.img, function (data) {
                     li.className = "completed"
-                    li.innerHTML = "<s>【" + (imgIndex + 1) + "】</s> <span>已完成，查找到" + data.length + "个区域块</span><button class='button' data-index='" + imgIndex + "'>预览</button>";
+                    li.innerHTML = "<s>【" + (imgIndex + 1) + "】</s> <span>已完成，查找到" + data.length + "个坐标区域</span><button class='button' data-index='" + imgIndex + "'>预览</button>";
                     listData.push(data)
                 });
                 imgIndex++;
-                mapFiles()
+                mapFiles(callback)
             }
         } else {
-            // ob.button.disabled = "disabled";
-            ob.save.disabled = "";
-            JSONData = Object.assign([], listData);
+            callback && callback(listData);
         }
     }
 
+    /**
+     * 查找像素块
+     * @param {*} img 
+     * @param {*} callback 
+     */
     function getPos(img, callback) {
         ob.canvas.width = img.width;
         ob.canvas.height = img.height;
         var ctx = ob.canvas.getContext("2d");                  // 设置在画布上绘图的环境
-        var contrastColor = ob.contrastColor.find(c => c.checked ).value.split(",").map(Number);
+        var contrastColor = ob.contrastColor.find(c => c.checked).value.split(",").map(Number);
         var colorRange = getRange(contrastColor, 5, 10);
         // console.log(colorRange);
         ctx.fillStyle = 'rgb(' + contrastColor[0] + ',' + contrastColor[1] + ',' + contrastColor[2] + ')';
         ctx.fillRect(0, 0, ob.canvas.width, ob.canvas.height);
         ctx.drawImage(img, 0, 0);                           // 将图片绘制到画布上
 
-        var tolerance =  {x:2,y:2}
+        var tolerance = { x: 2, y: 2 }
         tolerance.x = ob.toleranceX.value || tolerance.x;
         tolerance.y = ob.toleranceY.value || tolerance.y;
 
@@ -290,7 +223,7 @@ window.onload = function () {
 
         for (var i = 0; i < pixellines.length; i++) {
             var line = pixellines[i];
-            if(line.length > 8){
+            if (line.length > 8) {
                 // ctx.fillStyle = '#ff0000';
                 // ctx.fillRect(line[0].left, line[0].top, line.length, 1);
                 if (pixelRects.length == 0) {//记录首个色条
@@ -300,7 +233,7 @@ window.onload = function () {
                     currentLine = line;
                     continue;
                 };
-                if(i > 318){
+                if (i > 318) {
 
                 }
                 if (line[0].top - currentLine[0].top <= tolerance.y &&
@@ -351,10 +284,208 @@ window.onload = function () {
 
 
     };
+
+    /**
+     * 编辑已生成的像素块
+     * @param {*} e 
+     */
+    function editPos(e) {
+        console.log(e)
+        var index = e.target.dataset.block;
+        if (index != undefined) {//选中块
+            if (e.target !== ob.blockSelected) {
+                ob.blocks.forEach(b => {
+                    b.classList.remove("selected")
+                })
+                e.target.classList.add("selected")
+                ob.html.classList.add("editing")
+                editEvent.on(e.target);
+                ob.blockSelected = e.target
+            }
+        } else if (e.target.tagName == "S") {//删除块
+            if (ob.blockSelected) {
+                if (confirm('确认删除当前坐标吗')) {
+                    var img = ob.blockSelected.dataset.img;
+                    var block = ob.blockSelected.dataset.block;
+                    JSONData[img].splice(block, 1);
+                    editEvent.off(ob.blockSelected);
+                    ob.blockSelected.parentElement.removeChild(ob.blockSelected);
+                    ob.html.classList.remove("editing")
+                    ob.blockSelected = null
+                }
+            }
+        } else {//取消选中
+            if (ob.blockSelected) {
+                editEvent.off(ob.blockSelected);
+                ob.blockSelected.classList.remove("selected")
+                ob.html.classList.remove("editing")
+                ob.blockSelected = null
+            }
+        }
+    }
+
+    var editEvent = {
+        on: function (el) {
+            document.onkeydown = function (e) {
+                // console.log(e)
+                var code = e.key || e.keyCode || e.which;
+                if (code == "Shift" || code == 16) {
+                    // console.log("Shift - down")
+                    !keyShift && ob.blockSelected.classList.add("shift-down")
+                    keyShift = true;
+                } else {
+                    if (e.shiftKey) {
+                        // console.log("Shift - true")
+                        if (code == "W" || code == "w" || code == 87) {
+                            css(el, { "height": "-1" });
+                        }
+                        if (code == "A" || code == "a" || code == 65) {
+                            css(el, { "width": "-1" });
+                        }
+                        if (code == "S" || code == "s" || code == 83) {
+                            css(el, { "height": "+1" });
+                        }
+                        if (code == "D" || code == "d" || code == 68) {
+                            css(el, { "width": "+1" });
+                        };
+                    } else {
+                        // console.log("Shift - false")
+                        if (code == "W" || code == "w" || code == 87) {
+                            css(el, { "top": "-1" });
+                        }
+                        if (code == "A" || code == "a" || code == 65) {
+                            css(el, { "left": "-1" });
+                        }
+                        if (code == "S" || code == "s" || code == 83) {
+                            css(el, { "top": "+1" });
+                        }
+                        if (code == "D" || code == "d" || code == 68) {
+                            css(el, { "left": "+1" });
+                        };
+                    }
+                    updateJSON(el)
+                }
+            }
+            document.onkeyup = function (e) {
+                var code = e.key || e.keyCode || e.which;
+                if (code == "Shift" || code == 16) {
+                    // console.log("Shift - up")
+                    ob.blockSelected.classList.remove("shift-down")
+                    keyShift = false;
+                }
+            }
+
+            document.onmousewheel = function (e) {
+                var delta = e.deltaY;
+                blockScale(el, delta)
+                updateJSON(el)
+            }
+        },
+        off: function (el) {
+            document.onkeydown = null
+            document.onmousewheel = null
+        }
+    }
+
+    function css(el, style) {
+        for (var key in style) {
+            var value = style[key];
+            if (typeof value == "string") {
+                if (/\+|\-/.test(value)) {
+                    el.style[key] = (parseInt(el.style[key]) + parseInt(value)) + "px";
+                } else {
+                    el.style[key] = parseInt(value) + "px";
+                }
+            } else {
+                el.style[key] = style[key] + "px";
+            }
+        }
+    }
+
+    function blockScale(el, delta) {
+        var x = 4;
+        var y = parseInt(parseInt(el.style.height) / parseInt(el.style.width) * x);
+        if (delta > 0) {
+            css(el, {
+                "width": "+" + x,
+                "height": "+" + y,
+                "left": "-" + (x / 2),
+                "top": "-" + (y / 2)
+            })
+        } else {
+            css(el, {
+                "width": "-" + x,
+                "height": "-" + y,
+                "left": "+" + (x / 2),
+                "top": "+" + (y / 2)
+            })
+        }
+    }
+    function updateJSON(el) {
+        var style = el.style;
+        var img = el.dataset.img;
+        var block = el.dataset.block;
+
+        JSONData[img][block].left = parseInt(style.left);
+        JSONData[img][block].top = parseInt(style.top);
+        JSONData[img][block].width = parseInt(style.width);
+        JSONData[img][block].height = parseInt(style.height);
+        JSONData[img][block].center = [parseInt(style.left) + parseInt(style.width) / 2, parseInt(style.top) + parseInt(style.height) / 2];
+
+        var s = formatStyle(JSONData[img][block]);
+        el.title = s.title;
+    }
+
+    function contextmenu(e) {
+        console.log(e)
+        var e = e || event;
+        e.preventDefault();
+
+        var temp = e.target
+
+        while (temp && (!temp.dataset || (temp.dataset && !temp.dataset.contextmenu))){
+            temp = temp.parentElement;
+            console.log([temp])
+        } 
+        if (temp.dataset && temp.dataset.contextmenu) {
+            ob.contextmenuActive && ob.contextmenuActive.classList.remove("show");
+            ob.contextmenuActive = document.querySelector("#" + temp.dataset.contextmenu);
+            css(ob.contextmenuActive, {
+                left: e.pageX,
+                top: e.pageY
+            })
+            ob.contextmenuActive.classList.add("show");
+        }
+    }
+
+    function menuCommon(e) {
+        console.log(e)
+        var e = e || event;
+        var common = e.target.dataset.common;
+        if (common != undefined) {
+            contextmenuCommon[common]();
+            ob.contextmenuActive.classList.remove("show");
+            ob.contextmenuActive = null;
+        }else{
+            ob.contextmenuActive && ob.contextmenuActive.classList.remove("show");
+            ob.contextmenuActive = null;
+        }
+    }
+
+    var contextmenuCommon = {
+        createBlock: function () {
+            console.log("新建坐标")
+        },
+        editBlock: function () {
+            console.log("编辑坐标")
+        },
+        delBlock: function () {
+            console.log("删除坐标")
+        }
+    }
 };
 
 function copy2Clipboard(data) {
-    // console.log(JSON.stringify(data))
     var textarea = document.createElement("textarea");
     textarea.className = "clipboard-textarea"
     textarea.value = JSON.stringify(data)
@@ -364,21 +495,24 @@ function copy2Clipboard(data) {
     alert("复制成功")
 }
 
-
+function formatStyle(block) {
+    return {
+        style: 'left:' + block.left + 'px;top:' + block.top + 'px;width:' + block.width + 'px;height:' + block.height + 'px;center:' + block.center + ';',
+        title: '坐标：\n' + 'left: ' + block.left + 'px\ntop: ' + block.top + 'px\nwidth: ' + block.width + 'px\nheight: ' + block.height + 'px\ncenter: ' + block.center
+    }
+}
 
 function getRange(color, range1, range2) {
     var range1 = range1 || 5;
     var range2 = range2 || 100;
     var r = [];
-    var index = color.findIndex(c => c==255 );
-    var o1 = color.findIndex(c => c==0);
-    var o2 = 3-o1-index;
-    // console.log(index,o1,o2)
+    var index = color.findIndex(c => c == 255);
+    var o1 = color.findIndex(c => c == 0);
+    var o2 = 3 - o1 - index;
 
     for (var i = 0; i < range1; i++) {
         /*-*/ /*  255-- */
         var rgb = Object.assign([], color);
-        // console.log(color[index])
         rgb[index] = color[index] - i;
         r.push(rgb.join("-"));
 

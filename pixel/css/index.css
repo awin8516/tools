@@ -246,7 +246,22 @@ button {
   margin: -10px;
 }
 
-.preview-block.selected b {
+.preview-block s {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  left: 50%;
+  top: 100%;
+  margin-left: -20px;
+  margin-top: 10px;
+  border: 0px #9a9e9a solid;
+  border-radius: 50%;
+  display: none;
+  cursor: pointer;
+  background: url(../image/trash.svg) #ff6b6b no-repeat center/16px 16px;
+}
+
+.preview-block.selected * {
   display: block;
 }
 
@@ -265,13 +280,19 @@ button {
 .preview-block.selected b:nth-child(3) {
   right: 0;
   bottom: 0;
-  border-width: 0 2px 2px  0;
+  border-width: 0 2px 2px 0;
 }
 
 .preview-block.selected b:nth-child(4) {
   left: 0;
   bottom: 0;
   border-width: 0 0 2px 2px;
+}
+
+.preview-block.shift-down b:nth-child(1),
+.preview-block.shift-down b:nth-child(2),
+.preview-block.shift-down b:nth-child(4) {
+  display: none;
 }
 
 .preview-tips {
@@ -315,6 +336,37 @@ button {
 }
 
 .tips.show {
+  display: block;
+}
+
+.contextmenu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  min-width: 100px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1;
+  background-color: #fff;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+.contextmenu li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.contextmenu li:hover {
+  color: #409eff;
+}
+
+.contextmenu li + li {
+  border-top: 1px #eee solid;
+}
+
+.contextmenu.show {
   display: block;
 }
 
