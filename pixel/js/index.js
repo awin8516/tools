@@ -25,6 +25,7 @@ window.onload = function () {
 
     var IMGS = [];
     var imgIndex = 0;
+    var previewImgIndex = null;
     var listData = [];
     var JSONData = [];
     var keyShift = false;
@@ -52,7 +53,7 @@ window.onload = function () {
     }
     ob.result.addEventListener("click", preview, false);
     ob.preview.addEventListener("click", editPos, false);
-    ob.previewClose.onclick = function () { ob.preview.classList.remove("show") }
+    ob.previewClose.onclick = function () { ob.preview.classList.remove("show");previewImgIndex = null;}
     ob.btnTips.onclick = function () { ob.tips.classList.add("show") };
     ob.tips.onclick = function () { ob.tips.classList.remove("show") };
     document.oncontextmenu = contextmenu;
@@ -65,8 +66,9 @@ window.onload = function () {
     function preview(e) {
         var index = e.target.dataset.index;
         if (index != undefined && e.target.tagName == 'BUTTON') {
+            previewImgIndex = index;
             var html = '<img class="preview-img" src="' + window.URL.createObjectURL(IMGS[index]) + '">';
-            html += createBlock(index)
+            html += createImgBlock(index)
             ob.previewBox.innerHTML = html;
             ob.blocks = Array.prototype.slice.call(document.querySelectorAll(".preview-block"))
             ob.preview.classList.add("show")
@@ -77,13 +79,21 @@ window.onload = function () {
      * 生成色块HTML
      * @param {*} e 
      */
-    function createBlock(index) {
+    function createImgBlock(index) {
         var html = ""
         JSONData[index].forEach((block, i) => {
-            var s = formatStyle(block);
-            html += '<div class="preview-block" data-img="' + index + '" data-block="' + i + '" style="' + s.style + '" title="' + s.title + '"><b></b><b></b><b></b><b></b><s></s></div>'
+            html += createBlock(block,index,i);
         });
         return html
+    }
+    
+    /**
+     * 生成色块HTML
+     * @param {*} e 
+     */
+    function createBlock(block,index,i) {
+        var s = formatStyle(block);
+        return '<div class="preview-block" data-img="' + index + '" data-block="' + i + '" style="' + s.style + '" title="' + s.title + '"><b></b><b></b><b></b><b></b><s></s></div>'
     }
 
     /**
@@ -290,7 +300,7 @@ window.onload = function () {
      * @param {*} e 
      */
     function editPos(e) {
-        console.log(e)
+        // console.log(e)
         var index = e.target.dataset.block;
         if (index != undefined) {//选中块
             if (e.target !== ob.blockSelected) {
@@ -437,29 +447,28 @@ window.onload = function () {
     }
 
     function contextmenu(e) {
-        console.log(e)
+        // console.log(e)
         var e = e || event;
         e.preventDefault();
-
-        var temp = e.target
-
+        var temp = e.target;
         while (temp && (!temp.dataset || (temp.dataset && !temp.dataset.contextmenu))){
             temp = temp.parentElement;
-            console.log([temp])
-        } 
-        if (temp.dataset && temp.dataset.contextmenu) {
+        }
+        if (temp && temp.dataset && temp.dataset.contextmenu) {
             ob.contextmenuActive && ob.contextmenuActive.classList.remove("show");
             ob.contextmenuActive = document.querySelector("#" + temp.dataset.contextmenu);
             css(ob.contextmenuActive, {
                 left: e.pageX,
                 top: e.pageY
             })
+            ob.contextmenuActive.dataset.offsetX = e.offsetX;
+            ob.contextmenuActive.dataset.offsetY = e.offsetY;
             ob.contextmenuActive.classList.add("show");
         }
     }
 
     function menuCommon(e) {
-        console.log(e)
+        // console.log(e)
         var e = e || event;
         var common = e.target.dataset.common;
         if (common != undefined) {
@@ -473,13 +482,28 @@ window.onload = function () {
     }
 
     var contextmenuCommon = {
-        createBlock: function () {
-            console.log("新建坐标")
+        m_createBlock: function (e) {
+            var e = e || event;
+            // console.log("新建坐标")
+            var x = e.target.parentElement.dataset.offsetX
+            var y = e.target.parentElement.dataset.offsetY
+            var block = {
+                left : x,
+                top : y,
+                width : 50,
+                height : 50,
+                center: [x+25, y+25]
+            }
+            var html = createBlock(block,previewImgIndex,JSONData[previewImgIndex].length);
+            var newBlock = document.createElement("div")
+            newBlock.innerHTML = html
+            ob.previewBox.appendChild(newBlock.children[0])
+            JSONData[previewImgIndex].push(block)
         },
-        editBlock: function () {
+        m_editBlock: function () {
             console.log("编辑坐标")
         },
-        delBlock: function () {
+        m_delBlock: function () {
             console.log("删除坐标")
         }
     }

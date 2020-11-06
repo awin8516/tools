@@ -193,12 +193,20 @@ button {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  max-width: 90%;
-  max-height: 90%;
+  width: 90%;
+  height: 90%;
+  text-align: center;
   overflow: auto;
   box-sizing: border-box;
   background-color: #fff;
   display: inline-block;
+}
+
+.preview-scroll::after {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 }
 
 .editing .preview-scroll {
@@ -208,7 +216,7 @@ button {
 .preview-box {
   display: inline-block;
   position: relative;
-  vertical-align: top;
+  vertical-align: middle;
   background: url(../image/alpha.jpg);
 }
 
@@ -248,12 +256,12 @@ button {
 
 .preview-block s {
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   left: 50%;
   top: 100%;
-  margin-left: -20px;
-  margin-top: 10px;
+  margin-left: -15px;
+  margin-top: 20px;
   border: 0px #9a9e9a solid;
   border-radius: 50%;
   display: none;

@@ -15,7 +15,7 @@
             <input type="number" id="toleranceY" placeholder="纵向容差，默认为2：值范围1-5">
         </div>
         <div class="pick-item contrast-color">
-            <span>反差色： </span>
+            <span>目标色： </span>
             <label><input type="radio" name="contrastColor" value="255,0,0" checked> <span>红色</span></label>
             <label><input type="radio" name="contrastColor" value="0,255,0"> <span>绿色</span></label>
             <label><input type="radio" name="contrastColor" value="0,0,255"> <span>蓝色</span></label>
@@ -33,10 +33,10 @@
         <canvas id="canvas" class="canvas"></canvas>
     </div>
     <ul id="result" class="result block"></ul>
-    <div id="preview" class="preview" data-contextmenu="contextmenuPreview">
+    <div id="preview" class="preview">
         <div class="preview-tips"></div>
         <div class="preview-scroll">
-            <div id="previewBox" class="preview-box"><img id="previewImg" class="preview-img" src=""></div>
+            <div id="previewBox" class="preview-box" data-contextmenu="contextmenuPreview"><img id="previewImg" class="preview-img" src=""></div>
         </div>
         <b id="previewClose" class="preview-close">╳</b>
     </div>
@@ -44,9 +44,9 @@
 
     <div id="contextmenuBox" class="contextmenu-box">        
         <ul id="contextmenuPreview" class="contextmenu contextmenu-preview">
-            <li data-common="createBlock">新建坐标</li>
-            <!-- <li data-common="editBlock">编辑坐标</li>
-            <li data-common="delBlock">删除坐标</li> -->
+            <li data-common="m_createBlock">新建坐标</li>
+            <!-- <li data-common="m_editBlock">编辑坐标</li>
+            <li data-common="m_delBlock">删除坐标</li> -->
         </ul>
     </div>
 <script src="./js/index.js"></script>
