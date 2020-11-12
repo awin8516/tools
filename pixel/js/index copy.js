@@ -4,6 +4,10 @@ window.onload = function () {
     var ob = {
         html: document.querySelector("html"),
         file: document.querySelector("#file"),
+        toleranceX: parseInt(document.querySelector("#toleranceX")),
+        toleranceY: parseInt(document.querySelector("#toleranceY")),
+        toleranceColor: parseInt(document.querySelector("#toleranceColor")),
+        contrastColor: Array.prototype.slice.call(document.querySelectorAll("[name=contrastColor]")),
         button: document.querySelector("#button"),
         progressCompleted: document.querySelector("#progressCompleted"),
         progressTotal: document.querySelector("#progressTotal"),
@@ -24,6 +28,7 @@ window.onload = function () {
     }
 
     var CONFIG = {};
+    var IMGS = [];
     var imgIndex = 0;
     var previewImgIndex = null;
     var listData = [];
@@ -33,9 +38,11 @@ window.onload = function () {
 
     ob.file.onchange = function (e) {
         if (this.files && this.files[0]) {
+            IMGS = [];
+            IMGS = Array.prototype.slice.call(this.files);
             ob.button.disabled = "";
             ob.progressCompleted.innerHTML = 0;
-            ob.progressTotal.innerHTML = this.files.length;
+            ob.progressTotal.innerHTML = IMGS.length;
         }
     };
 
@@ -51,6 +58,7 @@ window.onload = function () {
         },
         onChange: function (hsb, hex, rgb) {
             $('#colorPicker b').css('backgroundColor', '#' + hex);
+            console.log(rgb)
             document.querySelector("#customColor").value = Object.values(rgb)
         }
     });
@@ -58,8 +66,7 @@ window.onload = function () {
 
     ob.button.onclick = function () {
         CONFIG = getConfig();
-        updateProgress(0);
-        if (CONFIG.files.length <= 0) {
+        if (IMGS.length <= 0) {
             alert("请选择素材图片");
             return false;
         }
@@ -86,19 +93,7 @@ window.onload = function () {
     document.addEventListener("click", menuCommon, false);
 
     function getConfig(){
-        var config = {}
-        config.files = Array.prototype.slice.call(ob.file.files);
-        config.toleranceX = parseInt(document.querySelector("#toleranceX").value) || 2
-        config.toleranceY = parseInt(document.querySelector("#toleranceY").value) || 2
-        config.toleranceLine = parseInt(document.querySelector("#toleranceLine").value) || 10
-        config.toleranceRect = parseInt(document.querySelector("#toleranceRect").value) || 5
-        config.toleranceColor = parseInt(document.querySelector("#toleranceColor").value) || 3;
-        var contrast = Array.prototype.slice.call(document.querySelectorAll("[name=contrastColor]")).find(c => c.checked);
-        config.contrastType = contrast.value == "transparent" ? "transparent" : "color";
-        config.contrastColor = config.contrastType == "transparent" ? [255,0,0] : contrast.value.split(",").map(Number);
-        config.colorRange = getRange(config.contrastColor, config.toleranceColor, config.toleranceColor * 5);
-        // console.log(config.colorRange)
-        return config;
+        CONFIG.imgs = IMGS
     }
 
     /**
@@ -109,7 +104,7 @@ window.onload = function () {
         var index = e.target.dataset.index;
         if (index != undefined && e.target.tagName == 'BUTTON') {
             previewImgIndex = index;
-            var html = '<img class="preview-img" src="' + window.URL.createObjectURL(CONFIG.files[index]) + '">';
+            var html = '<img class="preview-img" src="' + window.URL.createObjectURL(IMGS[index]) + '">';
             html += createImgBlockHtml(index)
             ob.previewBox.innerHTML = html;
             ob.blocks = Array.prototype.slice.call(document.querySelectorAll(".preview-block"))
@@ -140,8 +135,8 @@ window.onload = function () {
 
     function updateProgress(num){
         ob.progressCompleted.innerHTML = num;
-        ob.progressCompleted.style.width = (num / CONFIG.files.length * 100) + "%";
-        ob.result.scrollTo(0,1000*num);
+        ob.progressCompleted.style.width = (num / IMGS.length * 100) + "%";
+        ob.result.scrollTo(0,100000);
     }
 
     /**
@@ -149,8 +144,8 @@ window.onload = function () {
      * @param {*} callback 
      */
     function mapFiles(callback) {
-        if (imgIndex < CONFIG.files.length) {
-            ob.img.src = window.URL.createObjectURL(CONFIG.files[imgIndex]);
+        if (imgIndex < IMGS.length) {
+            ob.img.src = window.URL.createObjectURL(IMGS[imgIndex]);
             var li = document.createElement("li");
             li.innerHTML = "<s>【" + (imgIndex + 1) + "】</s> <span>loading...</span>";
             ob.result.appendChild(li);
@@ -177,20 +172,34 @@ window.onload = function () {
      * @param {*} callback 
      */
     function getPos(img, callback) {
-        var w = img.width
-        var h = img.height
-        ob.canvas.width = w;
-        ob.canvas.height = h;
+        ob.canvas.width = img.width;
+        ob.canvas.height = img.height;
         var ctx = ob.canvas.getContext("2d");                  // 设置在画布上绘图的环境
-        if(CONFIG.contrastType == "transparent"){
-            ctx.fillStyle = 'rgb(' + CONFIG.contrastColor.join() + ')';
-            ctx.fillRect(0, 0, w, h);
+        var contrastColor = ob.contrastColor.find(c => c.checked).value;
+        if(contrastColor == "transparent"){
+            contrastColor = [255,0,0];
+            // console.log('rgb(' + contrastColor[0] + ',' + contrastColor[1] + ',' + contrastColor[2] + ')')
+            ctx.fillStyle = 'rgb(' + contrastColor[0] + ',' + contrastColor[1] + ',' + contrastColor[2] + ')';
+            ctx.fillRect(0, 0, ob.canvas.width, ob.canvas.height);
+        }else{
+            contrastColor = contrastColor.split(",").map(Number);
         }
+        
+        // ctx.fillStyle = 'rgb(' + contrastColor[0] + ',' + contrastColor[1] + ',' + contrastColor[2] + ')';
+        // ctx.fillRect(0, 0, ob.canvas.width, ob.canvas.height);
+        var colorRange = getRange(contrastColor, ob.toleranceColor, ob.toleranceColor * 2);
+        // var colorRange = getRange(contrastColor, 5, 10);
         ctx.drawImage(img, 0, 0);                           // 将图片绘制到画布上
+
+        // console.log(colorRange)
+        var tolerance = { x: 2, y: 2 }
+        tolerance.x = ob.toleranceX.value || tolerance.x;
+        tolerance.y = ob.toleranceY.value || tolerance.y;
 
         // 获取画布上的图像像素矩阵
         // 获取到的数据为一维数组，包含图像的RGBA四个通道数据
-        var imgData = ctx.getImageData(0, 0, w, h).data;
+        var imgData = ctx.getImageData(0, 0, ob.canvas.width, ob.canvas.height).data;
+
         // console.log(imgData);
 
         // 将获取到的图像数据去除A通道
@@ -203,13 +212,8 @@ window.onload = function () {
         //找到符合像素点集
         var pixels = []
         for (var i = 0; i < imgArr.length; i++) {
-            // if( i>16969 && i<16990){
-                // console.log(imgArr[i])
-            // }
-            if (CONFIG.colorRange.includes(imgArr[i].join("-"))) {
-                pixels.push({ rgb: imgArr[i], index: i, left: i % w, top: parseInt(i / w) });
-                // ctx.fillStyle = '#ff0000';
-                // ctx.fillRect(i % w, parseInt(i / w), 1, 1);
+            if (colorRange.includes(imgArr[i].join("-"))) {
+                pixels.push({ rgb: imgArr[i], index: i, left: i % ob.canvas.width, top: parseInt(i / ob.canvas.width) })
             }
         }
         // console.log(pixels)
@@ -221,13 +225,12 @@ window.onload = function () {
         var pixellines = [];
         var lineIndex = -1;
         var currentPixel = null;
-
         var pixelRects = [];
         var rectIndex = -1;
         var currentLine = null;
         var resultData = []
 
-        //新的像素 条
+        //新的像素条
         function newLine(pixel) {
             lineIndex++;
             pixellines[lineIndex] = [];
@@ -235,7 +238,7 @@ window.onload = function () {
             pixellines[lineIndex].push(currentPixel);
         }
 
-        //新的像素 块
+        //新的像素块
         function newRect(line) {
             rectIndex++;
             pixelRects[rectIndex] = [];
@@ -249,7 +252,7 @@ window.onload = function () {
             for (var i = 0; i < pixelRects.length; i++) {
                 var rect = pixelRects[i];
                 var lastLine = rect[rect.length - 1]
-                if (line[0].top - lastLine[0].top <= CONFIG.toleranceY &&
+                if (line[0].top - lastLine[0].top <= tolerance.y &&
                     line[0].left < lastLine[lastLine.length - 1].left &&
                     line[line.length - 1].left > lastLine[0].left) {
                     res = i;
@@ -268,7 +271,7 @@ window.onload = function () {
                 currentPixel = pixel;
                 continue;
             }
-            if (pixel.index - currentPixel.index <= CONFIG.toleranceX) {//横向相邻的点
+            if (pixel.index - currentPixel.index <= tolerance.x) {//横向相邻的点
                 pixellines[lineIndex].push(pixel);
             } else {
                 newLine(pixel);
@@ -281,7 +284,7 @@ window.onload = function () {
 
         for (var i = 0; i < pixellines.length; i++) {
             var line = pixellines[i];
-            if (line.length > CONFIG.toleranceLine) {
+            if (line.length > 8) {
                 // ctx.fillStyle = '#ff0000';
                 // ctx.fillRect(line[0].left, line[0].top, line.length, 1);
                 if (pixelRects.length == 0) {//记录首个色条
@@ -294,7 +297,7 @@ window.onload = function () {
                 if (i > 318) {
 
                 }
-                if (line[0].top - currentLine[0].top <= CONFIG.toleranceY &&
+                if (line[0].top - currentLine[0].top <= tolerance.y &&
                     line[0].left < currentLine[currentLine.length - 1].left &&
                     line[line.length - 1].left > currentLine[0].left) {//
                     pixelRects[rectIndex].push(line);
@@ -322,7 +325,7 @@ window.onload = function () {
 
         for (var i = 0; i < pixelRects.length; i++) {
             var rect = pixelRects[i];
-            if (rect.length > CONFIG.toleranceRect) {//过滤掉非常小的块；
+            if (rect.length > 4) {//过滤掉非常小的块；
                 var indexOfMax = 0;
                 var max = rect.reduce((a, c, i) => c.length > a ? (indexOfMax = i, c.length) : a, 0)
                 var data = {
@@ -356,9 +359,11 @@ window.onload = function () {
             }
         } else if (e.target.tagName == "S") {//删除块
             if (ob.blockSelected) {
-                var imgIndex = ob.blockSelected.dataset.img;
-                var blockIndex = ob.blockSelected.dataset.block;
-                delBlock(imgIndex, blockIndex);
+                if (confirm('确认删除当前坐标吗')) {
+                    var imgIndex = ob.blockSelected.dataset.img;
+                    var blockIndex = ob.blockSelected.dataset.block;
+                    delBlock(imgIndex, blockIndex);
+                }
             }
         } else {//取消选中
             if (ob.blockSelected) {
@@ -394,17 +399,15 @@ window.onload = function () {
     }
 
     function delBlock(imgIndex, blockIndex){
-        if (confirm('确认删除当前坐标吗')) {
-            var block = ob.blocks[blockIndex];
-            var isblockSelected = (block == ob.blockSelected);
-            JSONData[imgIndex].splice(blockIndex, 1);
-            editEvent.off(block);
-            block.parentElement.removeChild(block);
-            ob.blocks = Array.prototype.slice.call(document.querySelectorAll(".preview-block"));
-            ob.blocks.forEach((b,i) => {b.dataset.block = i;})
-            ob.html.classList.remove("editing")
-            isblockSelected && (ob.blockSelected = null)
-        }
+        var block = ob.blocks[blockIndex];
+        var isblockSelected = (block == ob.blockSelected);
+        JSONData[imgIndex].splice(blockIndex, 1);
+        editEvent.off(block);
+        block.parentElement.removeChild(block);
+        ob.blocks = Array.prototype.slice.call(document.querySelectorAll(".preview-block"));
+        ob.blocks.forEach((b,i) => {b.dataset.block = i;})
+        ob.html.classList.remove("editing")
+        isblockSelected && (ob.blockSelected = null)
     }
 
 
@@ -422,44 +425,32 @@ window.onload = function () {
                         // console.log("Shift - true")
                         if (code == "W" || code == "w" || code == 87) {
                             css(el, { "height": "-1" });
-                            updateJSON(el);
                         }
                         if (code == "A" || code == "a" || code == 65) {
                             css(el, { "width": "-1" });
-                            updateJSON(el);
                         }
                         if (code == "S" || code == "s" || code == 83) {
                             css(el, { "height": "+1" });
-                            updateJSON(el);
                         }
                         if (code == "D" || code == "d" || code == 68) {
                             css(el, { "width": "+1" });
-                            updateJSON(el);
                         };
                     } else {
                         // console.log("Shift - false")
                         if (code == "W" || code == "w" || code == 87) {
                             css(el, { "top": "-1" });
-                            updateJSON(el);
                         }
                         if (code == "A" || code == "a" || code == 65) {
                             css(el, { "left": "-1" });
-                            updateJSON(el);
                         }
                         if (code == "S" || code == "s" || code == 83) {
                             css(el, { "top": "+1" });
-                            updateJSON(el);
                         }
                         if (code == "D" || code == "d" || code == 68) {
                             css(el, { "left": "+1" });
-                            updateJSON(el);
-                        };
-                        if (code == "Delete" || code == 46) {
-                            var imgIndex = el.dataset.img;
-                            var blockIndex = el.dataset.block;
-                            delBlock(imgIndex, blockIndex);
                         };
                     }
+                    updateJSON(el)
                 }
             }
             document.onkeyup = function (e) {
@@ -479,7 +470,6 @@ window.onload = function () {
         },
         off: function (el) {
             document.onkeydown = null
-            document.onkeyup = null
             document.onmousewheel = null
         }
     }
@@ -534,7 +524,7 @@ window.onload = function () {
     }
 
     function contextmenu(e) {
-        // console.log(e)
+        console.log(e)
         var e = e || event;
         e.preventDefault();
         var temp = e.target;
@@ -542,6 +532,7 @@ window.onload = function () {
             temp = temp.parentElement;
         }
         if (temp && temp.dataset && temp.dataset.contextmenu) {
+            console.log(e)
             ob.contextmenuActive && ob.contextmenuActive.classList.remove("show");
             ob.contextmenuActive = document.querySelector("#" + temp.dataset.contextmenu);
             css(ob.contextmenuActive, {
@@ -629,28 +620,28 @@ function getRange(color, range1, range2) {
         /*-*/ /*  255-- */
         var rgb = Object.assign([], color);
         rgb[index] = color[index] + i;
-        if(   rgb[index] >=0 && rgb[index] <=255 && !r.includes(rgb.join("-"))   ){
+        if(rgb[index] >=0 && rgb[index] <=255){
             r.push(rgb.join("-"));
 
             for (var k = -range2; k < range2; k++) {
                 /*-+-*/
                 rgb[o1] = color[o1] + k;
                 rgb[o2] = color[o2];
-                if(rgb[o1] >=0 && rgb[o1] <=255 && !r.includes(rgb.join("-"))){
+                if(rgb[o1] >=0 && rgb[o1] <=255){
                     r.push(rgb.join("-"));
                 }
 
                 /*--+*/
                 rgb[o1] = color[o1];
                 rgb[o2] = color[o2] + k;
-                if(rgb[o2] >=0 && rgb[o2] <=255 && !r.includes(rgb.join("-"))){
+                if(rgb[o2] >=0 && rgb[o2] <=255){
                     r.push(rgb.join("-"));
                 }
 
                 /*-++*/
                 rgb[o1] = color[o1] + k;
                 rgb[o2] = color[o2] + k;
-                if(rgb[o1] >=0 && rgb[o1] <=255 && rgb[o2] >=0 && rgb[o2] <=255 && !r.includes(rgb.join("-"))){
+                if(rgb[o1] >=0 && rgb[o1] <=255 && rgb[o2] >=0 && rgb[o2] <=255){
                     r.push(rgb.join("-"));
                 }
             }

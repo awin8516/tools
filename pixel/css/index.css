@@ -33,6 +33,11 @@ body {
   overflow: hidden;
 }
 
+.box .canvas {
+  width: 0;
+  height: 0;
+}
+
 .img {
   position: absolute;
   z-index: -1;
@@ -45,6 +50,24 @@ button {
   border: 1px #bbb solid;
   border-radius: 3px;
   cursor: pointer;
+}
+
+.params-tips {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  color: #fff;
+  text-align: center;
+  line-height: 18px;
+  vertical-align: middle;
+  background-color: #01d85e;
+  border-radius: 50%;
+  margin: 0 3px;
+  cursor: help;
+}
+
+.colorpicker {
+  z-index: 100;
 }
 
 .pick {
@@ -79,7 +102,7 @@ button {
 }
 
 .pick input[type='number'] {
-  width: 220px;
+  width: 50px;
   padding: 1px 5px;
   border: #bbb 1px solid;
   border-radius: 3px;
@@ -93,21 +116,43 @@ button {
   color: #000;
 }
 
+.pick .contrast-color .color-picker {
+  display: none;
+  padding: 1px;
+  border: 1px #ddd solid;
+  border-radius: 3px;
+  margin-left: 5px;
+}
+
+.pick .contrast-color .color-picker b {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
 .pick .contrast-color input {
   vertical-align: middle;
   margin-top: -1px;
 }
 
 .pick .contrast-color label:nth-of-type(1) input:checked + * {
-  color: red;
+  color: #747474;
 }
 
 .pick .contrast-color label:nth-of-type(2) input:checked + * {
-  color: lime;
+  color: red;
 }
 
 .pick .contrast-color label:nth-of-type(3) input:checked + * {
+  color: lime;
+}
+
+.pick .contrast-color label:nth-of-type(4) input:checked + * {
   color: blue;
+}
+
+.pick .contrast-color label:nth-of-type(5) input:checked + * + * {
+  display: inline-block;
 }
 
 .pick .button {
@@ -128,9 +173,48 @@ button {
   vertical-align: middle;
 }
 
-.canvas {
-  width: 0;
-  height: 0;
+.progress {
+  position: relative;
+  text-align: right;
+  height: 16px;
+  line-height: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: 10px;
+  background-color: #ddd;
+  color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3) inset;
+  display: none;
+}
+
+.progress .progress-completed {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2%;
+  height: 100%;
+  z-index: 1;
+  box-sizing: border-box;
+  padding-right: 0.5em;
+  line-height: inherit;
+  background-color: #409eff;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: -1px -1px 3px rgba(0, 0, 0, 0.3) inset;
+}
+
+.progress .progress-total {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding-right: 0.5em;
+  line-height: inherit;
+}
+
+.tasking .progress {
+  display: block;
 }
 
 .result {
@@ -140,6 +224,10 @@ button {
   overflow-y: auto;
   background-color: #fff;
   border-radius: 5px;
+}
+
+.tasking .result {
+  height: calc(100vh - 106px);
 }
 
 .result li {
@@ -189,10 +277,7 @@ button {
 }
 
 .preview-scroll {
-  position: relative;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin: 4.9vh 4.9%;
   width: 90%;
   height: 90%;
   text-align: center;
@@ -200,6 +285,7 @@ button {
   box-sizing: border-box;
   background-color: #fff;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .preview-scroll::after {
@@ -218,6 +304,7 @@ button {
   position: relative;
   vertical-align: middle;
   background: url(../image/alpha.jpg);
+  pointer-events: auto;
 }
 
 .preview-box::after {
@@ -243,6 +330,21 @@ button {
   box-shadow: 0 0 20px #00ff00 inset;
   display: block;
   pointer-events: auto;
+}
+
+.preview-block p {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  font-size: 22px;
+  color: #fff;
+  transform: translateY(-50%);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  font-family: cursive;
+  pointer-events: none;
+  user-select: none;
 }
 
 .preview-block b {
@@ -273,33 +375,33 @@ button {
   display: block;
 }
 
-.preview-block.selected b:nth-child(1) {
+.preview-block.selected b:nth-of-type(1) {
   left: 0;
   top: 0;
   border-width: 2px 0 0 2px;
 }
 
-.preview-block.selected b:nth-child(2) {
+.preview-block.selected b:nth-of-type(2) {
   right: 0;
   top: 0;
   border-width: 2px 2px 0 0;
 }
 
-.preview-block.selected b:nth-child(3) {
+.preview-block.selected b:nth-of-type(3) {
   right: 0;
   bottom: 0;
   border-width: 0 2px 2px 0;
 }
 
-.preview-block.selected b:nth-child(4) {
+.preview-block.selected b:nth-of-type(4) {
   left: 0;
   bottom: 0;
   border-width: 0 0 2px 2px;
 }
 
-.preview-block.shift-down b:nth-child(1),
-.preview-block.shift-down b:nth-child(2),
-.preview-block.shift-down b:nth-child(4) {
+.preview-block.shift-down b:nth-of-type(1),
+.preview-block.shift-down b:nth-of-type(2),
+.preview-block.shift-down b:nth-of-type(4) {
   display: none;
 }
 

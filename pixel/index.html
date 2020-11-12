@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>pixel</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="./js/colorpicker/js/colorpicker.js"></script>
+    <link rel="stylesheet" href="./js/colorpicker/css/colorpicker.css">
     <link rel="stylesheet" href="./css/index.min.css">
 </head>
 <body>
@@ -11,14 +14,20 @@
             <input type="file" id="file" class="file" multiple>
         </div>
         <div class="pick-item">
-            <input type="number" id="toleranceX" placeholder="横向容差，默认为2：值范围1-8">
-            <input type="number" id="toleranceY" placeholder="纵向容差，默认为2：值范围1-5">
+            <input type="number" id="toleranceX" value="2"><span class="params-tips" title="横向容差，默认为2：值范围1-8">?</span>
+            <input type="number" id="toleranceY" value="2"><span class="params-tips" title="纵向容差，默认为2：值范围1-5">?</span>
+            <input type="number" id="toleranceLine" value="10"><span class="params-tips" title="线容差，默认为10：值范围1-100">?</span>
+            <input type="number" id="toleranceRect" value="5"><span class="params-tips" title="块容差，默认为5：值范围1-100">?</span>
+            <input type="number" id="toleranceColor" value="3"><span class="params-tips" title="颜色容差，默认为3：值范围1-10">?</span>
         </div>
         <div class="pick-item contrast-color">
-            <span>目标色： </span>
-            <label><input type="radio" name="contrastColor" value="255,0,0" checked> <span>红色</span></label>
-            <label><input type="radio" name="contrastColor" value="0,255,0"> <span>绿色</span></label>
-            <label><input type="radio" name="contrastColor" value="0,0,255"> <span>蓝色</span></label>
+            <span>识别目标： </span>
+            <label title="透明区域"><input type="radio" name="contrastColor" value="transparent" checked> <span>透明区</span></label>
+            <label title="#FF0000"><input type="radio" name="contrastColor" value="255,0,0"> <span>红色</span></label>
+            <label title="#00FF00"><input type="radio" name="contrastColor" value="0,255,0"> <span>绿色</span></label>
+            <label title="#0000FF"><input type="radio" name="contrastColor" value="0,0,255"> <span>蓝色</span></label>
+            <label title="自定义色"><input type="radio" name="contrastColor" value="38,159,78" id="customColor"> <span>自定义</span><div id="colorPicker" class="color-picker"><b></b></div></label>
+            
         </div>
         <div class="pick-item">
             <button id="button" class="button">查找坐标</button>
@@ -28,14 +37,11 @@
             <a id="btnTips" class="btn-tips">使用说明</a>
         </div>
     </div>
-    <div class="box">
-        <img id="img" class="img" src="" alt="">
-        <canvas id="canvas" class="canvas"></canvas>
-    </div>
+    <div class="progress"><div id="progressCompleted" class="progress-completed">0</div><div id="progressTotal" class="progress-total">0</div></div>
     <ul id="result" class="result block"></ul>
     <div id="preview" class="preview">
         <div class="preview-tips"></div>
-        <div class="preview-scroll">
+        <div id="previewScroll" class="preview-scroll">
             <div id="previewBox" class="preview-box" data-contextmenu="contextmenuPreview"><img id="previewImg" class="preview-img" src=""></div>
         </div>
         <b id="previewClose" class="preview-close">╳</b>
@@ -49,6 +55,10 @@
             <li data-common="m_delBlock">删除坐标</li> -->
         </ul>
     </div>
-<script src="./js/index.js"></script>
+    <div class="box">
+        <img id="img" class="img" src="" alt="">
+        <canvas id="canvas" class="canvas"></canvas>
+    </div>
+    <script src="./js/index.js"></script>
 </body>
 </html>
